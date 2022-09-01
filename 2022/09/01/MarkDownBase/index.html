@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -30,6 +30,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2022/09/01/MarkDownBase/googlelogo_color_272x92dp.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>MarkDown入门 - Ride_or_DIE</title>
@@ -70,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -267,6 +269,16 @@
   <div class="row nomargin-x">
     <div class="side-col d-none d-lg-block col-lg-2">
       
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
 
     </div>
 
@@ -276,6 +288,14 @@
           <article class="post-content mx-auto">
             <!-- SEO header -->
             <h1 style="display: none">MarkDown入门</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年9月1日 晚上
+                  
+                
+              </p>
             
             <div class="markdown-body">
               
@@ -408,6 +428,11 @@
         </div>
       
       
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年9月1日</div>
+        </div>
+      
       <div class="license-meta-item">
         <div>许可协议</div>
         <div>
@@ -485,16 +510,6 @@
 
     <div class="side-col d-none d-lg-block col-lg-2">
       
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
 
     </div>
   </div>
@@ -576,21 +591,20 @@
 
   
     
-      <span id="leancloud-site-pv-container" style="display: none">
+      <span id="busuanzi_container_site_pv" style="display: none">
         总访问量 
-        <span id="leancloud-site-pv"></span>
+        <span id="busuanzi_value_site_pv"></span>
          次
       </span>
     
     
-      <span id="leancloud-site-uv-container" style="display: none">
+      <span id="busuanzi_container_site_uv" style="display: none">
         总访客数 
-        <span id="leancloud-site-uv"></span>
+        <span id="busuanzi_value_site_uv"></span>
          人
       </span>
     
     
-
   
 </div>
 
@@ -799,6 +813,8 @@
   <script  src="/js/local-search.js" ></script>
 
   <script defer src="/js/leancloud.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 
