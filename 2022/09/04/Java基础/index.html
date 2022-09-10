@@ -27,7 +27,7 @@
 <meta property="og:image" content="http://example.com/2022/09/04/Java%E5%9F%BA%E7%A1%80/gailan-01.png">
 <meta property="og:image" content="http://example.com/2022/09/04/Java%E5%9F%BA%E7%A1%80/npe-1.jpg">
 <meta property="article:published_time" content="2022-09-04T07:19:51.000Z">
-<meta property="article:modified_time" content="2022-09-10T04:27:36.091Z">
+<meta property="article:modified_time" content="2022-09-10T04:34:00.312Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2022/09/04/Java%E5%9F%BA%E7%A1%80/image-20220904193326678.png">
@@ -233,7 +233,7 @@
         
         
         
-          108 分钟
+          106 分钟
         
       </span>
     
@@ -294,7 +294,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年9月10日 中午
+                    本文最后更新于：2022年9月10日 下午
                   
                 
               </p>
@@ -479,12 +479,7 @@
 </ul>
 </blockquote>
 <blockquote>
-<p>常用通配符：T、E、K、V、？<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote">&lt;span class&#x3D;”hint–top hint–rounded” aria-label&#x3D;”聊一聊-JAVA 泛型中的通配符 T，E，K，V，？ - 掘金 (juejin.cn)</a></sup></p>
-</blockquote>
-</li>
-</ul>
-<p>“&gt;[2]</p>
-<blockquote>
+<p>常用通配符：T、E、K、V、？</p>
 <ul>
 <li>？标识不确定的java类型</li>
 <li>T（type）标识具体的一个java类型</li>
@@ -492,9 +487,8 @@
 <li>E（element）标识数组中的元素类型</li>
 </ul>
 </blockquote>
-<ul>
-<li><p>类型擦除：Java的泛型是<strong>伪泛型</strong>，因为Java在编译期间，所有的泛型信息都会被擦除，这就是通常所说的类型擦除。<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="Java泛型类型擦除以及类型擦除带来的问题 - 蜗牛大师 - 博客园 (cnblogs.com)
-">[1]</span></a></sup> 所有的泛型在编译过后均为Object，所以说，在运行期间通过反射可以向Integer泛型的List中添加String</p>
+</li>
+<li><p>类型擦除：Java的泛型是<strong>伪泛型</strong>，因为Java在编译期间，所有的泛型信息都会被擦除，这就是通常所说的类型擦除。 所有的泛型在编译过后均为Object，所以说，在运行期间通过反射可以向Integer泛型的List中添加String</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>list.add(<span class="hljs-number">12</span>);<br><span class="hljs-comment">//直接往Integer的list中添加string会在编译器报错</span><br>list.add(<span class="hljs-string">&quot;a&quot;</span>);<br><span class="hljs-comment">//通过反射获取运行期，list的add方法</span><br>Class&lt;? extend List&gt; clazz = list.getClass();<br><span class="hljs-type">Method</span> <span class="hljs-variable">add</span> <span class="hljs-operator">=</span> clazz.getDeclaredMethod(<span class="hljs-string">&quot;add&quot;</span>, Object.class);<br><span class="hljs-comment">//通过反射获取的add方法可以往Integer的list中添加string</span><br>add.invoke(list, <span class="hljs-string">&quot;a&quot;</span>);<br></code></pre></td></tr></table></figure></li>
 </ul>
 <h3 id="7-x3D-x3D-和equals-的区别"><a href="#7-x3D-x3D-和equals-的区别" class="headerlink" title="7. &#x3D;&#x3D;和equals()的区别"></a>7. &#x3D;&#x3D;和equals()的区别</h3><ul>
@@ -724,8 +718,7 @@
 <li>浅拷贝：拷贝原对象的引用</li>
 <li>深拷贝：创建一个新的对象，并对原引用对象的数据进行复制，将新对象的引用拷贝</li>
 </ul>
-<h1 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h1><h2 id="类和对象"><a href="#类和对象" class="headerlink" title="类和对象"></a>类和对象</h2><h3 id="1-面向对象和面向过程的区别-lt-span-class-x3D-”hint–top-hint–rounded”-aria-label-x3D-”怎么理解面向对象和面向过程到底的本质区别？-阿里云开发者社区-aliyun-com"><a href="#1-面向对象和面向过程的区别-lt-span-class-x3D-”hint–top-hint–rounded”-aria-label-x3D-”怎么理解面向对象和面向过程到底的本质区别？-阿里云开发者社区-aliyun-com" class="headerlink" title="1. 面向对象和面向过程的区别&lt;span class&#x3D;”hint–top hint–rounded” aria-label&#x3D;”怎么理解面向对象和面向过程到底的本质区别？ .-阿里云开发者社区 (aliyun.com)"></a>1. 面向对象和面向过程的区别<sup id="fnref:3" class="footnote-ref"><a href="#fn:3" rel="footnote">&lt;span class&#x3D;”hint–top hint–rounded” aria-label&#x3D;”怎么理解面向对象和面向过程到底的本质区别？ .-阿里云开发者社区 (aliyun.com)</a></sup></h3><p>“&gt;[3]</p>
-<blockquote>
+<h1 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h1><h2 id="类和对象"><a href="#类和对象" class="headerlink" title="类和对象"></a>类和对象</h2><h3 id="1-面向对象和面向过程的区别"><a href="#1-面向对象和面向过程的区别" class="headerlink" title="1. 面向对象和面向过程的区别"></a>1. 面向对象和面向过程的区别</h3><blockquote>
 <p>面向过程就是分析出解决问题所需的步骤，然后使用函数把这些步骤一步一步实现，使用的时候依次调用。</p>
 <p>面向对象就是把问题事务分解成各个对象，建立对象的目的不是为了完成一个步骤，而是为了描述某个事物在整个解决问题的步骤中的行为。</p>
 </blockquote>
@@ -983,10 +976,15 @@
 </blockquote>
 </li>
 </ul>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wuqinglong/p/9456193.html">Java泛型类型擦除以及类型擦除带来的问题 - 蜗牛大师 - 博客园 (cnblogs.com)</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903917835419661">聊一聊-JAVA 泛型中的通配符 T，E，K，V，？ - 掘金 (juejin.cn)</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/799160#:~:text=%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%92%8C%E9%9D%A2%E5%90%91%E8%BF%87,%E6%93%8D%E4%BD%9C%E5%AD%98%E5%82%A8%E5%9C%A8%E4%B8%80%E8%B5%B7%E3%80%82">怎么理解面向对象和面向过程到底的本质区别？ .-阿里云开发者社区 (aliyun.com)</a>
-<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wuqinglong/p/9456193.html">Java泛型类型擦除以及类型擦除带来的问题 - 蜗牛大师 - 博客园 (cnblogs.com)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903917835419661">聊一聊-JAVA 泛型中的通配符 T，E，K，V，？ - 掘金 (juejin.cn)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/799160#:~:text=%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%92%8C%E9%9D%A2%E5%90%91%E8%BF%87,%E6%93%8D%E4%BD%9C%E5%AD%98%E5%82%A8%E5%9C%A8%E4%B8%80%E8%B5%B7%E3%80%82">怎么理解面向对象和面向过程到底的本质区别？ .-阿里云开发者社区 (aliyun.com)</a></p>
+</li>
+</ol>
+
               
             </div>
             <hr/>
@@ -1049,6 +1047,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" title="十大排序算法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">十大排序算法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
