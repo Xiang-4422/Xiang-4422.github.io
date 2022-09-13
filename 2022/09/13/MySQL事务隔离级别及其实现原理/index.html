@@ -16,34 +16,34 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="简述：复杂度： 平方阶：冒泡排序、插入排序、选择排序 n^(1.3-2)阶：希尔排序 线性对数阶：快速排序、归并排序、堆排序 线性阶：计数排序、桶排序、基数排序、  稳定度： 算法稳定指的是两个相等键值的顺序和排序之前它们的顺序相同   稳定排序：冒泡排序、插入排序、归并排序、计数排序、桶排序、基数排序 不稳定排序：选择排序、希尔排序、快速排序、堆排序  注意：算法稳定与否和具体的实现有关！！！">
+    <meta name="description" content="MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 有一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订">
 <meta property="og:type" content="article">
-<meta property="og:title" content="十大排序算法">
-<meta property="og:url" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:title" content="MySQL事务隔离级别及其实现原理">
+<meta property="og:url" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
-<meta property="og:description" content="简述：复杂度： 平方阶：冒泡排序、插入排序、选择排序 n^(1.3-2)阶：希尔排序 线性对数阶：快速排序、归并排序、堆排序 线性阶：计数排序、桶排序、基数排序、  稳定度： 算法稳定指的是两个相等键值的顺序和排序之前它们的顺序相同   稳定排序：冒泡排序、插入排序、归并排序、计数排序、桶排序、基数排序 不稳定排序：选择排序、希尔排序、快速排序、堆排序  注意：算法稳定与否和具体的实现有关！！！">
+<meta property="og:description" content="MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 有一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/bubbleSort.gif">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/selectionSort.gif">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/insertionSort.gif">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/1024555-20161128110416068-1421707828.png">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/1024555-20161218163120151-452283750.png">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/quickSort.gif">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/countingSort.gif">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/Bucket_sort_1.svg_.png">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/Bucket_sort_2.svg_.png">
-<meta property="og:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/radixSort.gif">
-<meta property="article:published_time" content="2022-09-10T06:58:59.000Z">
-<meta property="article:modified_time" content="2022-09-10T13:13:41.793Z">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-77225da0805e43183c076c24f270e75b_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-90289243339a900aaf3f87d9c9930258_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-85fd2da20ae7cf219bf55d8b81f8bd94_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-457f695ba253674e7a998297660c1a01_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-114dd6691636883a92e7c1060210a014_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-da32a0f82e9585e39c655ac490c6f3d8_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-6a7c4b03297309813d57213a2a2d7366_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-f07516da40274690e8ece9bc415eab88_720w.jpg">
+<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-3ce9ac24fb6fdf3ff60d03e070136175_720w.jpg">
+<meta property="article:published_time" content="2022-09-13T13:56:19.000Z">
+<meta property="article:modified_time" content="2022-09-13T16:48:59.688Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/bubbleSort.gif">
+<meta name="twitter:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>十大排序算法 - Ride_or_DIE</title>
+  <title>MySQL事务隔离级别及其实现原理 - Ride_or_DIE</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -206,7 +206,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="十大排序算法"></span>
+            <span id="subtitle" data-typed-text="MySQL事务隔离级别及其实现原理"></span>
           
         </div>
 
@@ -217,8 +217,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-09-10 14:58" pubdate>
-          2022年9月10日 下午
+        <time datetime="2022-09-13 21:56" pubdate>
+          2022年9月13日 晚上
         </time>
       </span>
     
@@ -229,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.5k 字
+          2.9k 字
         
       </span>
     
@@ -240,7 +240,7 @@
         
         
         
-          13 分钟
+          25 分钟
         
       </span>
     
@@ -296,136 +296,203 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">十大排序算法</h1>
+            <h1 style="display: none">MySQL事务隔离级别及其实现原理</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年9月10日 晚上
+                    本文最后更新于：2022年9月14日 凌晨
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              <h2 id="简述："><a href="#简述：" class="headerlink" title="简述："></a>简述：</h2><h3 id="复杂度："><a href="#复杂度：" class="headerlink" title="复杂度："></a>复杂度：</h3><ul>
-<li>平方阶：冒泡排序、插入排序、选择排序</li>
-<li>n^(1.3-2)阶：希尔排序</li>
-<li>线性对数阶：快速排序、归并排序、堆排序</li>
-<li>线性阶：计数排序、桶排序、基数排序、</li>
-</ul>
-<h3 id="稳定度："><a href="#稳定度：" class="headerlink" title="稳定度："></a>稳定度：</h3><blockquote>
-<p>算法稳定指的是两个相等键值的顺序和排序之前它们的顺序相同</p>
-</blockquote>
+              <h2 id="MySQL事务"><a href="#MySQL事务" class="headerlink" title="MySQL事务"></a>MySQL事务</h2><ol>
+<li><p>是什么</p>
+<p>数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）</p>
+</li>
+<li><p>作用</p>
+<p>有一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。</p>
+<p>例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订单的数据和库存的数据就不一致。</p>
+</li>
+<li><p>事务特性（<strong>ACID</strong>）</p>
 <ul>
-<li>稳定排序：冒泡排序、插入排序、归并排序、计数排序、桶排序、基数排序</li>
-<li>不稳定排序：选择排序、希尔排序、快速排序、堆排序</li>
+<li>原子性（Atomicity）</li>
+<li>一致性（Consistency）</li>
+<li><strong>隔离性（Isolation）</strong></li>
+<li>持久性（Durability）</li>
 </ul>
-<p><strong>注意：算法稳定与否和具体的实现有关！！！</strong></p>
-<h2 id="一、冒泡排序"><a href="#一、冒泡排序" class="headerlink" title="一、冒泡排序"></a>一、冒泡排序</h2><blockquote>
-<p>比较相邻的元素。如果第一个比第二个大，就交换它们两个。每一次将最大的元素放到合适的位置。</p>
+</li>
+</ol>
+<h2 id="事务隔离要解决的问题"><a href="#事务隔离要解决的问题" class="headerlink" title="事务隔离要解决的问题"></a>事务隔离要解决的问题</h2><ul>
+<li><p><strong>脏读</strong>（未提交的数据（可能会回滚而失效）被其他事务读取）</p>
+<blockquote>
+<p>脏读指读到其他事务未提交的数据，未提交意味着这些数据可能会回滚，也就是可能最终不会存到数据库中，也就是不存在的数据。</p>
+<p>读到了并不一定存在的数据，这就是脏读。</p>
 </blockquote>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/bubbleSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="二、选择排序"><a href="#二、选择排序" class="headerlink" title="二、选择排序"></a>二、选择排序</h2><blockquote>
-<p>每次遍历寻找最小&#x2F;大元素放到首&#x2F;尾</p>
+</li>
+<li><p><strong>不可重复读</strong>（同一事务不同时刻同样的查询条件，查出来的数据不同）</p>
+<blockquote>
+<p>通常针对数据<strong>更新（UPDATE）</strong>操作。</p>
+<p>可重复读指的是在一个事务内，最开始读到的数据和事务结束前的任意时刻读到的同一批数据都是一致的。</p>
+<p>对比可重复读，不可重复读指的是在同一事务内，不同时刻读到的同一批数据可能是不一样的，可能会受到其他事务的影响，比如其他事务改了这批数据并提交了。</p>
 </blockquote>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/selectionSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="三、插入排序"><a href="#三、插入排序" class="headerlink" title="三、插入排序"></a>三、插入排序</h2><blockquote>
-<p>将未排序元素依次插入到已排序序列合适位置（初始化第一个元素未已排序序列）</p>
+</li>
+<li><p><strong>幻读</strong>（更新了数据但是好像未生效）</p>
+<blockquote>
+<p>幻读针对数据<strong>插入（INSERT）</strong>操作来说。</p>
+<p>例如：</p>
+<p>事务A对某行内容做了更改，未提交，</p>
+<p>此时事务B插入了与A修改前记录相同的行，并在A事务提交之前提交了，</p>
+<p>此时在A事务中查询，发现刚才做的更改好像未生效（其实是事务B刚插入的），</p>
+<p>这就叫幻读。</p>
 </blockquote>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/insertionSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="四、希尔排序（插入排序-缩小增量）"><a href="#四、希尔排序（插入排序-缩小增量）" class="headerlink" title="四、希尔排序（插入排序|缩小增量）"></a>四、希尔排序（插入排序|缩小增量）</h2><p>又叫（缩小增量排序），是插入排序改进版</p>
-<p>基于插入排序特性进行优化:</p>
+</li>
+</ul>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><ul>
+<li>读未提交（READ UNCOMMITTED）</li>
+<li>读提交（READ COMMITTED）解决脏读</li>
+<li>可重复读（REPEATABLE READ）解决不可重复读 <strong>默认</strong></li>
+<li>串行化（SERIALIZABEL）解决幻读</li>
+</ul>
+<h3 id="查看与设置隔离级别"><a href="#查看与设置隔离级别" class="headerlink" title="查看与设置隔离级别"></a>查看与设置隔离级别</h3><ul>
+<li>查看</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SHOW variables LIKE &#x27;transaction_isolation&#x27;;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png" srcset="/img/loading.gif" lazyload alt="image-20220913223306947"></p>
+<ul>
+<li>修改</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SET 作用域 TRANSACTION ISOLATION LEVEL 事务隔离级别;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>作用域：<ul>
+<li>SESSION：指针对当前会话窗口</li>
+<li>GLOBAL：全局</li>
+</ul>
+</li>
+<li>事务隔离级别<ul>
+<li>READ UNCOMMITTED</li>
+<li>READ COMMITTED</li>
+<li>REPEATABLE READ</li>
+<li>SERIALIZABLE</li>
+</ul>
+</li>
+</ul>
+<h3 id="在MySQL中执行事务"><a href="#在MySQL中执行事务" class="headerlink" title="在MySQL中执行事务"></a>在MySQL中执行事务</h3><p>事务流程：开始事务–》执行操作–》结束事务（提交&#x2F;回滚）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs MYSQL">BEGIN;/START TANSACTION;#事务开始于BEGIN命令后的第一条语句<br>#执行操作<br>COMMIT;<br></code></pre></td></tr></table></figure>
+
+<p>查看正在运行的事务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM information_schema.innodb_trx;<br></code></pre></td></tr></table></figure>
+
+<h3 id="隔离级别分析"><a href="#隔离级别分析" class="headerlink" title="隔离级别分析"></a>隔离级别分析</h3><h4 id="读未提交"><a href="#读未提交" class="headerlink" title="读未提交"></a>读未提交</h4><p>脏读问题：</p>
+<blockquote>
+<p>A更新的数据还未提交，B直接读取，若A进行回滚，那么A刚才更新的数据就是无效的，B获取到了无效的数据，即脏读。</p>
+</blockquote>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-77225da0805e43183c076c24f270e75b_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="读提交"><a href="#读提交" class="headerlink" title="读提交"></a>读提交</h4><p>解决脏读问题：</p>
+<blockquote>
+<p>一个事务只能读取到其他事务已经提交过的数据。这样脏读问题就解决了。</p>
+</blockquote>
+<p>不可重复读问题：</p>
+<blockquote>
+<p>B某一时刻读取了数据之后，A对其作了更新，B在同一事务中再去读同一数据，读取到的和第一次读取到的不一样，即为不可重复读。</p>
+</blockquote>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-90289243339a900aaf3f87d9c9930258_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="可重复读"><a href="#可重复读" class="headerlink" title="可重复读"></a>可重复读</h4><p>解决不可重复读问题：</p>
+<blockquote>
+<p>事务不会读到其他事务对已有的数据的<strong>修改</strong>，即使其他事务已提交。也就是说事务开始读到的已有数据到事务提交之前都是不会变的。</p>
+<p>但是，对于其他事务插入的数据是可以读到的。这也就引发了幻读问题。</p>
+</blockquote>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-85fd2da20ae7cf219bf55d8b81f8bd94_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>幻读问题：</p>
+<blockquote>
+<p>事务B对某行做了修改，事务A插入了一行，并且这行与B进行修改的行的原始数据一致，然后B再进行查询，发现读取到和未修改行一样的数据，就好像B做的修改没有生效一样，即幻读。</p>
+<p>MySQL中的可重复度隔离解决了幻读问题。</p>
+</blockquote>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-457f695ba253674e7a998297660c1a01_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="串行化"><a href="#串行化" class="headerlink" title="串行化"></a>串行化</h4><p>串行化相当于单线程，事务逐一执行，自然就不会存在因为并发而引起的脏读、不可重复读、幻读的问题。</p>
+<h2 id="MySQL中事务隔离的实现"><a href="#MySQL中事务隔离的实现" class="headerlink" title="MySQL中事务隔离的实现"></a>MySQL中事务隔离的实现</h2><p>读未提交：性能最好，相当于没加锁。</p>
+<p>串行化：读时加共享锁，可并发读，写时加排他锁，其他事务不能进行读写。</p>
+<h3 id="读提交和可重复读的实现"><a href="#读提交和可重复读的实现" class="headerlink" title="读提交和可重复读的实现"></a>读提交和可重复读的实现</h3><p>采用MVVC（多版本并发控制）的方法</p>
+<h4 id="行记录版本和事务id"><a href="#行记录版本和事务id" class="headerlink" title="行记录版本和事务id"></a>行记录版本和事务id</h4><p>概述：</p>
+<blockquote>
+<p>我们在数据库中看到的一条行记录可能实际上有多个版本，每个版本除了记录数据外，还有一个表示版本的字段，记未row trx_id，而整个字段就是使其产生的事务的id，事务id记为transaction id，它在事务开始的时候向事务系统申请，按时间先后顺序递增。</p>
+</blockquote>
+<p>图解：</p>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-114dd6691636883a92e7c1060210a014_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h4><p>读提交和可重复读实现的关键就是快照，学名叫做一致性视图。</p>
 <blockquote>
 <ul>
-<li>插入排序在对几乎已经拍好序的数据操作时，效率高。</li>
-<li>但是一般来说插入排序是低效的，因为每次插入只能将数据移动一位。</li>
-</ul>
-</blockquote>
-<p>希尔排序的基本思想：</p>
-<blockquote>
-<p>希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；随着增量逐渐减少，每组包含的元素越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。</p>
-</blockquote>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/1024555-20161128110416068-1421707828.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="五、归并排序（分治法）"><a href="#五、归并排序（分治法）" class="headerlink" title="五、归并排序（分治法）"></a>五、归并排序（分治法）</h2><ul>
-<li><p><strong>分治法</strong>的典型应用。</p>
+<li><p>可重复读是在事务开始的时候生成一个当前事务全局性的快照。</p>
 </li>
-<li><p>问题分解：要将数组排序，先将数组分解成两份，将两份分别排好序后，再将两份数组合并，合并后的数组就排好序了。</p>
+<li><p>而读提交是每次执行语句的时候都重新生成一次快照。</p>
 </li>
 </ul>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/1024555-20161218163120151-452283750.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="六、快速排序（分治法-冒泡排序）"><a href="#六、快速排序（分治法-冒泡排序）" class="headerlink" title="六、快速排序（分治法|冒泡排序）"></a>六、快速排序（分治法|冒泡排序）</h2><ul>
-<li><p><strong>分治法</strong>的典型应用。</p>
-</li>
-<li><p>从本质上看，快速排序算是<strong>在冒泡排序基础上的递归分治法</strong></p>
-</li>
-<li><p>算法思想：</p>
-<blockquote>
-<p>选择一个基准元素，然后以它为基准将数组分为两个区。然后将比基准值小的都放到基准值左边，大的放到基准值右边，然后对两个区域分别递归排序排序。</p>
-<p>划区的操作就相当于是冒泡操作，每一层递归，一个元素就放置到了它该在的位置。</p>
 </blockquote>
-</li>
-<li><p>算法实现：</p>
-<blockquote>
-<p>在单独的一层递归中，选择首元素作为基准元素，然后使用双指针，从第二个元素和末尾元素向中间遍历，左指针找比基准元素小的元素，右指针找比基准元素大的值，然后交换，最后将基准元素与左指针指向元素互换，这样基准元素左边都比它小，右边都比他大，此时他已经到了该在的位置。</p>
-</blockquote>
-</li>
-</ul>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/quickSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="七、堆排序（选择排序-堆）"><a href="#七、堆排序（选择排序-堆）" class="headerlink" title="七、堆排序（选择排序|堆）"></a>七、堆排序（选择排序|堆）</h2><ul>
-<li><p>基于堆这种数据结构而设计</p>
-<blockquote>
-<p>堆是具有一下性质的<strong>完全二叉树</strong>：每个节点的值都大于或等于其左右子节点的值，称为大顶堆。反之为小顶堆。</p>
-</blockquote>
-</li>
-<li><p>堆排序是一种<strong>选择排序</strong></p>
-</li>
-<li><p>堆排序的基本思想：</p>
-<blockquote>
-<p>1、将待排序序列构造成一个大顶堆，此时整个序列的最大值就是堆顶的根节点。</p>
-<p>2、将其与末尾元素进行交换，此时末尾就为最大值，然后将剩余的n-1个元素重新构造成一个堆，这样就会得到n个元素的次小值。</p>
-<p>如此反复执行，就能得到一个有序序列。</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="八、计数排序"><a href="#八、计数排序" class="headerlink" title="八、计数排序"></a>八、计数排序</h2><ul>
-<li><p>计数排序的思想：</p>
-<blockquote>
-<p>将输入的数值转换为键存储在额外开辟的数组空间中。要求输入的数据是有确定范围的整数</p>
-</blockquote>
-</li>
-<li><p>计数排序不是比较排序。用于计数的数组大小取决于数据的范围，所以说计数排序只适合于数据范围较小的数组。</p>
-</li>
-<li><p>但是计数排序可以用在基数排序中，用来排序数据范围很大的数组。</p>
-</li>
-</ul>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/countingSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h2 id="九、桶排序（计数排序-桶）"><a href="#九、桶排序（计数排序-桶）" class="headerlink" title="九、桶排序（计数排序|桶）"></a>九、桶排序（计数排序|桶）</h2><ul>
-<li><p>桶排序是计数排序的升级版。</p>
+<p>快照能够读取到的版本：</p>
 <blockquote>
 <ul>
-<li><p>计数排序是将每个值占用一个数组位置（相当于桶大小为1），然后直接顺序取值后全部元素就已拍好序列。</p>
-</li>
-<li><p>而桶排序则是将一定范围内的值放入一个桶中，然后对每个桶中元素单独排序（可以使用各种算法，一般采用插入排序，若桶内已经有元素，则新来的元素使用插入排序放入桶中），最后依次从桶中取出拍好序的元素归位。</p>
-</li>
+<li>当前事务内的更新，可以读到；</li>
+<li>快照创建前未提交的版本不可读；</li>
+<li>快照创建后的提交的版本不可读</li>
 </ul>
 </blockquote>
+<p>综上：可重复读和读提交二者<strong>唯一的区别就是快照的创建</strong></p>
+<h3 id="并发写的问题"><a href="#并发写的问题" class="headerlink" title="并发写的问题"></a>并发写的问题</h3><p>问题：</p>
+<blockquote>
+<p>两个事务对同一数据做修改。最终的结果应该时间靠后的哪个事务。</p>
+<p>并且在更新之前要先读数据，这里所说的读和上面说到的读不一样，更新之前的读叫做“当前读”，总是当前版本的数据，也就是多版本中最新一次提交的那版。</p>
+</blockquote>
+<p>例子：</p>
+<blockquote>
+<p>若A执行UPDATE操作，在UPDATE执行期间，要对所修改的行加<strong>行锁</strong>，这个行锁在提交过后才释放。在A提交之前，B若想UPDATE这行数据，需要先申请锁，但是锁已经被A占有，所以B需要等到A提交并释放锁过后才能获取锁继续执行。</p>
+</blockquote>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-da32a0f82e9585e39c655ac490c6f3d8_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>两种加锁过程：</p>
 <ol>
-<li>将元素分配到桶中</li>
+<li><p>有索引（只锁对应行）</p>
+<blockquote>
+<p>例如：<code>UPDATE user SET age=11 WHERE id = 1;</code></p>
+<p>id是这张表的主键，是有索引的情况，那么MySQL直接就在索引数中找到这行数据，让后将该行上行锁。</p>
+</blockquote>
+</li>
+<li><p>无索引（全锁，在解锁留下对应行）</p>
+<blockquote>
+<p>例如：&#96;UPDATE user SET age&#x3D;11 WHERE age&#x3D;10;</p>
+<p>age并非索引，所以MySQL无法直接定位该行（或者多行）数据。然后MySQL就对表中的所有行加行锁（并非表锁），然后分局条件过滤，释放掉不满足条件的行的行锁。</p>
+<p>这个加锁和解锁的过程非常影响性能，所以对于大表需要合理的设计索引来避免这种情况。</p>
+</blockquote>
+</li>
 </ol>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/Bucket_sort_1.svg_.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<ol start="2">
-<li>将每个桶中元素进行排序</li>
-<li>然后依次将每个桶中的元素取出归位</li>
-</ol>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/Bucket_sort_2.svg_.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p> 并发写问题 的解决方式是行锁，而解决幻读的方式则是间隙锁。MySQL将行锁和间隙锁合并在一起，解决了并发写和幻读的问题，这个锁叫做Next-Key锁</p>
+<p>间隙锁：</p>
+<ul>
+<li>表：</li>
+</ul>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-6a7c4b03297309813d57213a2a2d7366_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li>间隙锁：</li>
+</ul>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-f07516da40274690e8ece9bc415eab88_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<blockquote>
+<p>MySQL会在筛选的索引列和其两端的索引列之间加上间隙锁。</p>
+<p>例如执行：<code>UPDATE user SET name = ‘风筝2号’ WHERE age = 10; </code></p>
+<p>（其中age是索引列，唯一）那么MySQL就会在age为[负无穷，10）、（10，30）这两个区间加上间隙锁，那么所有age在这两个区间的数据在此期间就无法插入。（30之后的区间插入数据不会有幻读问题，所以不需要加间隙锁）</p>
+</blockquote>
+<ul>
+<li><p>加锁过程</p>
+<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-3ce9ac24fb6fdf3ff60d03e070136175_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<blockquote>
+<p>在A提交之前，因为事务B插入的数据age&#x3D;10，由于age&#x3D;10的行添加了行锁，两边有间隙锁，所以插入操作无法完成，需要等到A提交后才能插入。这样就不存在幻读问题了。（age  &gt; 30的行插入不受影响）</p>
+</blockquote>
+<blockquote>
+<p>若age不是索引列，那么数据库将为整个表加上间隙锁，那么不管age为何值均要等到事务A提交才能成功插入。</p>
+</blockquote>
 </li>
 </ul>
-<h2 id="十、基数排序（桶排序-按位分配桶）"><a href="#十、基数排序（桶排序-按位分配桶）" class="headerlink" title="十、基数排序（桶排序|按位分配桶）"></a>十、基数排序（桶排序|按位分配桶）</h2><blockquote>
-<p>基数排序是一种非比较型整数排序算法，其原理是将整数按位切割成不同的数字，然后根据每个位上数字来分配桶（1-9共十个桶）。</p>
-<p>基数排序还可以用于字符串和浮点数的排序。</p>
-</blockquote>
-<p><img src="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/radixSort.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
 
               
             </div>
@@ -442,8 +509,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>十大排序算法</div>
-      <div>http://example.com/2022/09/10/十大排序算法/</div>
+      <div>MySQL事务隔离级别及其实现原理</div>
+      <div>http://example.com/2022/09/13/MySQL事务隔离级别及其实现原理/</div>
     </div>
     <div class="license-meta">
       
@@ -455,13 +522,13 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年9月10日</div>
+          <div>2022年9月13日</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年9月10日</div>
+          <div>2022年9月14日</div>
         </div>
       
       <div class="license-meta-item">
@@ -490,18 +557,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" title="MySQL事务隔离级别及其实现原理">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MySQL事务隔离级别及其实现原理</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/09/04/Java%E5%9F%BA%E7%A1%80/" title="Java基础">
-                        <span class="hidden-mobile">Java基础</span>
+                      <a href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" title="十大排序算法">
+                        <span class="hidden-mobile">十大排序算法</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
