@@ -16,34 +16,27 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 每一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订">
+    <meta name="description" content="一、并发缺点1. 频繁的上下文切换为什么会有频繁的多线程切换： 真多线程：多核CPU，每个线程在不同的CPU上执行  宏观多线程：CPU分配给每个线程一定的时间片，CPU通过不断切换线程，宏观上就是多个线程同时执行  每次切换线程需要保存线程当前状态，加载下一个线程之前保存的状态，这就是上下文切换，每个线程执行的时间很短，所以说上下文切换就很频繁。    减少上下文切换的方法： 无锁并发编程  参">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL事务隔离级别及其实现原理">
-<meta property="og:url" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:title" content="Java并发-基础">
+<meta property="og:url" content="http://example.com/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
-<meta property="og:description" content="MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 每一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订">
+<meta property="og:description" content="一、并发缺点1. 频繁的上下文切换为什么会有频繁的多线程切换： 真多线程：多核CPU，每个线程在不同的CPU上执行  宏观多线程：CPU分配给每个线程一定的时间片，CPU通过不断切换线程，宏观上就是多个线程同时执行  每次切换线程需要保存线程当前状态，加载下一个线程之前保存的状态，这就是上下文切换，每个线程执行的时间很短，所以说上下文切换就很频繁。    减少上下文切换的方法： 无锁并发编程  参">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-77225da0805e43183c076c24f270e75b_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-90289243339a900aaf3f87d9c9930258_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-85fd2da20ae7cf219bf55d8b81f8bd94_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-457f695ba253674e7a998297660c1a01_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-114dd6691636883a92e7c1060210a014_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-da32a0f82e9585e39c655ac490c6f3d8_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-6a7c4b03297309813d57213a2a2d7366_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-f07516da40274690e8ece9bc415eab88_720w.jpg">
-<meta property="og:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-3ce9ac24fb6fdf3ff60d03e070136175_720w.jpg">
-<meta property="article:published_time" content="2022-09-13T13:56:19.000Z">
-<meta property="article:modified_time" content="2022-09-13T16:54:44.607Z">
+<meta property="og:image" content="http://example.com/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159b250b111f7tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159b8a740b329tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159c1a4cc499dtplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="article:published_time" content="2022-10-13T14:04:32.000Z">
+<meta property="article:modified_time" content="2022-10-13T15:53:17.678Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png">
+<meta name="twitter:image" content="http://example.com/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159b250b111f7tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>MySQL事务隔离级别及其实现原理 - Ride_or_DIE</title>
+  <title>Java并发-基础 - Ride_or_DIE</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -206,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MySQL事务隔离级别及其实现原理"></span>
+            <span id="subtitle" data-typed-text="Java并发-基础"></span>
           
         </div>
 
@@ -217,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-09-13 21:56" pubdate>
-          2022年9月13日 晚上
+        <time datetime="2022-10-13 22:04" pubdate>
+          2022年10月13日 晚上
         </time>
       </span>
     
@@ -240,7 +233,7 @@
         
         
         
-          25 分钟
+          26 分钟
         
       </span>
     
@@ -296,203 +289,216 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">MySQL事务隔离级别及其实现原理</h1>
+            <h1 style="display: none">Java并发-基础</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年9月14日 凌晨
+                    本文最后更新于：2022年10月13日 晚上
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              <h2 id="MySQL事务"><a href="#MySQL事务" class="headerlink" title="MySQL事务"></a>MySQL事务</h2><ol>
-<li><p>是什么</p>
-<p>数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）</p>
+              <h2 id="一、并发缺点"><a href="#一、并发缺点" class="headerlink" title="一、并发缺点"></a>一、并发缺点</h2><h3 id="1-频繁的上下文切换"><a href="#1-频繁的上下文切换" class="headerlink" title="1. 频繁的上下文切换"></a>1. 频繁的上下文切换</h3><h4 id="为什么会有频繁的多线程切换："><a href="#为什么会有频繁的多线程切换：" class="headerlink" title="为什么会有频繁的多线程切换："></a>为什么会有频繁的多线程切换：</h4><ul>
+<li><p>真多线程：多核CPU，每个线程在不同的CPU上执行</p>
 </li>
-<li><p>作用</p>
-<p>每一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。</p>
-<p>例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订单的数据和库存的数据就不一致。</p>
+<li><p>宏观多线程：CPU分配给每个线程一定的时间片，CPU通过不断切换线程，宏观上就是多个线程同时执行</p>
+<blockquote>
+<p>每次切换线程需要保存线程当前状态，加载下一个线程之前保存的状态，这就是上下文切换，每个线程执行的时间很短，所以说上下文切换就很频繁。</p>
+</blockquote>
 </li>
-<li><p>事务特性（<strong>ACID</strong>）</p>
+</ul>
+<h4 id="减少上下文切换的方法："><a href="#减少上下文切换的方法：" class="headerlink" title="减少上下文切换的方法："></a>减少上下文切换的方法：</h4><ul>
+<li><p>无锁并发编程</p>
+<blockquote>
+<p>参考concurrentHashMap锁分段思想，减少多线程竞争</p>
+</blockquote>
+</li>
+<li><p>CAS算法</p>
+<blockquote>
+<p>使用乐观锁，减少锁竞争带来的上下文切换</p>
+</blockquote>
+</li>
+<li><p>使用最少线程</p>
+<blockquote>
+<p>避免创建不必要的线程</p>
+</blockquote>
+</li>
+<li><p>协程</p>
+<blockquote>
+<p>在单线程中实现多任务调度</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-线程安全问题"><a href="#2-线程安全问题" class="headerlink" title="2. 线程安全问题"></a>2. 线程安全问题</h3><h4 id="线程安全问题：死锁"><a href="#线程安全问题：死锁" class="headerlink" title="线程安全问题：死锁"></a>线程安全问题：死锁</h4><h5 id="如何避免死锁："><a href="#如何避免死锁：" class="headerlink" title="如何避免死锁："></a>如何避免死锁：</h5><ul>
+<li>避免一个线程获得多个锁&#x2F;多个资源</li>
+<li>使用定时锁</li>
+<li>对于数据库锁，加锁和解锁必须在一个数据库连接里，否则可能会解锁失败</li>
+</ul>
+<h4 id="JMM内存模型中的问题"><a href="#JMM内存模型中的问题" class="headerlink" title="JMM内存模型中的问题"></a>JMM内存模型中的问题</h4><ul>
+<li>原子性</li>
+<li>可见性</li>
+<li>有序性</li>
+</ul>
+<h2 id="二、基础概念"><a href="#二、基础概念" class="headerlink" title="二、基础概念"></a>二、基础概念</h2><h3 id="同步与异步"><a href="#同步与异步" class="headerlink" title="同步与异步"></a>同步与异步</h3><p>同步和异步通常用来形容一次方法调用。</p>
 <ul>
-<li>原子性（Atomicity）</li>
-<li>一致性（Consistency）</li>
-<li><strong>隔离性（Isolation）</strong></li>
-<li>持久性（Durability）</li>
+<li>同步方法：调用者必须等待同步方法结束后，才会执行后面的代码。</li>
+<li>异步方法：调用者调用方法后会直接继续执行后续代码，被调用的代码执行完毕后会通知调用者</li>
 </ul>
-</li>
-</ol>
-<h2 id="事务隔离要解决的问题"><a href="#事务隔离要解决的问题" class="headerlink" title="事务隔离要解决的问题"></a>事务隔离要解决的问题</h2><ul>
-<li><p><strong>脏读</strong>（未提交的数据（可能会回滚而失效）被其他事务读取）</p>
-<blockquote>
-<p>脏读指读到其他事务未提交的数据，未提交意味着这些数据可能会回滚，也就是可能最终不会存到数据库中，也就是不存在的数据。</p>
-<p>读到了并不一定存在的数据，这就是脏读。</p>
-</blockquote>
-</li>
-<li><p><strong>不可重复读</strong>（同一事务不同时刻同样的查询条件，查出来的数据不同）</p>
-<blockquote>
-<p>通常针对数据<strong>更新（UPDATE）</strong>操作。</p>
-<p>可重复读指的是在一个事务内，最开始读到的数据和事务结束前的任意时刻读到的同一批数据都是一致的。</p>
-<p>对比可重复读，不可重复读指的是在同一事务内，不同时刻读到的同一批数据可能是不一样的，可能会受到其他事务的影响，比如其他事务改了这批数据并提交了。</p>
-</blockquote>
-</li>
-<li><p><strong>幻读</strong>（更新了数据但是好像未生效）</p>
-<blockquote>
-<p>幻读针对数据<strong>插入（INSERT）</strong>操作来说。</p>
-<p>例如：</p>
-<p>事务A对某行内容做了更改，未提交，</p>
-<p>此时事务B插入了与A修改前记录相同的行，并在A事务提交之前提交了，</p>
-<p>此时在A事务中查询，发现刚才做的更改好像未生效（其实是事务B刚插入的），</p>
-<p>这就叫幻读。</p>
-</blockquote>
-</li>
+<h3 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h3><ul>
+<li>并发：一个CPU核心分时执行多个线程</li>
+<li>并行：多个CPU核心同时分别执行一个线程</li>
 </ul>
-<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><ul>
-<li>读未提交（READ UNCOMMITTED）</li>
-<li>读提交（READ COMMITTED）解决脏读</li>
-<li>可重复读（REPEATABLE READ）解决不可重复读 <strong>默认</strong></li>
-<li>串行化（SERIALIZABEL）解决幻读</li>
+<h3 id="阻塞与非阻塞"><a href="#阻塞与非阻塞" class="headerlink" title="阻塞与非阻塞"></a>阻塞与非阻塞</h3><ul>
+<li>阻塞：若一个线程占有了临界区的资源，其他线程若要访问，那么就需要等待这个线程释放该资源，会导致等待的线程挂起，这就叫阻塞</li>
+<li>非阻塞：强调没有线程可以阻塞其他线程，所有线程都会尝试地往前运行</li>
 </ul>
-<h3 id="查看与设置隔离级别"><a href="#查看与设置隔离级别" class="headerlink" title="查看与设置隔离级别"></a>查看与设置隔离级别</h3><ul>
-<li>查看隔离级别</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SHOW variables LIKE &#x27;transaction_isolation&#x27;;<br></code></pre></td></tr></table></figure>
-
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/image-20220913223306947.png" srcset="/img/loading.gif" lazyload alt="image-20220913223306947"></p>
-<ul>
-<li>修改隔离级别</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SET 作用域 TRANSACTION ISOLATION LEVEL 事务隔离级别;<br></code></pre></td></tr></table></figure>
-
-<blockquote>
-<p>作用域：</p>
-<ul>
-<li>SESSION：指针对当前会话窗口</li>
-<li>GLOBAL：全局</li>
-</ul>
-<p>事务隔离级别</p>
-<ul>
-<li>READ UNCOMMITTED</li>
-<li>READ COMMITTED</li>
-<li>REPEATABLE READ</li>
-<li>SERIALIZABLE</li>
-</ul>
-</blockquote>
-<h3 id="在MySQL中执行事务"><a href="#在MySQL中执行事务" class="headerlink" title="在MySQL中执行事务"></a>在MySQL中执行事务</h3><p>事务流程：开始事务–》执行操作–》结束事务（提交&#x2F;回滚）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs MYSQL">BEGIN;/START TANSACTION;#事务开始于BEGIN命令后的第一条语句<br>#执行操作<br>COMMIT;<br></code></pre></td></tr></table></figure>
-
-<p>查看正在运行的事务：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM information_schema.innodb_trx;<br></code></pre></td></tr></table></figure>
-
-<h3 id="隔离级别分析"><a href="#隔离级别分析" class="headerlink" title="隔离级别分析"></a>隔离级别分析</h3><h4 id="读未提交（READ-UNCOMMITTED）"><a href="#读未提交（READ-UNCOMMITTED）" class="headerlink" title="读未提交（READ UNCOMMITTED）"></a>读未提交（READ UNCOMMITTED）</h4><p>脏读问题：</p>
-<blockquote>
-<p>A更新的数据还未提交，B直接读取，若A进行回滚，那么A刚才更新的数据就是无效的，B获取到了无效的数据，即脏读。</p>
-</blockquote>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-77225da0805e43183c076c24f270e75b_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h4 id="读提交（READ-COMMITTED）"><a href="#读提交（READ-COMMITTED）" class="headerlink" title="读提交（READ COMMITTED）"></a>读提交（READ COMMITTED）</h4><p>解决脏读问题：</p>
-<blockquote>
-<p>一个事务只能读取到其他事务已经提交过的数据。这样脏读问题就解决了。</p>
-</blockquote>
-<p>不可重复读问题：</p>
-<blockquote>
-<p>B某一时刻读取了数据之后，A对其作了更新，B在同一事务中再去读同一数据，读取到的和第一次读取到的不一样，即为不可重复读。</p>
-</blockquote>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-90289243339a900aaf3f87d9c9930258_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h4 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h4><p>解决不可重复读问题：</p>
-<blockquote>
-<p>事务不会读到其他事务对已有的数据的<strong>修改</strong>，即使其他事务已提交。也就是说事务开始读到的已有数据到事务提交之前都是不会变的。</p>
-<p>但是，对于其他事务插入的数据是可以读到的。这也就引发了幻读问题。</p>
-</blockquote>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-85fd2da20ae7cf219bf55d8b81f8bd94_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>幻读问题：</p>
-<blockquote>
-<p>事务B对某行做了修改，事务A插入了一行，并且这行与B进行修改的行的原始数据一致，然后B再进行查询，发现读取到和未修改行一样的数据，就好像B做的修改没有生效一样，即幻读。</p>
-<p>MySQL中的可重复度隔离解决了幻读问题。</p>
-</blockquote>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-457f695ba253674e7a998297660c1a01_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h4 id="串行化（SERIALIZABLE）"><a href="#串行化（SERIALIZABLE）" class="headerlink" title="串行化（SERIALIZABLE）"></a>串行化（SERIALIZABLE）</h4><p>串行化相当于单线程，事务逐一执行，自然就不会存在因为并发而引起的脏读、不可重复读、幻读的问题。</p>
-<h2 id="MySQL中事务隔离的实现"><a href="#MySQL中事务隔离的实现" class="headerlink" title="MySQL中事务隔离的实现"></a>MySQL中事务隔离的实现</h2><p>读未提交：性能最好，相当于没加锁。</p>
-<p>串行化：读时加共享锁，可并发读，写时加排他锁，其他事务不能进行读写。</p>
-<h3 id="读提交和可重复读的实现"><a href="#读提交和可重复读的实现" class="headerlink" title="读提交和可重复读的实现"></a>读提交和可重复读的实现</h3><p>采用MVVC（多版本并发控制）的方法</p>
-<h4 id="行记录版本和事务id"><a href="#行记录版本和事务id" class="headerlink" title="行记录版本和事务id"></a>行记录版本和事务id</h4><p>概述：</p>
-<blockquote>
-<p>我们在数据库中看到的一条行记录可能实际上有多个版本，每个版本除了记录数据外，还有一个表示版本的字段，记未row trx_id，而整个字段就是使其产生的事务的id，事务id记为transaction id，它在事务开始的时候向事务系统申请，按时间先后顺序递增。</p>
-</blockquote>
-<p>图解：</p>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-114dd6691636883a92e7c1060210a014_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h4 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h4><p>读提交和可重复读实现的关键就是快照，学名叫做一致性视图。</p>
-<blockquote>
-<ul>
-<li><p>可重复读是在事务开始的时候生成一个当前事务全局性的快照。</p>
-</li>
-<li><p>而读提交是每次执行语句的时候都重新生成一次快照。</p>
-</li>
-</ul>
-</blockquote>
-<p>快照能够读取到的版本：</p>
-<blockquote>
-<ul>
-<li>当前事务内的更新，可以读到；</li>
-<li>快照创建前未提交的版本不可读；</li>
-<li>快照创建后的提交的版本不可读</li>
-</ul>
-</blockquote>
-<p>综上：可重复读和读提交二者<strong>唯一的区别就是快照的创建</strong></p>
-<h3 id="并发写的问题"><a href="#并发写的问题" class="headerlink" title="并发写的问题"></a>并发写的问题</h3><p>问题：</p>
-<blockquote>
-<p>两个事务对同一数据做修改。最终的结果应该时间靠后的哪个事务。</p>
-<p>并且在更新之前要先读数据，这里所说的读和上面说到的读不一样，更新之前的读叫做“当前读”，总是当前版本的数据，也就是多版本中最新一次提交的那版。</p>
-</blockquote>
-<p>例子：</p>
-<blockquote>
-<p>若A执行UPDATE操作，在UPDATE执行期间，要对所修改的行加<strong>行锁</strong>，这个行锁在提交过后才释放。在A提交之前，B若想UPDATE这行数据，需要先申请锁，但是锁已经被A占有，所以B需要等到A提交并释放锁过后才能获取锁继续执行。</p>
-</blockquote>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-da32a0f82e9585e39c655ac490c6f3d8_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>两种加锁过程：</p>
+<h3 id="临界区"><a href="#临界区" class="headerlink" title="临界区"></a>临界区</h3><p>临界区用来表示一种公共资源或者说共享数据，可以被多个线程使用，但是同一时刻只能由一个线程占有</p>
+<h2 id="三、线程状态转换及其基本操作"><a href="#三、线程状态转换及其基本操作" class="headerlink" title="三、线程状态转换及其基本操作"></a>三、线程状态转换及其基本操作</h2><h3 id="1-新建线程"><a href="#1-新建线程" class="headerlink" title="1. 新建线程"></a>1. 新建线程</h3><blockquote>
+<p>Java程序天生就是多线程的，包含：</p>
 <ol>
-<li><p>有索引（只锁对应行）</p>
+<li>分发处理发送个JVM信号的线程</li>
+<li>调用对象finalize方法的线程</li>
+<li>清除Reference的线程</li>
+<li>main线程，用户线程的入口</li>
+</ol>
+</blockquote>
+<ul>
+<li><p>方法一、继承Thread类，重写run方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thead</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>()&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span>&#123;<br>        Sytem.out.println(<span class="hljs-string">&quot;通过继承Thread&quot;</span>)<br>        <span class="hljs-built_in">super</span>.run();<br>    &#125;<br>&#125;;<br>thread.start();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>方法二、实现runnable接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>()&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;通过实现runnable接口&quot;</span>)<br>    &#125;<br>&#125;);<br>thread.start();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>方法三、实现callable接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ExecuterService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> Executors.newSingleThreadExecutor();<br>Future&lt;String&gt; future = service.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Callable</span>()&#123;<br>	<span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;通过实现Callable接口&quot;</span><br>    &#125;<br>&#125;);<br><span class="hljs-keyword">try</span>&#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> future.get();<br>    System.out.println(result);<br>&#125;<span class="hljs-keyword">catch</span>(Exception)&#123;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li><p>优先考虑通过实现接口创建线程（Java只能单一继承）</p>
+</li>
+<li><p>可以将callable包装成FutureTask</p>
 <blockquote>
-<p>例如：<code>UPDATE user SET age=11 WHERE id = 1;</code></p>
-<p>id是这张表的主键，是有索引的情况，那么MySQL直接就在索引数中找到这行数据，让后将该行上行锁。</p>
+<p>FutureTask同时实现Future接口和Runnable接口，所以将FutureTask提交给ExecutorService执行后，可以直接从FutureTask获取异步结果</p>
+<p><img src="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159b250b111f7tplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 </blockquote>
 </li>
-<li><p>无索引（全锁，在解锁留下对应行）</p>
+<li><p>可以将runnable包装成callable</p>
 <blockquote>
-<p>例如：&#96;UPDATE user SET age&#x3D;11 WHERE age&#x3D;10;</p>
-<p>age并非索引，所以MySQL无法直接定位该行（或者多行）数据。然后MySQL就对表中的所有行加行锁（并非表锁），然后分局条件过滤，释放掉不满足条件的行的行锁。</p>
-<p>这个加锁和解锁的过程非常影响性能，所以对于大表需要合理的设计索引来避免这种情况。</p>
+<p>runnable执行不会返回结果，callable执行后会返回结果</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-线程状态转换"><a href="#2-线程状态转换" class="headerlink" title="2. 线程状态转换"></a>2. 线程状态转换</h3><p><img src="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159b8a740b329tplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>六个状态：</p>
+<ul>
+<li><p>NEW</p>
+<blockquote>
+<p>线程创建后即为NEW状态</p>
+</blockquote>
+</li>
+<li><p>RUNNABLE</p>
+<blockquote>
+<p>线程执行start()过后进入RUNNABLE状态，此时线程由系统调度分配时间片，线程也可以使用yeild()主动放弃时间片</p>
+<p>使用Object.notify()或Object.notifyAll()方法可以将WAITING和TIME_WAITING状态的线程切换至RUNNABLE状态</p>
+</blockquote>
+</li>
+<li><p>BLOCKED</p>
+<blockquote>
+<p>当线程出现资源竞争，即进入synchronized方法或代码块时需要获取锁，若没有获取锁则进入阻塞状态</p>
+</blockquote>
+</li>
+<li><p>WAITING</p>
+<blockquote>
+<ul>
+<li><p>调用锁对象的wait()、join ()方法</p>
+</li>
+<li><p>LockSupport.lock()</p>
+</li>
+<li><p>调用juc包中的锁对象进行加锁（因为其底层调用的是LockSupport的方法）</p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>TIME_WAITING</p>
+<blockquote>
+<ul>
+<li>wait(long)</li>
+<li>sleep(long)</li>
+<li>join(long)</li>
+<li>LockSupport.parkNanos()</li>
+<li>LockSupport.parkUtil()</li>
+</ul>
+</blockquote>
+</li>
+<li><p>TERMINATID</p>
+</li>
+</ul>
+<h3 id="3-线程的基本操作"><a href="#3-线程的基本操作" class="headerlink" title="3. 线程的基本操作"></a>3. 线程的基本操作</h3><ol>
+<li><p>interrupted</p>
+<blockquote>
+<p>中断可以理解为线程的一个标志位，它表示一个运行中的线程是否被其他线程执行了中断操作。</p>
+<ul>
+<li><p>其他线程可以通过interrupt()方法打断某线程</p>
+</li>
+<li><p>线程可以在线程内部调用isInterrupted()来感知是否被其他线程中断</p>
+</li>
+<li><p>Thread的静态方法可以对档期那线程进行中断操作，同时该操作会清除中断标志位</p>
+</li>
+</ul>
+</blockquote>
+<p><img src="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%9F%BA%E7%A1%80/163159c1a4cc499dtplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<blockquote>
+<p>中断可以看作是线程间的一种简便的交互方式。在结束线程时通过中断标志位，使线程由机会清理资源，相较于直接结束线程，这种方式更加优雅和安全。</p>
+</blockquote>
+</li>
+<li><p>join</p>
+<blockquote>
+<p>join方法可以看作是线程间协作的一种方式。</p>
+<p>A执行threadB.join()语义：表示线程A需要等待另线程B执行完毕后才能继续执行</p>
+</blockquote>
+</li>
+<li><p>sleep</p>
+<blockquote>
+<p>方法签名：public static native void sleep(long millis)</p>
+<p>由上可看出sleep时Thread的静态方法，本地实现，让当前线程睡眠指定时间</p>
+</blockquote>
+<p>sleep()与wait()区别：</p>
+<ul>
+<li>sleep()是Thread的静态方法，而wait()是Object的实例方法</li>
+<li>wait必须要在同步方法或同步方法块中调用，即调用前该线程必须已经获得对象锁。sleep没有限制</li>
+<li>wait会释放CPU资源和线程占有的对象锁，使得该线程进入该对象锁的等待队列。sleep只会释放CPU资源，不会释放对象锁</li>
+<li>sleep休眠固定时间后唤醒，等待CPU时间片。wait等待对象锁notify唤醒后离开等待队列，等待CPU时间片</li>
+</ul>
+</li>
+<li><p>yield</p>
+<blockquote>
+<p>方法签名：public static native void yield()</p>
+<p>yield是Thread的静态方法</p>
+<ul>
+<li>当前线程主动让出CPU时间片</li>
+<li>让出的时间片只会分配给与当前线程优先级相同的线程</li>
+<li>当前线程让出CPU时间片后还会参与CPU时间片的竞争</li>
+</ul>
 </blockquote>
 </li>
 </ol>
-<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p> 并发写问题 的解决方式是行锁，而解决幻读的方式则是间隙锁。MySQL将行锁和间隙锁合并在一起，解决了并发写和幻读的问题，这个锁叫做Next-Key锁</p>
-<p>间隙锁：</p>
+<h3 id="4-守护线程Daemon"><a href="#4-守护线程Daemon" class="headerlink" title="4. 守护线程Daemon"></a>4. 守护线程Daemon</h3><blockquote>
+<p>守护线程：守护线程是在后台默默守护一些系统服务，比如垃圾回收线程、JIT线程</p>
+<p>用户线程：用户线程就是系统的工作线程，完成整个系统的业务操作</p>
 <ul>
-<li>表：</li>
-</ul>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-6a7c4b03297309813d57213a2a2d7366_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<ul>
-<li>间隙锁：</li>
-</ul>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-f07516da40274690e8ece9bc415eab88_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<blockquote>
-<p>MySQL会在筛选的索引列和其两端的索引列之间加上间隙锁。</p>
-<p>例如执行：<code>UPDATE user SET name = ‘风筝2号’ WHERE age = 10; </code></p>
-<p>（其中age是索引列，唯一）那么MySQL就会在age为[负无穷，10）、（10，30）这两个区间加上间隙锁，那么所有age在这两个区间的数据在此期间就无法插入。（30之后的区间插入数据不会有幻读问题，所以不需要加间隙锁）</p>
-</blockquote>
-<ul>
-<li><p>加锁过程</p>
-<p><img src="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/v2-3ce9ac24fb6fdf3ff60d03e070136175_720w.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
-<blockquote>
-<p>在A提交之前，因为事务B插入的数据age&#x3D;10，由于age&#x3D;10的行添加了行锁，两边有间隙锁，所以插入操作无法完成，需要等到A提交后才能插入。这样就不存在幻读问题了。（age  &gt; 30的行插入不受影响）</p>
-</blockquote>
-<blockquote>
-<p>若age不是索引列，那么数据库将为整个表加上间隙锁，那么不管age为何值均要等到事务A提交才能成功插入。</p>
-</blockquote>
+<li><p>用户线程代表整个系统的业务任务全部完成，因此系统没有对象需要守护，守护线程自然也就结束。</p>
+</li>
+<li><p>当一个Java应用中只剩下守护线程的时候，虚拟机就会退出。</p>
+</li>
+<li><p>守护线程不会执行finnaly块中的代码</p>
+</li>
+<li><p>在线程调用start()前对调用setDaemon (true)将线程设置为守护线程</p>
 </li>
 </ul>
+</blockquote>
 
               
             </div>
@@ -509,8 +515,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MySQL事务隔离级别及其实现原理</div>
-      <div>http://example.com/2022/09/13/MySQL事务隔离级别及其实现原理/</div>
+      <div>Java并发-基础</div>
+      <div>http://example.com/2022/10/13/Java并发-基础/</div>
     </div>
     <div class="license-meta">
       
@@ -522,13 +528,13 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年9月13日</div>
+          <div>2022年10月13日</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年9月14日</div>
+          <div>2022年10月13日</div>
         </div>
       
       <div class="license-meta-item">
@@ -557,18 +563,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/16/%E9%BC%8E%E6%A1%A5%E9%9D%A2%E8%AF%95%E9%A2%84%E4%B9%A0/" title="鼎桥面试预习">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">鼎桥面试预习</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" title="十大排序算法">
-                        <span class="hidden-mobile">十大排序算法</span>
+                      <a href="/2022/09/16/%E9%BC%8E%E6%A1%A5%E9%9D%A2%E8%AF%95%E9%A2%84%E4%B9%A0/" title="鼎桥面试预习">
+                        <span class="hidden-mobile">鼎桥面试预习</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

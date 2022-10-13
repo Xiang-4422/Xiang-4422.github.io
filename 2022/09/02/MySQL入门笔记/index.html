@@ -24,7 +24,7 @@
 <meta property="og:description" content="SQL简介 什么是 SQL  结构化查询语言（Structured Query Language）   SQL 的作用  客户端使用SQL来操作服务器   语法规范   SQL语句可以在单行或多行书写, 以分号结尾 可以使用空格和缩进来增强语句的可读性 MySQL不区分大小写, 但是建议使用大写    SQL语句分类   DDL(Data Definition Language): 数据定义语言">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-02T04:50:42.000Z">
-<meta property="article:modified_time" content="2022-09-02T11:43:18.187Z">
+<meta property="article:modified_time" content="2022-09-14T00:41:07.190Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -290,7 +290,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年9月2日 晚上
+                    本文最后更新于：2022年9月14日 早上
                   
                 
               </p>
@@ -579,7 +579,7 @@
 <blockquote>
 <p>在使用列运算后自动生成的列名称不直观，可以给列名起个别名(<strong>AS可省略</strong>)</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT IFNULL (列名1,0)+1000 FROM 表名 AS 奖学金;<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT IFNULL (列名1,0)+1000 AS 奖学金 FROM 表名;<br></code></pre></td></tr></table></figure>
 </blockquote>
 <h3 id="2-行控制"><a href="#2-行控制" class="headerlink" title="2. 行控制"></a>2. 行控制</h3><ol>
 <li><p>条件查询: <strong>WHERE</strong></p>
@@ -612,7 +612,7 @@
 <h2 id="三、聚合函数"><a href="#三、聚合函数" class="headerlink" title="三、聚合函数"></a>三、聚合函数</h2><ol>
 <li><p>查询有效行数：<strong>COUNT()</strong></p>
 <blockquote>
-<p>括号中可以是列名、*、数字，其中*和数字跟*等效</p>
+<p>括号中可以是列名、*、数字，其中*和数字等效</p>
 </blockquote>
 </li>
 <li><p>计算</p>
@@ -647,13 +647,13 @@
 <li><p>分组前过滤条件（对整张表进行过滤）</p>
 <blockquote>
 <p>WHERE</p>
-<p>在ORDER BY之前</p>
+<p>在GROUP BY之前</p>
 </blockquote>
 </li>
 <li><p>分组后过滤条件（对分组查询的结果过滤）</p>
 <blockquote>
 <p>HAVING</p>
-<p>在ORDER BY之后</p>
+<p>在GROUP BY之后</p>
 </blockquote>
 </li>
 </ul>
@@ -722,7 +722,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年9月2日</div>
+          <div>2022年9月14日</div>
         </div>
       
       <div class="license-meta-item">
