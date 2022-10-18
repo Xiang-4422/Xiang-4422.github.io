@@ -223,6 +223,105 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
+          Java并发-CopyOnWriteArrayList
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
+        <div>
+          
+          CopyOnWriteArrayList简介ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。 业务场景，很多业务都是读多写少的：  比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 22:36" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
+          Java多线程-ConcurrentHashMap
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
+        <div>
+          
+          ConcurrentHashmap简介HashMap在多线程情况下扩容可能会陷入死循环。 线程安全的map使用：  hashtable类 Collections提供的方法将map包装成线程安全的map。Map&lt;K,V&gt; synchronizedMap(Map&lt;K,V&gt; m) concurrentHashMap  上面两种方式都是通过synchronized关键字来实现线程安
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 16:16" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
+          Java并发-LockSupport
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
+        <div>
+          
+          LockSupport简介调用LockSupport场景：  AQS的底层实现中  锁的实现  Condition中，线程的等待&#x2F;通知机制   LockSupport位于java.util.concurrent.locks包下，LockSupport时线程的阻塞原语，用来阻塞和唤醒线程。 每个使用LockSupport的线程都会与一个许可关联，如果该许可可用，并且可以在线程中使用，则调用
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 13:33" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-Condition/" target="_self">
           Java并发-Condition
         </a>
@@ -439,105 +538,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-10-13 22:04" pubdate>
               2022-10-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/16/%E9%BC%8E%E6%A1%A5%E9%9D%A2%E8%AF%95%E9%A2%84%E4%B9%A0/" target="_self">
-          鼎桥面试预习
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/16/%E9%BC%8E%E6%A1%A5%E9%9D%A2%E8%AF%95%E9%A2%84%E4%B9%A0/" target="_self">
-        <div>
-          
-          A  TCP和UDP的区别      UDP TCP    连接 无连接 面向连接   可靠性 不可靠传输 可靠传输，流量控制和拥塞控制   连接对象数量 一对N，N对一，多对多 只能一对一   传输方式 面向报文 面向字节流   首部开销 小，8字节 大，20-60字节   使用场景 实时应用：IP电话、视频会议、直播 要求可靠传输的应用：文件传输    TCP（可靠性：文件下载，查看网页，邮件
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-16 12:04" pubdate>
-              2022-09-16
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-          MySQL事务隔离级别及其实现原理
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-        <div>
-          
-          MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 每一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-13 21:56" pubdate>
-              2022-09-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" target="_self">
-          十大排序算法
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" target="_self">
-        <div>
-          
-          简述：复杂度： 平方阶：冒泡排序、插入排序、选择排序 n^(1.3-2)阶：希尔排序 线性对数阶：快速排序、归并排序、堆排序 线性阶：计数排序、桶排序、基数排序、  稳定度： 算法稳定指的是两个相等键值的顺序和排序之前它们的顺序相同   稳定排序：冒泡排序、插入排序、归并排序、计数排序、桶排序、基数排序 不稳定排序：选择排序、希尔排序、快速排序、堆排序  注意：算法稳定与否和具体的实现有关！！！
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-10 14:58" pubdate>
-              2022-09-10
             </time>
           </div>
         
