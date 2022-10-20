@@ -16,23 +16,26 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="CopyOnWriteArrayList简介ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。 业务场景，很多业务都是读多写少的：  比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配">
+    <meta name="description" content="ThreadLocal简介加锁的弊端：  多线程编程中通过synchronized或者lock控制对临界区资源的同步顺序从而解决线程安全的问题。 通过加锁的方式或让未获取锁的线程阻塞等待，这种方式时间效率并不是很好。  空间换时间：  线程安全问题的核心在于多个线程会对同一临界区共享资源进行操作，若让每个线程使用自己的“共享资源”，那么多个线程互相隔离，就不会出现线程安全的问题。这实际上是一种“空">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java并发-CopyOnWriteArrayList">
-<meta property="og:url" content="http://example.com/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/index.html">
+<meta property="og:title" content="Java并发-ThreadLocal">
+<meta property="og:url" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
-<meta property="og:description" content="CopyOnWriteArrayList简介ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。 业务场景，很多业务都是读多写少的：  比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配">
+<meta property="og:description" content="ThreadLocal简介加锁的弊端：  多线程编程中通过synchronized或者lock控制对临界区资源的同步顺序从而解决线程安全的问题。 通过加锁的方式或让未获取锁的线程阻塞等待，这种方式时间效率并不是很好。  空间换时间：  线程安全问题的核心在于多个线程会对同一临界区共享资源进行操作，若让每个线程使用自己的“共享资源”，那么多个线程互相隔离，就不会出现线程安全的问题。这实际上是一种“空">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-10-18T14:36:31.000Z">
-<meta property="article:modified_time" content="2022-10-18T15:25:59.506Z">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ZpbmNlbnRfd2VuMDc2Ng==,size_16,color_FFFFFF,t_70.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/16334681776bb805tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp">
+<meta property="article:published_time" content="2022-10-19T13:50:49.000Z">
+<meta property="article:modified_time" content="2022-10-19T15:58:33.816Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ZpbmNlbnRfd2VuMDc2Ng==,size_16,color_FFFFFF,t_70.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>Java并发-CopyOnWriteArrayList - Ride_or_DIE</title>
+  <title>Java并发-ThreadLocal - Ride_or_DIE</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -195,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java并发-CopyOnWriteArrayList"></span>
+            <span id="subtitle" data-typed-text="Java并发-ThreadLocal"></span>
           
         </div>
 
@@ -206,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-18 22:36" pubdate>
-          2022年10月18日 晚上
+        <time datetime="2022-10-19 21:50" pubdate>
+          2022年10月19日 晚上
         </time>
       </span>
     
@@ -218,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          3.5k 字
         
       </span>
     
@@ -229,7 +232,7 @@
         
         
         
-          14 分钟
+          30 分钟
         
       </span>
     
@@ -285,66 +288,86 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Java并发-CopyOnWriteArrayList</h1>
+            <h1 style="display: none">Java并发-ThreadLocal</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年10月18日 晚上
+                    本文最后更新于：2022年10月19日 晚上
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              <h1 id="CopyOnWriteArrayList简介"><a href="#CopyOnWriteArrayList简介" class="headerlink" title="CopyOnWriteArrayList简介"></a>CopyOnWriteArrayList简介</h1><p>ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。</p>
-<p>业务场景，很多业务都是读多写少的：</p>
+              <h1 id="ThreadLocal简介"><a href="#ThreadLocal简介" class="headerlink" title="ThreadLocal简介"></a>ThreadLocal简介</h1><p>加锁的弊端：</p>
+<blockquote>
+<p>多线程编程中通过synchronized或者lock控制对临界区资源的同步顺序从而解决线程安全的问题。</p>
+<p>通过加锁的方式或让未获取锁的线程阻塞等待，这种方式时间效率并不是很好。</p>
+</blockquote>
+<p>空间换时间：</p>
+<blockquote>
+<p>线程安全问题的核心在于多个线程会对同一临界区共享资源进行操作，若让每个线程使用自己的“共享资源”，那么多个线程互相隔离，就不会出现线程安全的问题。这实际上是一种“空间换时间”的方案，每个线程拥有自己的“共享资源”会占用大量内存，但是不需要同步也就避免了阻塞等待的情况。</p>
+</blockquote>
+<p>虽然ThreadLocal并不是在java.util.concurrent包中而在Java.lang包中，但是我更倾向于将其作为一种并发容器（虽然真实存放的数据是ThreadLocalMap）进行归类。</p>
+<p>从ThreadLocal这个类名可以顾名思义的进行理解，表示线程的“本地变量”，即每个线程都拥有该变量的副本，达到人手一份的效果，各自用各自的就可以避免共享资源的竞争。</p>
+<h1 id="ThreadLocal的实现原理"><a href="#ThreadLocal的实现原理" class="headerlink" title="ThreadLocal的实现原理"></a>ThreadLocal的实现原理</h1><h2 id="void-set-T-value"><a href="#void-set-T-value" class="headerlink" title="void set (T value)"></a>void set (T value)</h2><blockquote>
+<p>set方法设置在前线程中的threadLocal变量的值</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">set</span><span class="hljs-params">(T value)</span> &#123;<br>	<span class="hljs-comment">//1. 获取当前线程实例对象</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>	<span class="hljs-comment">//2. 通过当前线程实例获取到ThreadLocalMap对象</span><br>    <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> getMap(t);<br>    <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>)<br>		<span class="hljs-comment">//3. 如果Map不为null,则以当前threadLocl实例为key,值为value进行存入</span><br>        map.set(<span class="hljs-built_in">this</span>, value);<br>    <span class="hljs-keyword">else</span><br>		<span class="hljs-comment">//4.map为null,则新建ThreadLocalMap并存入value</span><br>        createMap(t, value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>关于ThreadLocalMap：</p>
 <ul>
-<li><p>比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配置</p>
+<li><p>数据真正存放在ThreadLocalMap中，key为当前threadLocal实例</p>
 </li>
-<li><p>又比如白名单、黑名单</p>
-</li>
-</ul>
-<p>读多写少的情况可以使用ReentrantReadWriteLock：</p>
+<li><p>ThreadLocalMap的引用作为Thread类的一个属性，被Thread维护</p>
 <ul>
-<li>优点：读写分离，读读之间不会阻塞</li>
-<li>局限：写锁被写线程获取后，读线程会被阻塞</li>
+<li>getMap方法：</li>
 </ul>
-<p>CopyOnWriteArrayList容器可以解决读写锁的局限性。</p>
-<h1 id="COW的设计思想"><a href="#COW的设计思想" class="headerlink" title="COW的设计思想"></a>COW的设计思想</h1><p>COW通俗理解：</p>
-<p>COW通俗的理解是当我们往容器中添加一个元素的时候，不直接往容器中添加，而是先将当前容器进行Copy，复制出来一个新的容器，然后将元素添加到新的容器中，添加完元素后，再将原容器的引用指向新容器。</p>
-<p>对CopyOnWrite容器进行并发读的时候，不用加锁，因为当前容器不会添加新元素。</p>
-<p>对CopyOnWrite容器进行并发写的时候，是在新建的容器中执行写，所以读取到的数据会有延迟，放弃了数据实时性。</p>
-<p>数据实时性：</p>
-<p>若是简单的使用读写锁，在写锁被获取后，读写线程都会被阻塞，只有当写锁释放后，读线程才有机会获取到读锁读取数据。站在读线程的角度来看，即读线程任何时候都是获取到最新的数据，满足数据实时性。COW通过<strong>牺牲数据实时性</strong>，满足数据的最终一致性来避免读线程的阻塞。</p>
-<h1 id="CopyOnWriteArrayList的实现原理"><a href="#CopyOnWriteArrayList的实现原理" class="headerlink" title="CopyOnWriteArrayList的实现原理"></a>CopyOnWriteArrayList的实现原理</h1><p>数据结构：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//该数组只能通过getArray()和setArray()方法访问</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">transient</span> <span class="hljs-keyword">volatile</span> Object[] array;<br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">ThreadLocalMap <span class="hljs-title function_">getMap</span><span class="hljs-params">(Thread t)</span> &#123;<br>    <span class="hljs-keyword">return</span> t.threadLocals;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li><p>CopyOnWriteArrayList内部维护的是一个数组。</p>
+<li><p>createMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">void</span> <span class="hljs-title function_">createMap</span><span class="hljs-params">(Thread t, T firstValue)</span> &#123;<br>    t.threadLocals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocalMap</span>(<span class="hljs-built_in">this</span>, firstValue);<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ul>
 </li>
-<li><p>该数组引用被volatile修饰，保证其可见性。</p>
+</ul>
+<h2 id="T-get"><a href="#T-get" class="headerlink" title="T get()"></a>T get()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> T <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123;<br>	<span class="hljs-comment">//1. 获取当前线程的实例对象</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>	<span class="hljs-comment">//2. 获取当前线程的threadLocalMap</span><br>    <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> getMap(t);<br>    <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>) &#123;<br>		<span class="hljs-comment">//3. 获取map中当前threadLocal实例为key的值的entry</span><br>        ThreadLocalMap.<span class="hljs-type">Entry</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> map.getEntry(<span class="hljs-built_in">this</span>);<br>        <span class="hljs-keyword">if</span> (e != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br>			<span class="hljs-comment">//4. 当前entitiy不为null的话，就返回相应的值value</span><br>            <span class="hljs-type">T</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> (T)e.value;<br>            <span class="hljs-keyword">return</span> result;<br>        &#125;<br>    &#125;<br>	<span class="hljs-comment">//5. 若map为null或者entry为null的话通过该方法初始化，并返回该方法返回的value</span><br>    <span class="hljs-keyword">return</span> setInitialValue();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>map为空时的处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> T <span class="hljs-title function_">setInitialValue</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">T</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> initialValue();<br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>    <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> getMap(t);<br>    <span class="hljs-comment">//若map已经创建</span><br>    <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>)<br>        map.set(<span class="hljs-built_in">this</span>, value);<br>    <span class="hljs-comment">//若map还没创建</span><br>    <span class="hljs-keyword">else</span><br>        createMap(t, value);<br>    <span class="hljs-keyword">return</span> value;<br>&#125;<br><span class="hljs-comment">//initialValue类为protected，表示继承ThreadLocal的类可以通过重写该方法设置默认值</span><br><span class="hljs-keyword">protected</span> T <span class="hljs-title function_">initialValue</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="void-remove"><a href="#void-remove" class="headerlink" title="void remove()"></a>void remove()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">remove</span><span class="hljs-params">()</span> &#123;<br>	<span class="hljs-comment">//1. 获取当前线程的threadLocalMap</span><br>	<span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> getMap(Thread.currentThread());<br> 	<span class="hljs-keyword">if</span> (m != <span class="hljs-literal">null</span>)<br>		<span class="hljs-comment">//2. 从map中删除以当前threadLocal实例为key的键值对</span><br>		m.remove(<span class="hljs-built_in">this</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="ThreadLocalMap详解"><a href="#ThreadLocalMap详解" class="headerlink" title="ThreadLocalMap详解"></a>ThreadLocalMap详解</h1><p>ThreadLocal类的get、set和remove都是通过调用其属性threadLocals（ThreadLocalMap）的getEntry、set和remove实现的。</p>
+<h2 id="Entry数据结构"><a href="#Entry数据结构" class="headerlink" title="Entry数据结构"></a>Entry数据结构</h2><p>ThreadLocalMap是ThreadLocal的一个静态内部类。和大多数容器一样，其内部维护了一个数组，ThreadLocalMap内部维护了一个Entry类型的tabel数组。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadLocalMap</span> &#123;<br>    <span class="hljs-comment">//数组会根据需要扩容</span><br>    <span class="hljs-comment">//数组的长度必须是2的幂次方</span><br>    <span class="hljs-keyword">private</span> Entry[] table;<br>    ...<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Entry</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">WeakReference</span>&lt;ThreadLocal&lt;?&gt;&gt; &#123;<br>    	<span class="hljs-comment">/** The value associated with this ThreadLocal. */</span><br>    	Object value;<br>		Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;<br>    		<span class="hljs-built_in">super</span>(k);<br>    		value = v;<br>		&#125;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Entry是一个以ThreadLocal为key，Object为value的键值对。</p>
+</li>
+<li><p>ThreadLocal是弱引用，因为Entry继承了WeakReference。</p>
+</li>
+<li><p>Entry的构造方法中，调用了super(k)将ThreadLocal实例包装成一个WeakReference</p>
 </li>
 </ul>
-<h2 id="get方法"><a href="#get方法" class="headerlink" title="get方法"></a>get方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> E <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">int</span> index)</span> &#123;<br>    <span class="hljs-keyword">return</span> get(getArray(), index);<br>&#125;<br><span class="hljs-keyword">final</span> Object[] getArray() &#123;<br>    <span class="hljs-keyword">return</span> array;<br>&#125;<br><span class="hljs-keyword">private</span> E <span class="hljs-title function_">get</span><span class="hljs-params">(Object[] a, <span class="hljs-type">int</span> index)</span> &#123;<br>    <span class="hljs-keyword">return</span> (E) a[index];<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h2 id="add方法"><a href="#add方法" class="headerlink" title="add方法"></a>add方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">add</span><span class="hljs-params">(E e)</span> &#123;<br>    <span class="hljs-keyword">final</span> <span class="hljs-type">ReentrantLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.lock;<br>	<span class="hljs-comment">//1. 使用Lock,保证写线程在同一时刻只有一个</span><br>    lock.lock();<br>    <span class="hljs-keyword">try</span> &#123;<br>		<span class="hljs-comment">//2. 获取旧数组引用</span><br>        Object[] elements = getArray();<br>        <span class="hljs-type">int</span> <span class="hljs-variable">len</span> <span class="hljs-operator">=</span> elements.length;<br>		<span class="hljs-comment">//3. 创建新的数组，并将旧数组的数据复制到新数组中</span><br>        Object[] newElements = Arrays.copyOf(elements, len + <span class="hljs-number">1</span>);<br>		<span class="hljs-comment">//4. 往新数组中添加新的数据</span><br>		newElements[len] = e;<br>		<span class="hljs-comment">//5. 将旧数组引用指向新的数组</span><br>        setArray(newElements);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        lock.unlock();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="COW-vs-读写锁"><a href="#COW-vs-读写锁" class="headerlink" title="COW vs 读写锁"></a>COW vs 读写锁</h2><p>相同点：</p>
-<ul>
-<li>两种都是通过读写分离的思想实现</li>
-<li>读线程间是互不阻塞的</li>
-</ul>
-<p>不同点：</p>
-<ul>
-<li>读写锁：为了实现数据实时性，在写锁被获取后，读线程会被阻塞。为了解决“脏读”问题，读锁被获取后，写线程会被阻塞</li>
-<li>COW则完全放开了牺牲数据实时性而保证数据最终一致性，即读线程对数据的更新是延迟感知的，因此读线程永远不会被阻塞。</li>
-</ul>
-<h2 id="COW的缺点"><a href="#COW的缺点" class="headerlink" title="COW的缺点"></a>COW的缺点</h2><ul>
-<li>内存占用问题：因为COW的运行机制，在写操作的时候，内存中会有两个对象（旧容器和新容器）。</li>
-<li>数据一致性问题：COW容器只能保证数据的最终一致性，不能保证数据的实时一致性。（弱一致性）</li>
-</ul>
-
+<h2 id="Thread、ThreadLocal、ThreadLocalMap之间的关系"><a href="#Thread、ThreadLocal、ThreadLocalMap之间的关系" class="headerlink" title="Thread、ThreadLocal、ThreadLocalMap之间的关系"></a>Thread、ThreadLocal、ThreadLocalMap之间的关系</h2><p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ZpbmNlbnRfd2VuMDc2Ng==,size_16,color_FFFFFF,t_70.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>ThreadLocal数据实际的存放：</p>
+<blockquote>
+<p>每一个线程实例都有一个ThreadLoaclMap实例的属性，ThreadLocalMap中维护了一个Entry数组用于存放不同ThreadLocal实例存放的数据。</p>
+</blockquote>
+<p>通过ThreadLocal存取数据：</p>
+<blockquote>
+<p>ThreadLocal不存储数据，其提供一些方法，操作这些数据。</p>
+<p>通过当前线程实例获取当前线程实例的ThreadLocalMap（在不同的方法中执行，获取的是不同的ThreadLocalMap），然后使用ThreadLocal本身作为key，从ThreadLocalMap中的Entry数组中获取ThreadLocal存放在当前线程中的value。</p>
+</blockquote>
+<p>ThreadLocal根据当前线程获取当前线程对应的ThreadLocalMap（每个线程对应一个ThreadLocalMap），该ThreadLocalMap可以存储多个不同ThreadLocal实例存储在当前线程中的数据（一个ThreadLocal实例可以分别在多个线程中存储一个value）</p>
+<p>ThreadLocal内存泄漏问题：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/16334681776bb805tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp" srcset="/img/loading.gif" lazyload alt="ThreadLocal各引用间的关系"></p>
+<p>Entry中的key是弱引用，当ThreadLocal实例引用被置为null后，这个ThreadLocal实例不可达，会被GC回收，那么ThreadLocalMap中就会出现key为null的额Entry，这个Entry无法被访问，也无法被回收。若线程不结束，这个key为null的Entry会一直存在，无法回收，造成内存泄漏。虽然在线程结束后，线程相关的所有类都会被回收，但是在实际的开发中，会使用线程池，线程为了被复用不会主动结束，这样垃圾也就一直不能被回收。所以在使用完ThreadLocal后，主动的通过remove移除对应的Entry，避免内存泄漏。</p>
+<h2 id="set方法"><a href="#set方法" class="headerlink" title="set方法"></a>set方法</h2><h2 id="getEntry方法"><a href="#getEntry方法" class="headerlink" title="getEntry方法"></a>getEntry方法</h2><h2 id="remove方法"><a href="#remove方法" class="headerlink" title="remove方法"></a>remove方法</h2><h1 id="Thread-Local的使用场景"><a href="#Thread-Local的使用场景" class="headerlink" title="Thread Local的使用场景"></a>Thread Local的使用场景</h1>
               
             </div>
             <hr/>
@@ -360,8 +383,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java并发-CopyOnWriteArrayList</div>
-      <div>http://example.com/2022/10/18/Java并发-CopyOnWriteArrayList/</div>
+      <div>Java并发-ThreadLocal</div>
+      <div>http://example.com/2022/10/19/Java并发-ThreadLocal/</div>
     </div>
     <div class="license-meta">
       
@@ -373,13 +396,13 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年10月18日</div>
+          <div>2022年10月19日</div>
         </div>
       
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年10月18日</div>
+          <div>2022年10月19日</div>
         </div>
       
       <div class="license-meta-item">
@@ -408,18 +431,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/" title="Java并发-ConcurrentLinkedQueue">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java并发-ConcurrentLinkedQueue</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" title="Java多线程-ConcurrentHashMap">
-                        <span class="hidden-mobile">Java多线程-ConcurrentHashMap</span>
+                      <a href="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/" title="Java并发-ConcurrentLinkedQueue">
+                        <span class="hidden-mobile">Java并发-ConcurrentLinkedQueue</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

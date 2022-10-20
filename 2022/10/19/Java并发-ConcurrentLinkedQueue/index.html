@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ConcurrentLinkedQueue简介ConcurrentLinkedQueue是一个线程安全的队列，其数据结构是链表。 底层数据结构NodeConcurrentLinkedQueue的底层节点类Node： 12345private static class Node&lt;E&gt; &amp;#123;        volatile E item;        volatile Node&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发-ConcurrentLinkedQueue">
+<meta property="og:url" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="ConcurrentLinkedQueue简介ConcurrentLinkedQueue是一个线程安全的队列，其数据结构是链表。 底层数据结构NodeConcurrentLinkedQueue的底层节点类Node： 12345private static class Node&lt;E&gt; &amp;#123;        volatile E item;        volatile Node&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/1633459982863c26tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599933a4aabtplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599c2390c2btplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599cd4cbdabtplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599d7d92981tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599936bd919tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/163345999f3d68bbtplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599bd85583btplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="og:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599be78fddetplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+<meta property="article:published_time" content="2022-10-19T05:43:27.000Z">
+<meta property="article:modified_time" content="2022-10-19T13:43:14.005Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/1633459982863c26tplv-t2oaga2asx-zoom-in-crop-mark4536000.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java并发-ConcurrentLinkedQueue - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java并发-ConcurrentLinkedQueue"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-19 13:43" pubdate>
+          2022年10月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java并发-ConcurrentLinkedQueue</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年10月19日 晚上
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="ConcurrentLinkedQueue简介"><a href="#ConcurrentLinkedQueue简介" class="headerlink" title="ConcurrentLinkedQueue简介"></a>ConcurrentLinkedQueue简介</h1><p>ConcurrentLinkedQueue是一个线程安全的队列，其数据结构是链表。</p>
+<h2 id="底层数据结构"><a href="#底层数据结构" class="headerlink" title="底层数据结构"></a>底层数据结构</h2><h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h3><p>ConcurrentLinkedQueue的底层节点类Node：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Node</span>&lt;E&gt; &#123;<br>        <span class="hljs-keyword">volatile</span> E item;<br>        <span class="hljs-keyword">volatile</span> Node&lt;E&gt; next;<br>		.......<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Node包含两个属性：（都使用volatile修饰，保证内存可见性）</p>
+<ul>
+<li><p>一个数据域item，用于保存数据</p>
+</li>
+<li><p>一个next指针，用于构成链式队列</p>
+</li>
+</ul>
+<h3 id="ConcurrentLinkedQueue"><a href="#ConcurrentLinkedQueue" class="headerlink" title="ConcurrentLinkedQueue"></a>ConcurrentLinkedQueue</h3><p>成员变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">transient</span> <span class="hljs-keyword">volatile</span> Node&lt;E&gt; head;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">transient</span> <span class="hljs-keyword">volatile</span> Node&lt;E&gt; tail;<br></code></pre></td></tr></table></figure>
+
+<p>ConcurrentLinkedQueue通过持有链表的头尾节点来管理队列。</p>
+<p>构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">ConcurrentLinkedQueue</span><span class="hljs-params">()</span> &#123;<br>    head = tail = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>&lt;E&gt;(<span class="hljs-literal">null</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>初始化示意图：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/1633459982863c26tplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="1.ConcurrentLinkedQueue初始化状态.png"></p>
+<h2 id="操作Node的几个CAS操作"><a href="#操作Node的几个CAS操作" class="headerlink" title="操作Node的几个CAS操作"></a>操作Node的几个CAS操作</h2><p>在队列进行出队入队的时候免不了对节点需要进行操作，在多线程就很容易出现线程安全的问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//更改Node中的数据域item</span><br><span class="hljs-type">boolean</span> <span class="hljs-title function_">casItem</span><span class="hljs-params">(E cmp, E val)</span> &#123;<br>    <span class="hljs-keyword">return</span> UNSAFE.compareAndSwapObject(<span class="hljs-built_in">this</span>, itemOffset, cmp, val);<br>&#125;<br><span class="hljs-comment">//更改Node中的指针域next</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">lazySetNext</span><span class="hljs-params">(Node&lt;E&gt; val)</span> &#123;<br>    UNSAFE.putOrderedObject(<span class="hljs-built_in">this</span>, nextOffset, val);<br>&#125;<br><span class="hljs-comment">//更改Node中的指针域next</span><br><span class="hljs-type">boolean</span> <span class="hljs-title function_">casNext</span><span class="hljs-params">(Node&lt;E&gt; cmp, Node&lt;E&gt; val)</span> &#123;<br>    <span class="hljs-keyword">return</span> UNSAFE.compareAndSwapObject(<span class="hljs-built_in">this</span>, nextOffset, cmp, val);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这些方法实际上通过UNSAFE实例的方式，UNSAFE位sun.misc.Unsafe类，该类是hotspot底层方法。</p>
+<h1 id="offer-方法"><a href="#offer-方法" class="headerlink" title="offer()方法"></a>offer()方法</h1><p>关于offer源码的思考方向：</p>
+<ul>
+<li><p>单线程offer</p>
+</li>
+<li><p>多个线程offer</p>
+</li>
+<li><p>部分线程offer，部分线程poll</p>
+<ul>
+<li><p>offer的速度快于poll</p>
+<blockquote>
+<p>队列长度越来越长，offer在队列尾部操作，poll在队头，两个线程不会互相影响</p>
+</blockquote>
+</li>
+<li><p>poll的速度快于offer</p>
+<blockquote>
+<p>队列会越来越短，offer线程和poll线程会出现“交集”，这一时刻可以称offer线程和poll线程同时操作的节点为临界点。</p>
+<p>对于该临界点poll和offer的发生相对顺序的思考角度：</p>
+<ul>
+<li><p>offer-poll-offer</p>
+<blockquote>
+<p>当offer线程在Node1后扎入Node2时，此时poll线程已经将Node1删除，这种情况需要在offer方法中考虑</p>
+</blockquote>
+</li>
+<li><p>poll-offer-poll</p>
+<blockquote>
+<p>当poll线程准备删除节点（队列为空），此时offer线程插入一个节点使得队列为非空，这种情况应该是poll线程考虑</p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">offer</span><span class="hljs-params">(E e)</span> &#123;<br>    <span class="hljs-comment">//null判断</span><br>    checkNotNull(e);<br>    <span class="hljs-comment">//将数据包装成一个Node类</span><br>    <span class="hljs-keyword">final</span> Node&lt;E&gt; newNode = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>&lt;E&gt;(e);<br>    <span class="hljs-comment">//循环直到成功插入Node</span><br>    <span class="hljs-keyword">for</span> (Node&lt;E&gt; t = tail, p = t;;) &#123;<br>        <span class="hljs-comment">//t为tail,但是tail并不一定指向真正的尾节点，因为tail是被延迟更新的</span><br>        <span class="hljs-comment">//p为指针用于寻找真正尾节点，q用于辅助p判断是否到达尾节点</span><br>        Node&lt;E&gt; q = p.next;<br>        <span class="hljs-comment">//1 p为尾节点，执行插入</span><br>        <span class="hljs-keyword">if</span> (q == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-comment">//CAS插入新节点，如果CAS失败会在下一次循环重试</span><br>            <span class="hljs-keyword">if</span> (p.casNext(<span class="hljs-literal">null</span>, newNode)) &#123;<br>                <span class="hljs-comment">//插入节点成功后更新tail（tail延迟更新机制）</span><br>                <span class="hljs-comment">//p为真尾节点，t为tail，如果tail没有指向真尾节点，则更新tail</span><br>                <span class="hljs-keyword">if</span> (p != t) <span class="hljs-comment">// hop two nodes at a time</span><br>                	casTail(t, newNode);  <span class="hljs-comment">// Failure is OK.</span><br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">//2 p不为尾节点，移动p指针直到找到尾节点</span><br>        <span class="hljs-comment">//2.1 p节点其next指向自己，这种节点称之为哨兵节点，说明在本线程执行offer的过程中，p节点被删除了</span><br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p == q)<br>            p = (t != (t = tail)) ? t : head;<br>        <span class="hljs-comment">//2.2 如果p指向的不是真正的尾节点</span><br>        <span class="hljs-keyword">else</span><br>            <span class="hljs-comment">//移动p指针，寻找真正尾节点</span><br>            p = (p != t &amp;&amp; t != (t = tail)) ? t : q;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="单线程offer分析"><a href="#单线程offer分析" class="headerlink" title="单线程offer分析"></a>单线程offer分析</h2><p>单线程相关代码段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">p = (p != t &amp;&amp; t != (t = tail)) ? t : q;<br></code></pre></td></tr></table></figure>
+
+<p>在单线程中，条件(p !&#x3D; t &amp;&amp; t !&#x3D; (t &#x3D; tail))一定为false，所以单线程offer中该代码段等价于p &#x3D; q</p>
+<h2 id="多线程offer分析"><a href="#多线程offer分析" class="headerlink" title="多线程offer分析"></a>多线程offer分析</h2><p>多线程offer相关代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">t != (t = tail))<br></code></pre></td></tr></table></figure>
+
+<p>若在执行offer操作的过程中，有其他的offer线程执行完毕（tail值可能更新），左边t为旧值压入栈中，右边t被赋予新的tail值，该表达式为真，说明tail更新，直接将tail赋予p</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599933a4aabtplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="5.线程A和线程B有可能的执行时序.png"></p>
+<h2 id="offer-poll-offer分析"><a href="#offer-poll-offer分析" class="headerlink" title="offer-poll-offer分析"></a>offer-poll-offer分析</h2><p>初始状态：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599c2390c2btplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="10.offer和poll相互影响分析时队列初始状态.png"></p>
+<p>在执行offer的时候，有一个线程完成poll：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599cd4cbdabtplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="11.线程A和线程B可能存在的执行时序.png"></p>
+<p>另一个线程完成poll后的状态：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599d7d92981tplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="12.线程B进行poll后队列的状态图.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p == q)<br>    p = (t != (t = tail)) ? t : head;<br></code></pre></td></tr></table></figure>
+
+<p>p &#x3D;&#x3D; q表示在当前线程在执行offer操作的时候，其他线程已经将p设置为哨兵节点了，此时需要重新给p赋值来寻找真正的尾节点</p>
+<p>由前面的多线程分析可知，若t !&#x3D; (t &#x3D; tail))为真，说明在当前线程执行offer期间tail更新了，则将p置为tail，若没有，则将p置为head（因为其他线程设置哨兵节点的时候肯定会更新head）</p>
+<h1 id="poll-方法"><a href="#poll-方法" class="headerlink" title="poll()方法"></a>poll()方法</h1><p>poll方法源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> E <span class="hljs-title function_">poll</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">//标记点</span><br>    restartFromHead: <span class="hljs-keyword">for</span> (;;) &#123;<br>        <span class="hljs-comment">//初始化h,p,q</span><br>        <span class="hljs-comment">//p指针用于寻找真正的头节点</span><br>        <span class="hljs-keyword">for</span> (Node&lt;E&gt; h = head, p = h, q;; p = q) &#123;<br>            <span class="hljs-keyword">final</span> E item;<br>            <span class="hljs-comment">//1 若p为头节点，CAS将其数据item置为null（若CAS失败，则会等待下一次循环重试）</span><br>            <span class="hljs-keyword">if</span> ((item = p.item) != <span class="hljs-literal">null</span> &amp;&amp; p.casItem(item, <span class="hljs-literal">null</span>)) &#123;<br>                <span class="hljs-comment">//1.1 若真正的头节点不为head，则更新head</span><br>                <span class="hljs-keyword">if</span> (p != h) <span class="hljs-comment">// hop two nodes at a time</span><br>                    <span class="hljs-comment">//若p为尾节点，则将p置为head，若p不为尾节点，则将p.next置为head</span><br>                    updateHead(h, ((q = p.next) != <span class="hljs-literal">null</span>) ? q : p);<br>                <span class="hljs-comment">//1.2 返回头节点数据</span><br>                <span class="hljs-keyword">return</span> item;<br>            &#125;<br>            <span class="hljs-comment">//2 若队列为空，返回null</span><br>            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((q = p.next) == <span class="hljs-literal">null</span>) &#123;<br>                updateHead(h, p);<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>            &#125;<br>            <span class="hljs-comment">//3 若p已经被其他线程给poll出去了</span><br>            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p == q)<br>                <span class="hljs-comment">//返回标记点重试poll操作</span><br>                <span class="hljs-keyword">continue</span> restartFromHead;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//更新head</span><br><span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateHead</span><span class="hljs-params">(Node&lt;E&gt; h, Node&lt;E&gt; p)</span> &#123;<br>    <span class="hljs-keyword">if</span> (h != p &amp;&amp; casHead(h, p))<br>        <span class="hljs-comment">//lazySetNext将h的next设置为其自己</span><br>        h.lazySetNext(h);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="head属性的延迟更新"><a href="#head属性的延迟更新" class="headerlink" title="head属性的延迟更新"></a>head属性的延迟更新</h2><p>初始状态：</p>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599936bd919tplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="6.队列初始状态.png"></p>
+<p>第一次poll过后的状态：</p>
+<blockquote>
+<p>只是简单的将head指向的节点item置为null，标记其已经被poll出去了</p>
+</blockquote>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/163345999f3d68bbtplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="7.队列出队操作后的状态.png"></p>
+<p>第二次poll：</p>
+<ul>
+<li><p>第一次循环结束：</p>
+<blockquote>
+<p>第一次循环p指针指向的不是真正的head，所以第一次循环只是移动p指针</p>
+</blockquote>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599bd85583btplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="8.经过一次循环后的状态.png"></p>
+</li>
+<li><p>第二次循环结束：</p>
+<blockquote>
+<p>经过第一次循环移动p指着过后，此时p已经指向真正的头节点，此时执行updateHead设置head</p>
+</blockquote>
+<p><img src="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ConcurrentLinkedQueue/16334599be78fddetplv-t2oaga2asx-zoom-in-crop-mark4536000.png" srcset="/img/loading.gif" lazyload alt="9.Node2从队列中出队后的状态.png"></p>
+</li>
+</ul>
+<h2 id="单线程poll分析"><a href="#单线程poll分析" class="headerlink" title="单线程poll分析"></a>单线程poll分析</h2><ul>
+<li>若p指向节点的item不为null，说明该节点为真正头节点（待删除节点）<ul>
+<li>若p与head相等，只需要将其item置为null，不需要真正执行删除</li>
+<li>若不相等，则需要使用updateHead更新head，真正执行删除（）</li>
+<li>最后返回item即可。</li>
+</ul>
+</li>
+<li>若p指向的节点item为null，说明该节点并非真正的头节点，那么就需要移动p指针寻找真正头节点（item不为null的节点）</li>
+</ul>
+<h2 id="多线程poll分析"><a href="#多线程poll分析" class="headerlink" title="多线程poll分析"></a>多线程poll分析</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p == q)<br>    <span class="hljs-keyword">continue</span> restartFromHead;<br></code></pre></td></tr></table></figure>
+
+<p>p &#x3D;&#x3D; q说明p指向的节点已经称为哨兵节点，即已经被其他线程poll出去了，则需要从restartFromHead重新开始执行poll，重新用到的是最新的head</p>
+<h2 id="poll-offer-poll情况分析"><a href="#poll-offer-poll情况分析" class="headerlink" title="poll-offer-poll情况分析"></a>poll-offer-poll情况分析</h2><p>在执行poll线程的时候，若执行到else if ((q &#x3D; p.next) &#x3D;&#x3D; null) 已经判断队列为空了，这时另一个线程完成了offer操作，此时线程已经判断队列为空，但是实际上队列不为空，该线程仍会返回null</p>
+<p>所以说判断空队列不能通过poll操作返回null进行判断，而是要使用isEmpty方法进行判断。</p>
+<h1 id="HOPS的设计"><a href="#HOPS的设计" class="headerlink" title="HOPS的设计"></a>HOPS的设计</h1><h2 id="tail和head更新触发机制"><a href="#tail和head更新触发机制" class="headerlink" title="tail和head更新触发机制"></a>tail和head更新触发机制</h2><p>通过上面个的offer和poll的分析，我们可知tail和head的更新是延迟的，二者的更新触发机制：</p>
+<ul>
+<li>tail更新：当tail指向的节点的下一个节点不为null的时候（不是真正的尾节点），会执行定位队列真正尾节点的操作，找到尾节点后完成插入操作之后，才会通过casTail进行tail的更新；当tail指向的下一个节点为null的时候，只插入节点不更新tail</li>
+<li>head更新：当head指向的节点的item域为null的时候，会执行定位队列真正头节点的操作，找到头节点后完成删除之后，通过updateHead更新head，当head指向的item不为null的时候，只删除节点不更新head</li>
+</ul>
+<h2 id="延迟更新的目的"><a href="#延迟更新的目的" class="headerlink" title="延迟更新的目的"></a>延迟更新的目的</h2><p>更新tail和head是CAS操作，使用延迟更新可以减少CAS更新的操作。通过p指针定位头尾节点操作，来代替每次都CAS更新头尾节点的操作，提高offer和poll操作的效率。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java并发-ConcurrentLinkedQueue</div>
+      <div>http://example.com/2022/10/19/Java并发-ConcurrentLinkedQueue/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月19日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年10月19日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/19/Java%E5%B9%B6%E5%8F%91-ThreadLocal/" title="Java并发-ThreadLocal">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java并发-ThreadLocal</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" title="Java并发-CopyOnWriteArrayList">
+                        <span class="hidden-mobile">Java并发-CopyOnWriteArrayList</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
