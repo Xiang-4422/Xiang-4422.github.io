@@ -223,6 +223,237 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
+          Java多线程-ConcurrentHashMap
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
+        <div>
+          
+          ConcurrentHashmap简介HashMap在多线程情况下扩容可能会陷入死循环。 线程安全的map使用：  hashtable类 Collections提供的方法将map包装成线程安全的map。Map&lt;K,V&gt; synchronizedMap(Map&lt;K,V&gt; m) concurrentHashMap  上面两种方式都是通过synchronized关键字来实现线程安
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 16:16" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
+          Java并发-LockSupport
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
+        <div>
+          
+          LockSupport简介调用LockSupport场景：  AQS的底层实现中  锁的实现  Condition中，线程的等待&#x2F;通知机制   LockSupport位于java.util.concurrent.locks包下，LockSupport时线程的阻塞原语，用来阻塞和唤醒线程。 每个使用LockSupport的线程都会与一个许可关联，如果该许可可用，并且可以在线程中使用，则调用
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 13:33" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-Condition/" target="_self">
+          Java并发-Condition
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-Condition/" target="_self">
+        <div>
+          
+          Condition简介等待通知机制的实现：  Object：  任何一个Java对象都是继承自Object类，在线程间实现通信往往会使用到Object的的wait()和notify()来实现等待&#x2F;通知机制。  Object的wait()和notify()是与对象监视器配合完成线程间的等待&#x2F;通知机制   Condition:  Condition实现和Object类wait()和
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 20:42" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantReadWriteLock/" target="_self">
+          Java并发-ReentrantReadWriteLock
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantReadWriteLock/" target="_self">
+        <div>
+          
+          读写锁简介独占锁与共享锁：  独占式获取锁，同一时刻只有一个线程能够获取锁。 而在一些业务场景中，大部分只是读数据，写数据很少，读数据不会影响数据的正确性，使用独占锁的话会出现性能瓶颈。 读锁允许同一时刻被多个线程获取，但是写锁会阻塞所有的读写线程。   独占锁： Java关键字synchronized concurrents包中实现Lock接口的ReentrantLock   共享锁： conc
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 12:15" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+          Java并发-ReentrantLock
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+        <div>
+          
+          ReentrantLock简介ReentrantLock重入锁，是实现Lock接口的一个类。  支持重入性，表示能够对共享资源重复加锁，即当前获取该锁的线程再次获取不会被阻塞。Java关键字synchronized通过获取自增，释放自减的方式实现重入。  ReentrantLock还支持公平锁和非公平锁两种方式。   重入性的实现原理支持重入性需要解决的两个问题 在获取锁的时候，如果已经获取锁的线
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 11:04" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/16/Java%E5%B9%B6%E5%8F%91-AQS%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3/" target="_self">
+          Java并发-AQS深入理解
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/16/Java%E5%B9%B6%E5%8F%91-AQS%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3/" target="_self">
+        <div>
+          
+          AQS简介在同步组件的实现中，AQS是核心部分 同步组件的实现者通过AQS提供的模板方法实现同步组件的同步语义 AQS则实现了对同步状态的管理，以及对阻塞线程的排队、等待和通知等一些底层的实现 AQS核心：  同步队列 独占式锁的获取于释放 共享锁的获取和释放 可中断锁、超时等待锁获取  AQS提供的模板方法：  独占式锁  void acquire(int arg)  独占式获取同步状态，如果获
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-16 11:45" pubdate>
+              2022-10-16
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/15/Java%E5%B9%B6%E5%8F%91-Lock%E4%B8%8EAQS%E5%88%9D%E8%AF%86/" target="_self">
+          Java并发-Lock与AQS初识
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/15/Java%E5%B9%B6%E5%8F%91-Lock%E4%B8%8EAQS%E5%88%9D%E8%AF%86/" target="_self">
+        <div>
+          
+          concurrent包包结构： atomic子包 locks子包 阻塞队列以及executors  concurrent包的实现 底层依赖volatile和CAS   Lock简介锁使用来控制多个线程访问共享资源的方式，一般来说，一个锁能够防止多个线程同时访问共享资源。 Lock接口与syncronized在Lock接口出现之前，Java程序主要靠synchronized关键字实现锁。 Lock拥
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-15 20:12" pubdate>
+              2022-10-15
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/14/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%85%B3%E9%94%AE%E5%AD%97/" target="_self">
           Java并发-并发关键字
         </a>
@@ -307,237 +538,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-09-16 12:04" pubdate>
               2022-09-16
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-          MySQL事务隔离级别及其实现原理
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/13/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" target="_self">
-        <div>
-          
-          MySQL事务 是什么 数据库事务指的是一组数据操作，事务内的操作要么全部成功，要么全部失败，什么都不做。（实际上事务中可能部分操作已经完成，但是有一部分失败，事务的作用就是回滚已经成功的所有操作）  作用 每一次操作由一系列动作组成，若其中某一个环节异常，那么整个操作都要撤回。 例如：网购付款，付款后的两个操作，订单更新、库存更新，这两个操作要么都完成，要么都不完成，如果只有一个操作执行，那么订
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-13 21:56" pubdate>
-              2022-09-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" target="_self">
-          十大排序算法
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/10/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" target="_self">
-        <div>
-          
-          简述：复杂度： 平方阶：冒泡排序、插入排序、选择排序 n^(1.3-2)阶：希尔排序 线性对数阶：快速排序、归并排序、堆排序 线性阶：计数排序、桶排序、基数排序、  稳定度： 算法稳定指的是两个相等键值的顺序和排序之前它们的顺序相同   稳定排序：冒泡排序、插入排序、归并排序、计数排序、桶排序、基数排序 不稳定排序：选择排序、希尔排序、快速排序、堆排序  注意：算法稳定与否和具体的实现有关！！！
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-10 14:58" pubdate>
-              2022-09-10
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/04/Java%E5%9F%BA%E7%A1%80/" target="_self">
-          Java基础
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/04/Java%E5%9F%BA%E7%A1%80/" target="_self">
-        <div>
-          
-          基础基础概念1. Java语言特点 面向对象（封装、继承、多态） 平台无关性（Java虚拟机） 多线程（语言级支持） 网络编程（Java诞生就是为了简化网络编程设计） 编译与解释并存 简单易学、可靠性、安全性  2. JVM、JRE、JDK JVM  JVM是运行Java字节码的虚拟机，JVM针对不同的系统的特定实现，目的是使用相同的字节码，在不同平台的JVM上运行都能产生相同结果。   什么是字
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-04 15:19" pubdate>
-              2022-09-04
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-          MySQL进阶
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-        <div>
-          
-          编码问题在安装MySQL时已经指定了默认编码为UTF8，所以在创建数据库、创建表的时候都无需指定编码。  几个关于编码的参数：  character_set_client  服务器用来解读用户发来数据所使用的编码   character_set_results  服务器发送给客户数据的编码   character_set_connection  character_set_database  ch
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-03 09:54" pubdate>
-              2022-09-03
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/02/MySQL%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" target="_self">
-          MySQL入门笔记
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/02/MySQL%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" target="_self">
-        <div>
-          
-          SQL简介 什么是 SQL  结构化查询语言（Structured Query Language）   SQL 的作用  客户端使用SQL来操作服务器   语法规范   SQL语句可以在单行或多行书写, 以分号结尾 可以使用空格和缩进来增强语句的可读性 MySQL不区分大小写, 但是建议使用大写    SQL语句分类   DDL(Data Definition Language): 数据定义语言
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-02 12:50" pubdate>
-              2022-09-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/02/MySQL45%E8%AE%B2/" target="_self">
-          MySQL45讲笔记
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/02/MySQL45%E8%AE%B2/" target="_self">
-        <div>
-          
-          学习MySQL原理的意义即使是MySQL的使用者，而非开发者，也需要理解MySQL的原理  提升数据库的性能 更快速的定位并解决问题  一条MySQL语句是怎么执行的MySQL的基本架构 Server层连接器 管理连接，权限验证   数据库连接命令:  mysql -h$ip -P$port -u$user -p  用户的权限在建立连接的时候获取, 对于已经成功建立连接的用户, 管理员再修改其权限
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-02 08:36" pubdate>
-              2022-09-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/01/MarkDownBase/" target="_self">
-          MarkDown入门
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/01/MarkDownBase/" target="_self">
-        <div>
-          
-          总览一、基本语法1. 标题 # H1  ## H2 ### H3 H1H2H3 2. 粗体 *bold text* bold text  3. 斜体 *italicized text* italicized text  4. 引用块 &gt; blockquote  blockquote   5. 有序列表  First item Second item Third item   6. 无序列表
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-01 22:31" pubdate>
-              2022-09-01
             </time>
           </div>
         

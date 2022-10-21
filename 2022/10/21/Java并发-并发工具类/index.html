@@ -1,0 +1,879 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="CountDownLatch简介业务场景： 在多线程协作完成业务功能时，有时候需要等待其他多个线程完成任务后，主线程才能继续往下执行业务功能。 解决方案：  使用Thread类的join方法，让主线程等待被join的线程执行完毕后，主线程才能继续往下执行。 也可以使用线程间消息通信机制（wait和notify） Java并发工具类中为我们提供了类似“倒计时”这样的工具类，也就是CountDownL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发-并发工具类">
+<meta property="og:url" content="http://example.com/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="CountDownLatch简介业务场景： 在多线程协作完成业务功能时，有时候需要等待其他多个线程完成任务后，主线程才能继续往下执行业务功能。 解决方案：  使用Thread类的join方法，让主线程等待被join的线程执行完毕后，主线程才能继续往下执行。 也可以使用线程间消息通信机制（wait和notify） Java并发工具类中为我们提供了类似“倒计时”这样的工具类，也就是CountDownL">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/16334ad72bdd4ca3tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp">
+<meta property="article:published_time" content="2022-10-21T01:58:28.000Z">
+<meta property="article:modified_time" content="2022-10-21T09:55:04.328Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/16334ad72bdd4ca3tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java并发-并发工具类 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java并发-并发工具类"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-21 09:58" pubdate>
+          2022年10月21日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          72 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java并发-并发工具类</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年10月21日 下午
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>业务场景：</strong></p>
+<p>在多线程协作完成业务功能时，有时候需要等待其他多个线程完成任务后，主线程才能继续往下执行业务功能。</p>
+<p>解决方案：</p>
+<ul>
+<li>使用Thread类的join方法，让主线程等待被join的线程执行完毕后，主线程才能继续往下执行。</li>
+<li>也可以使用线程间消息通信机制（wait和notify）</li>
+<li>Java并发工具类中为我们提供了类似“倒计时”这样的工具类，也就是CountDownLathch来完成这种业务场景</li>
+</ul>
+<p><strong>CountDownLatch的通俗解释：</strong></p>
+<p>若有6个运动员参与比赛，一个裁判员在终点计时。每个运动员到达终点，裁判员就少一个计时任务，当所有运动员到达终点，裁判员任务完完成，才能继续执行其他操作。6个运动员可以类比为六个线程，裁判员类比为一个主线程，当运动员到达终点时，调用CountDownLatch.countDown()方法对计数器减一，直到计数器为0，裁判员主线程才能继续往下执行。</p>
+<h2 id="CountDownLatch的主要方法"><a href="#CountDownLatch的主要方法" class="headerlink" title="CountDownLatch的主要方法"></a>CountDownLatch的主要方法</h2><p>构造方法：</p>
+<ul>
+<li><p>public CountDownLatch(int count)</p>
+<blockquote>
+<p>构造方法传入一个整数N，之后调用countdown方法会对N减一，当N捡到0时，之前因为调用await方法阻塞的线程会被唤醒会继续执行。</p>
+</blockquote>
+</li>
+</ul>
+<p>使用方法：</p>
+<ul>
+<li><p>await() throws InterruptedException</p>
+<blockquote>
+<p> 调用该方法的线程等到构造方法传入的N减到0的时候，才能继续往下执行</p>
+</blockquote>
+</li>
+<li><p>await(long timeout, TimeUnit unit)</p>
+<blockquote>
+<p>在await方法的基础上，增加了超时等待机制</p>
+</blockquote>
+</li>
+<li><p>countDown()</p>
+<blockquote>
+<p>使CountDownLatch计数值N减1</p>
+</blockquote>
+</li>
+<li><p>long getCount()</p>
+<blockquote>
+<p>获取当前CountDownLatch中的计数值</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="解释示例的代码实现"><a href="#解释示例的代码实现" class="headerlink" title="解释示例的代码实现"></a>解释示例的代码实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CountDownLatchDemo</span> &#123;<br> 	<span class="hljs-comment">//运动员线程需要关注的起跑信号</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">CountDownLatch</span> <span class="hljs-variable">startSignal</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CountDownLatch</span>(<span class="hljs-number">1</span>);<br>	<span class="hljs-comment">//裁判员线程需要关注的六个运动员都到达终点的信号</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">CountDownLatch</span> <span class="hljs-variable">endSignal</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CountDownLatch</span>(<span class="hljs-number">6</span>);<br><br>	<span class="hljs-comment">//主线程裁判员线程</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">executorService</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">6</span>);<br>        <span class="hljs-comment">//创建六个运动员线程并提交给线程池执行</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">6</span>; i++) &#123;<br>            executorService.execute(() -&gt; &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot; 运动员等待裁判员响哨！！！&quot;</span>);<br>                    <span class="hljs-comment">//运动员等待起跑信号</span><br>                    startSignal.await();<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;正在全力冲刺&quot;</span>);<br>                    endSignal.countDown();<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  到达终点&quot;</span>);<br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                    e.printStackTrace();<br>                &#125;<br>            &#125;);<br>        &#125;<br>        <span class="hljs-comment">//起跑信号，六个运动员起跑</span><br>        System.out.println(<span class="hljs-string">&quot;裁判员发号施令啦！！！&quot;</span>);<br>        startSignal.countDown();<br>        <span class="hljs-comment">//结束信号，裁判员宣布比赛结束</span><br>        endSignal.await();<br>        System.out.println(<span class="hljs-string">&quot;所有运动员到达终点，比赛结束！&quot;</span>);<br>        executorService.shutdown();<br>        &#125;<br>    &#125;<br>&#125;<br>输出结果：<br>    <br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span> 运动员等待裁判员响哨！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span> 运动员等待裁判员响哨！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span> 运动员等待裁判员响哨！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span> 运动员等待裁判员响哨！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span> 运动员等待裁判员响哨！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span> 运动员等待裁判员响哨！！！<br>裁判员发号施令啦！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  到达终点<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  到达终点<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  到达终点<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  到达终点<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  到达终点<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>正在全力冲刺<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  到达终点<br>所有运动员到达终点，比赛结束！<br></code></pre></td></tr></table></figure>
+
+<p>注意：代码中设置了两个CountDownLatch，一个startSignal用于让裁判员发送开始信号给运动员，一个endSignal用于让裁判员接收结束信号。</p>
+<h1 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>CyclicBarrier也是一种多线程并发控制的使用工具，和CountDownLatch一样具有等待计数的功能，但是更加强大。</p>
+<p>通俗解释：</p>
+<p>还是上面的运动会例子，模拟运动员入场的情况。假设有6条跑道，需要6个运动员都到达跑到起点后，才能吹哨开始跑步。跑道起点相当于一个barrier，是临界点，6个运动员类比成线程的话，到达临界点的线程会阻塞，需要等待到达临界点的线程到达六个，阻塞在临界点的线程才会解除阻塞继续执行。</p>
+<p>CyclicBarrier在使用一次过后，仍然有效，可以继续当计数器使用，这是和CountDownLatch的区别之一。</p>
+<p>示意图：</p>
+<p><img src="/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/16334ad72bdd4ca3tplv-t2oaga2asx-zoom-in-crop-mark4536000.webp" srcset="/img/loading.gif" lazyload alt="CyclicBarrier执行示意图.jpg"></p>
+<h2 id="CyclicBarrier的主要方法"><a href="#CyclicBarrier的主要方法" class="headerlink" title="CyclicBarrier的主要方法"></a>CyclicBarrier的主要方法</h2><p>构造方法：</p>
+<p>public CyclicBarrier(int parties, Runnable barrierAction)</p>
+<p>使用方法：</p>
+<ul>
+<li><p>await()</p>
+<blockquote>
+<p>等待所有的线程都到达指定的临界点</p>
+</blockquote>
+</li>
+<li><p>awat(long timeout, TimeUnit unit)</p>
+<blockquote>
+<p>在await方法基础上增加超时等待机制</p>
+</blockquote>
+</li>
+<li><p>int getNumberWaiting()</p>
+<blockquote>
+<p>获取当前有多少个线程阻塞等待在临界点上</p>
+</blockquote>
+</li>
+<li><p>boolean isBroken()</p>
+<blockquote>
+<p>用于查询阻塞等待的线程是否被中断</p>
+</blockquote>
+</li>
+<li><p>void reset()</p>
+<blockquote>
+<p>将屏障重置为初始状态，如果当前有线程正在临界点等待的话，将抛出BrokenBarrierException</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="解释示例的代码实现："><a href="#解释示例的代码实现：" class="headerlink" title="解释示例的代码实现："></a>解释示例的代码实现：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CyclicBarrierDemo</span> &#123;<br>    <span class="hljs-comment">//创建计数为6的CyclicBarrier，并设置线程到齐后的执行函数</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">CyclicBarrier</span> <span class="hljs-variable">barrier</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CyclicBarrier</span>(<span class="hljs-number">6</span>, () -&gt; &#123;<br>        System.out.println(<span class="hljs-string">&quot;所有运动员入场，裁判员一声令下！！！！！&quot;</span>);<br>    &#125;);<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;运动员准备进场，全场欢呼............&quot;</span>);<br>        <br>        <span class="hljs-comment">//创建六个运动员线程并提交给线程池执行</span><br>    	<span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">6</span>);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &amp;lt; <span class="hljs-number">6</span>; i++) &#123;<br>            service.execute(() -&amp;gt; &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot; 运动员，进场&quot;</span>);<br>                    <span class="hljs-comment">//在barrier阻塞，等待其他线程到齐</span><br>                    barrier.await();<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  运动员出发&quot;</span>);<br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                    e.printStackTrace();<br>                &#125; <span class="hljs-keyword">catch</span> (BrokenBarrierException e) &#123;<br>                    e.printStackTrace();<br>                &#125;<br>            &#125;);<br>        &#125;<br>	&#125;<br>&#125;<br><br>输出结果：<br>运动员准备进场，全场欢呼............<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span> 运动员，进场<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span> 运动员，进场<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span> 运动员，进场<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span> 运动员，进场<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span> 运动员，进场<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span> 运动员，进场<br>所有运动员入场，裁判员一声令下！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  运动员出发<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  运动员出发<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  运动员出发<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  运动员出发<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  运动员出发<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  运动员出发<br></code></pre></td></tr></table></figure>
+
+<h2 id="CountDownLatch与CyclicBarrier比较"><a href="#CountDownLatch与CyclicBarrier比较" class="headerlink" title="CountDownLatch与CyclicBarrier比较"></a>CountDownLatch与CyclicBarrier比较</h2><p>二者都是用于控制并发的工具类，都可以理解成维护一个计数器，但是二者的侧重点不同：</p>
+<ul>
+<li>CountDownLatch一般用于某个线程A等待其他若干线程执行完任务后，它才执行（一个线程等多个线程）。而CyclicBarrier一般用于一组线程互相等待至某个状态，然后这一组线程再同时执行（多个线程互相等待）。</li>
+<li>调用CountDownLatch的countDown方法不会阻塞当前线程；而调用CyclicBarrier的await方法会阻塞当前线程，直到CyclicBarrier指定的线程数量到达，才继续往下执行。</li>
+<li>CountDownLatch方法较少，使用简单。而CyclicBarrier提供的方法更多，可以同通过getNumberWaiting()、isBroken()方法获取当前多个线程的状态，并且再构造方法中可以传入barrierAction，指定当所有线程都到达时执行的业务功能。</li>
+<li>CountDownLatch是一次性的，不能复用，而CyclicBarrier可以复用。</li>
+</ul>
+<h1 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h1><h2 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h2><p>Semaphore可以理解为信号量，用于控制资源能够被并发访问的线程数量，以保证多个线程能够合理的使用特定资源。</p>
+<p>Semaphore就相当于一个许可证，线程需要先通过acquire方法获取该许可证，该线程才能继续执行下去，否则只能在该方法处阻塞等待。当执行完业务功能够，通过release()方法将许可证归还，以便其他线程能够获得许可证继续执行。</p>
+<p>业务场景：</p>
+<p>Semaphore可以用作流量控制，特别是公共资源有限的应用场景，比如数据库连接。加入有多个线程读取数据后，需要将数据保存在数据库中，而可用的最大数据库连接只有10个，这个时候就需要使用Semaphore来控制能够并发访问到数据库连接资源的线程数只有10个。在限制资源使用的应用场景下，Semaphore是特别合适的。</p>
+<h2 id="Semaphore的主要方法"><a href="#Semaphore的主要方法" class="headerlink" title="Semaphore的主要方法"></a>Semaphore的主要方法</h2><p>构造方法：</p>
+<ul>
+<li><p>Semaphore(int permits)</p>
+</li>
+<li><p>Semaphore(int permits, boolean fair)</p>
+</li>
+</ul>
+<p>获取与释放许可的方法：</p>
+<ul>
+<li>acquire()</li>
+<li>acquire(int permits)</li>
+<li>release()</li>
+<li>release(int permits)</li>
+<li>boolean tryAcquire()</li>
+<li>boolean tryAcquire(int permits)</li>
+<li>boolean tryAcquire(long timeout, TimeUnit unit)</li>
+<li>Boolean try Acquire(int premits, long timeout, TimeUnit unit)</li>
+</ul>
+<p>获取许可证和阻塞线程信息的方法：</p>
+<ul>
+<li>int availablePermits()</li>
+<li>int getQueueLength()</li>
+<li>boolean hasQueuedThreads()</li>
+<li>Collections<Thread> getQueueThreads()</Thread></li>
+</ul>
+<h2 id="使用示例代码实现"><a href="#使用示例代码实现" class="headerlink" title="使用示例代码实现"></a>使用示例代码实现</h2><p>模拟场景：</p>
+<p>有一天，班主任需要班上10个同学到讲台上来填写一个表格，但是老师只准备了5只笔，因此只能保证同时只有5名同学能够拿到笔填写表格，没有拿到笔的同学需要等待前面拿到笔的同学用完笔放回，才能拿到笔填写表格。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SemaphoreDemo</span> &#123;<br>    <span class="hljs-comment">//表示老师只有5支笔</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Semaphore</span> <span class="hljs-variable">semaphore</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Semaphore</span>(<span class="hljs-number">5</span>);<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">//表示10个学生</span><br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">10</span>);<br>        <span class="hljs-comment">//创建10个学生线程</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>            service.execute(() -&gt; &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  同学准备获取笔......&quot;</span>);<br>                    semaphore.acquire();<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  同学获取到笔&quot;</span>);<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  填写表格ing.....&quot;</span>);<br>                    TimeUnit.SECONDS.sleep(<span class="hljs-number">3</span>);<br>                    semaphore.release();<br>                    System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;  填写完表格，归还了笔！！！！！！&quot;</span>);<br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                    e.printStackTrace();<br>                &#125;<br>            &#125;);<br>        &#125;<br>        service.shutdown();<br>    &#125;<br>&#125;<br>输出结果<br>    <br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  填写表格ing.....<br><br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">7</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">8</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">9</span>  同学准备获取笔......<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">10</span>  同学准备获取笔......<br><br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">4</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">9</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">9</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">5</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">7</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">7</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">8</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">8</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">1</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">3</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">2</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">10</span>  同学获取到笔<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">10</span>  填写表格ing.....<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">7</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">9</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">8</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">6</span>  填写完表格，归还了笔！！！！！！<br>pool-<span class="hljs-number">1</span>-thread-<span class="hljs-number">10</span>  填写完表格，归还了笔！！！！！！<br></code></pre></td></tr></table></figure>
+
+<h1 id="Exchanger"><a href="#Exchanger" class="headerlink" title="Exchanger"></a>Exchanger</h1><h2 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h2><p>Exchanger是一个用于线程间协作的工具类，用于两个线程间交换数据。它提供了一个交换的同步点，在这个同步点两个线程能够交换数据。</p>
+<p>具体交换数据是通过exchange() 方法来实现的，如果一个线程先执行exchange方法，那么它会同步等待另一个线程也执行exchange方法，这个时候两个线程都到达同步点，两个线程就可以交换数据。</p>
+<h2 id="Exchanger的主要方法"><a href="#Exchanger的主要方法" class="headerlink" title="Exchanger的主要方法"></a>Exchanger的主要方法</h2><p>构造方法：</p>
+<p>只有一个简单的无参构造方法</p>
+<p>主要方法：</p>
+<ul>
+<li>V exchange(V x)</li>
+<li>V exchange(V x, long timeout, timeUnit unit)</li>
+</ul>
+<h2 id="使用示例代码实现-1"><a href="#使用示例代码实现-1" class="headerlink" title="使用示例代码实现"></a>使用示例代码实现</h2><p>模拟场景：</p>
+<p>在青春洋溢的中学时代，下课期间，男生经常会给走廊里为自己喜欢的女孩送情书。男生会先到女孩教师门口，然后等女孩出来，教师门口就是一个同步点，然后彼此交换信物。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExchangerDemo</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Exchanger&lt;String&gt; exchanger = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exchanger</span>();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">//代表男生和女生</span><br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">2</span>);<br>		<span class="hljs-comment">//男生线程</span><br>        service.execute(() -&gt; &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-comment">//男生对女生说的话</span><br>                <span class="hljs-type">String</span> <span class="hljs-variable">girl</span> <span class="hljs-operator">=</span> exchanger.exchange(<span class="hljs-string">&quot;我其实暗恋你很久了......&quot;</span>);<br>                System.out.println(<span class="hljs-string">&quot;女孩儿说：&quot;</span> + girl);<br>            &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;);<br>        <span class="hljs-comment">//女生线程</span><br>        service.execute(() -&gt; &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                System.out.println(<span class="hljs-string">&quot;女生慢慢的从教室你走出来......&quot;</span>);<br>                TimeUnit.SECONDS.sleep(<span class="hljs-number">3</span>);<br>                <span class="hljs-comment">//女生说的话</span><br>                <span class="hljs-type">String</span> <span class="hljs-variable">boy</span> <span class="hljs-operator">=</span> exchanger.exchange(<span class="hljs-string">&quot;我也很喜欢你......&quot;</span>);<br>                System.out.println(<span class="hljs-string">&quot;男孩儿说：&quot;</span> + boy);<br>            &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;);<br>    &#125;<br>&#125;<br><br>输出结果：<br><br>女生慢慢的从教室你走出来......<br>男孩儿说：我其实暗恋你很久了......<br>女孩儿说：我也很喜欢你......<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java并发-并发工具类</div>
+      <div>http://example.com/2022/10/21/Java并发-并发工具类/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月21日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年10月21日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" title="Java多线程-生产者与消费者问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java多线程-生产者与消费者问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-atomic%E5%8C%85/" title="Java并发-atomic包">
+                        <span class="hidden-mobile">Java并发-atomic包</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
