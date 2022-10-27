@@ -1,0 +1,1057 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Java异常简介在程序运行中会出现各种错误，例如：  用户造成的错误： 输入错误类型 程序想要读某个文件，但是已经被用户删除了   随机出现，且无法避免的错误： 网络中断 内存耗尽，程序崩溃 用户点击“打印”，但是根本没有打印机    一个健壮的程序必须处理各种各样的错误。所谓的错误，就是程序调用某个函数的时候，如果失败，就表示出错。 程序如何获知调用失败的信息？  方法一：约定返回错误码  预定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="异常处理">
+<meta property="og:url" content="http://example.com/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="Java异常简介在程序运行中会出现各种错误，例如：  用户造成的错误： 输入错误类型 程序想要读某个文件，但是已经被用户删除了   随机出现，且无法避免的错误： 网络中断 内存耗尽，程序崩溃 用户点击“打印”，但是根本没有打印机    一个健壮的程序必须处理各种各样的错误。所谓的错误，就是程序调用某个函数的时候，如果失败，就表示出错。 程序如何获知调用失败的信息？  方法一：约定返回错误码  预定">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221024215512715.png">
+<meta property="og:image" content="http://example.com/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221025114909589.png">
+<meta property="og:image" content="http://example.com/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221025171850623.png">
+<meta property="article:published_time" content="2022-10-24T13:36:04.000Z">
+<meta property="article:modified_time" content="2022-10-25T09:32:58.915Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221024215512715.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>异常处理 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="异常处理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-24 21:36" pubdate>
+          2022年10月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          99 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">异常处理</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年10月25日 下午
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="Java异常"><a href="#Java异常" class="headerlink" title="Java异常"></a>Java异常</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在程序运行中会出现各种<strong>错误</strong>，例如：</p>
+<ul>
+<li>用户造成的错误：<ul>
+<li>输入错误类型</li>
+<li>程序想要读某个文件，但是已经被用户删除了</li>
+</ul>
+</li>
+<li>随机出现，且无法避免的错误：<ul>
+<li>网络中断</li>
+<li>内存耗尽，程序崩溃</li>
+<li>用户点击“打印”，但是根本没有打印机</li>
+</ul>
+</li>
+</ul>
+<p>一个健壮的程序必须处理各种各样的错误。所谓的错误，就是程序调用某个函数的时候，如果失败，就表示出错。</p>
+<p>程序如何获知调用失败的信息？</p>
+<ul>
+<li><p>方法一：约定返回错误码</p>
+<blockquote>
+<p>预定返回不同的内容表示不同的执行情况。</p>
+</blockquote>
+</li>
+<li><p>方法二：在语言层面上提供一个异常处理机制</p>
+<blockquote>
+<p>Java内置了一层异常处理机制，总是使用异常来表示错误。</p>
+<p>异常是一种class，因此它本身带有类型信息。</p>
+<p>异常可以在任何地方抛出，但只需要在上层捕获，这样就和方法调用分离。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Java异常继承关系"><a href="#Java异常继承关系" class="headerlink" title="Java异常继承关系"></a>Java异常继承关系</h2><p><img src="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221024215512715.png" srcset="/img/loading.gif" lazyload alt="image-20221024215512715"></p>
+<ul>
+<li>Throwable<ul>
+<li><strong>Error：严重错误，程序一般无法处理</strong><ul>
+<li>OutOfMemoryError：内存耗尽</li>
+<li>NoClassDefFoundError：无法加载某个Class</li>
+<li>StackOverflowError：栈溢出</li>
+</ul>
+</li>
+<li><strong>Exception：运行时错误，可以被捕获并处理</strong><ul>
+<li><strong>RuntimeException：程序逻辑错误，需要修复程序本身</strong><ul>
+<li>NullPointerException</li>
+<li>IndexOutOfBoundsException</li>
+<li>IllegalArgumentException<ul>
+<li>NumberFormatException：数值类型的格式错误</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>非RuntimeException：这些异常时程序逻辑处理的一部分(编译器强制处理)</strong><ul>
+<li>IOException<ul>
+<li>FileNotFoundException：未找到文件</li>
+<li>SocketException：读取网络失败</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Java对异常处理的规定：</p>
+<ul>
+<li><p>必须捕获的异常：Checked Exception</p>
+<blockquote>
+<p>包括Exception及其子类，但不包括RuntimeException及其子类，这种类型的异常称为Checked Exception</p>
+</blockquote>
+</li>
+<li><p>不需要捕获的异常</p>
+<blockquote>
+<p>包括Error及其子类，RuntimeException及其子类</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="异常的抛出、传播和捕获"><a href="#异常的抛出、传播和捕获" class="headerlink" title="异常的抛出、传播和捕获"></a>异常的抛出、传播和捕获</h1><h2 id="异常的抛出"><a href="#异常的抛出" class="headerlink" title="异常的抛出"></a>异常的抛出</h2><p>如果说程序出现了需要抛出异常的情况，可以抛出异常，分为两步：</p>
+<ul>
+<li>new一个Excepion实例</li>
+<li>使用throw语句抛出</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">parseInt</span><span class="hljs-params">(String s, <span class="hljs-type">int</span> radix)</span> <span class="hljs-keyword">throws</span> NumberFormatException &#123;<br>    <span class="hljs-keyword">if</span> (s == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NumberFormatException</span>(<span class="hljs-string">&quot;null&quot;</span>);<br>    &#125;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>throw和throws：</p>
+<ul>
+<li><p>方法通过throw<strong>抛出</strong>异常实例</p>
+</li>
+<li><p>throws<strong>声明</strong>方法可能会抛出的异常</p>
+</li>
+</ul>
+<h2 id="异常的传播与捕获"><a href="#异常的传播与捕获" class="headerlink" title="异常的传播与捕获"></a>异常的传播与捕获</h2><p>catch异常过后，可以选择处理异常，也可以选择再抛出。再次抛出可以使用另一个异常将原始的异常封装。即新建异常时，将原始异常作为参数传入。也可以直接原封不动地抛出。</p>
+<p>异常传播示例：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-comment">//捕获并处理异常</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            process1();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>	<span class="hljs-comment">//捕获异常，并抛出</span><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">process1</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            process2();<br>        &#125; <span class="hljs-keyword">catch</span> (NullPointerException e) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(e);<br>        &#125;<br>    &#125;<br>    <br>	<span class="hljs-comment">//源头抛出异常</span><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">process2</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NullPointerException</span>();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>异常的栈信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//可以从栈信息中查看到完成的方法调用链</span><br><br><span class="hljs-comment">//第二次被抛出时的异常信息</span><br>java.lang.IllegalArgumentException: java.lang.NullPointerException<br>    at Main.process1(Main.java:<span class="hljs-number">15</span>)<br>    at Main.main(Main.java:<span class="hljs-number">5</span>)<br><span class="hljs-comment">//原始异常信息</span><br>Caused by: java.lang.NullPointerException<br>    at Main.process2(Main.java:<span class="hljs-number">20</span>)<br>    at Main.process1(Main.java:<span class="hljs-number">13</span>)<br></code></pre></td></tr></table></figure>
+
+<h2 id="关于finally"><a href="#关于finally" class="headerlink" title="关于finally"></a>关于finally</h2><ul>
+<li><p>在try…catch…finally代码块中不论是否捕获异常，finally代码块都会执行。</p>
+</li>
+<li><p>若在finally代码块中抛出异常，那么原来在catch中准备抛出的异常就会丢失。</p>
+<blockquote>
+<p>如何解决：</p>
+<p>在finally代码块中，新建异常后，使用addSuppressed方法将catch中捕获的异常填进去。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">Exception</span> <span class="hljs-variable">origin</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            System.out.println(Integer.parseInt(<span class="hljs-string">&quot;abc&quot;</span>));<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            origin = e;<br>            <span class="hljs-keyword">throw</span> e;<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-type">Exception</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>();<br>            <span class="hljs-keyword">if</span> (origin != <span class="hljs-literal">null</span>) &#123;<br>                e.addSuppressed(origin);<br>            &#125;<br>            <span class="hljs-keyword">throw</span> e;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>绝大多数情况不要在finally中抛出异常。</p>
+</blockquote>
+</li>
+</ul>
+<p>finally中的代码在什么时候执行：</p>
+<p>如果try、catch中没有return语句的话，finally中的代码就相当于添加到try和catch代码块的末尾。</p>
+<p>如果说有return，那么finally中的代码在return前执行，准确的说是被return的代码执行完毕，return前。</p>
+<p>例如：return i++;</p>
+<p>执行的步骤，先执行i++获取最终需要return的值，然后执行return。finally代码块就是在i++执行完毕后，return前执行。</p>
+<h1 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h1><p>当需要在代码中抛出异常时，尽量使用JDK已定义的异常类型。</p>
+<p>在一个大型项目中，可以自定义新的异常类型，但是，保持一个合理的异常继承体系很重要。</p>
+<p>常见的自定义异常做法：</p>
+<ol>
+<li><p>自定义一个BaseException作为“根异常”，然后派生出各种业务类型的异常。</p>
+</li>
+<li><p>BaseException需要从一个合适的Exception派生，通常从RuntimeException派生</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BaseException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RuntimeException</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BaseException</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BaseException</span><span class="hljs-params">(String message, Throwable cause)</span> &#123;<br>        <span class="hljs-built_in">super</span>(message, cause);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BaseException</span><span class="hljs-params">(String message)</span> &#123;<br>        <span class="hljs-built_in">super</span>(message);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BaseException</span><span class="hljs-params">(Throwable cause)</span> &#123;<br>        <span class="hljs-built_in">super</span>(cause);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>其他的业务类型的异常就可以从BaseException派生</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserNotFoundException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseException</span> &#123;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoginFailedException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseException</span> &#123;<br>&#125;<br><br>...<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>从RuntimeException继承BaseException的原因：不需要强制try catch</p>
+<h1 id="NullPointerException"><a href="#NullPointerException" class="headerlink" title="NullPointerException"></a>NullPointerException</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>在所有的RumtimeException异常中，NullPointerException时最常碰到的。</p>
+<p>NullPointerException即空指针异常，俗称NPE。如果一个对象为null，调用其方法或访问其字段就会产生NullPointerException，这个异常通常时由JVM抛出的。（指针这个概念来自C语言，Java语言中并无指针。我们定义的变量实际上是引用，Null Pointer更确切地来说是Null Reference，不过二者区别不大）</p>
+<h2 id="处理NPE"><a href="#处理NPE" class="headerlink" title="处理NPE"></a>处理NPE</h2><p>首先明确NullPointerException是一种代码逻辑错误，遇到NPE，遵循原则是早暴露，早修复，严禁使用try catch来隐藏这种编码错误。</p>
+<p>异常分为两种：</p>
+<ul>
+<li>一种是代码的逻辑错误，需要修复代码。比如一个String为null，然后调用了String的方法。</li>
+<li>另一种是无法避免的外界错误。比如尝试连接网络，网络连接失败，这种异常是代码逻辑的一部分，需要在代码中try catch处理这种异常</li>
+</ul>
+<p>好的编码习惯可以降低NPE的产生，例如：</p>
+<ul>
+<li><p>在成员变量定义的时候初始化</p>
+</li>
+<li><p>使用空字符串””，而不是默认的null</p>
+</li>
+<li><p>使用空数组，而不是默认的null</p>
+</li>
+</ul>
+<h1 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h1><h2 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h2><p>断言（Assertion）是一种调试程序的方式。在Java中，使用assert关键字来实现断言。</p>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">double</span> <span class="hljs-variable">x</span> <span class="hljs-operator">=</span> Math.abs(-<span class="hljs-number">123.45</span>);<br>    <span class="hljs-keyword">assert</span> x &gt;= <span class="hljs-number">0</span>;<br>    System.out.println(x);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>assert x &gt;&#x3D; 0 即为断言，断言预期x &gt;&#x3D; 0 为true。如果计算结果为false，则断言失败，抛出AssertionError。</p>
+<blockquote>
+<p>使用assert语句时，还可以添加一个可选的断言消息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">assert</span> x &gt;= <span class="hljs-number">0</span> : <span class="hljs-string">&quot;x must &gt;= 0&quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>在抛出异常的时候会带上消息“x must &gt;&#x3D; 0”，更加方便调试</p>
+</blockquote>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>Java断言的特点：断言失败会抛出AssertionError异常，导致程序结束退出。因此，断言不能用于可恢复的程序错误，只应该用于开法和测试阶段。</p>
+<p>例如：</p>
+<p>可恢复的程序错误，不应该使用断言：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">void</span> <span class="hljs-title function_">sort</span><span class="hljs-params">(<span class="hljs-type">int</span>[] arr)</span> &#123;<br>    <span class="hljs-keyword">assert</span> arr != <span class="hljs-literal">null</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>应该抛出异常并在上层捕获：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">void</span> <span class="hljs-title function_">sort</span><span class="hljs-params">(<span class="hljs-type">int</span>[] arr)</span> &#123;<br>    <span class="hljs-keyword">if</span> (arr == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;array cannot be null&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>JVM默认关闭断言指令，遇到assert语句就自动忽略了，不执行。</p>
+<p>要执行assert语句，必须给Java虚拟机传递-enableassertions（简写-ea）参数启动断言。</p>
+<p><strong>注意：在实际开发中很少使用断言。更好的方法是编写单元测试。</strong></p>
+<h1 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h1><h2 id="JDK-Logging"><a href="#JDK-Logging" class="headerlink" title="JDK Logging"></a>JDK Logging</h2><h3 id="日志简介"><a href="#日志简介" class="headerlink" title="日志简介"></a>日志简介</h3><p>没有日志系统时的错误排查过程：</p>
+<blockquote>
+<p>在编写程序的过程中，发现程序运行结果于预期不符合，怎么半？</p>
+<p>使用System.out.println()打印出执行过程中的某些变量，观察每一步的结果于代码逻辑是否符合，然后有针对性地修改代码。</p>
+<p>代码修改好了，然后删除没用地System.out.println()语句。</p>
+<p>又出问题了，再加上System.out.println()语句。</p>
+</blockquote>
+<p>日志的引入：</p>
+<blockquote>
+<p>反复的Sytem.out.println()语句插入与删除，非常麻烦，所以就引入了日志（Logging），它地目的就是为了取代System.out.println()。</p>
+</blockquote>
+<p>输出日志，而不是System.out.println()的好处：</p>
+<ul>
+<li>可以设置输出样式。避免自己重复写”Error: “ + var</li>
+<li>可以设置输出级别，禁止某些级别输出。例如，只输出错误日志</li>
+<li>可以重定向到文件。这样可以再程序运行结束后查看日志</li>
+<li>可以按包名控制日志级别。只输出某些包的日志</li>
+</ul>
+<h3 id="如何使用日志"><a href="#如何使用日志" class="headerlink" title="如何使用日志"></a>如何使用日志</h3><p>Java标准库内置了日志包：java.util.logging，我们可以直接使用。</p>
+<p>简单例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hello</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> Logger.getGlobal();<br>        logger.info(<span class="hljs-string">&quot;start process...&quot;</span>);<br>        logger.warning(<span class="hljs-string">&quot;memory is running out...&quot;</span>);<br>        logger.fine(<span class="hljs-string">&quot;ignored.&quot;</span>);<br>        logger.severe(<span class="hljs-string">&quot;process will be terminated...&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">Mar <span class="hljs-number">02</span>, <span class="hljs-number">2019</span> <span class="hljs-number">6</span>:<span class="hljs-number">32</span>:<span class="hljs-number">13</span> PM Hello main<br>INFO: start process...<br>Mar <span class="hljs-number">02</span>, <span class="hljs-number">2019</span> <span class="hljs-number">6</span>:<span class="hljs-number">32</span>:<span class="hljs-number">13</span> PM Hello main<br>WARNING: memory is running out...<br>Mar <span class="hljs-number">02</span>, <span class="hljs-number">2019</span> <span class="hljs-number">6</span>:<span class="hljs-number">32</span>:<span class="hljs-number">13</span> PM Hello main<br>SEVERE: process will be terminated...<br></code></pre></td></tr></table></figure>
+
+<p>日志包含的信息：时间、调用类、调用方法等</p>
+<h3 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h3><p>在上面的例子中，4条日志，只打印了3条，logger.fine()没有打印。这是因为，日志的输出可以设定级别。</p>
+<p>JDK的Logging定义了7个日志级别，从严重到普通：</p>
+<ul>
+<li>SEVERE</li>
+<li>WARNING</li>
+<li>INFO</li>
+<li>CONFIG</li>
+<li>FINE</li>
+<li>FINER</li>
+<li>FINERST</li>
+</ul>
+<p>因为默认的级别是INFO，因此，INFO级别一下的日志，不会被打印出来。</p>
+<p>使用日志级别的好处在于：调整日志级别就可以屏蔽掉很多调式无关的日志输出。</p>
+<h3 id="内置Logging的局限"><a href="#内置Logging的局限" class="headerlink" title="内置Logging的局限"></a>内置Logging的局限</h3><ul>
+<li>Loggin系统在JVM启动时读取配置文件并完成初始化，一旦开始运行mian()方法，就无法修改配置</li>
+<li>配置不方便，需要在JVM启动时传参：-Djava.util.logging.config.file&#x3D;&lt;config-file-name&gt;</li>
+</ul>
+<h2 id="Commens-Logging"><a href="#Commens-Logging" class="headerlink" title="Commens Logging"></a>Commens Logging</h2><h3 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h3><p>和Java标准库提供的日志不同，Commens Logging是一个第三方日志库，它是由Apache创建的日志模块。</p>
+<p>Commons Logging的特色是，它可以挂接不同的日志系统，并通过配置文件指定挂接的日志系统。默认情况下，Commens Logging自动搜索并使用Log4j，如果没有找到Log4j，再使用JDK logging。</p>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><p>使用Commons Logging只需要和两个类打交道，并且只有两步：</p>
+<ul>
+<li><p>第一步：通过LogFactory获取Log类的实例</p>
+</li>
+<li><p>第二步：使用Log实例的方法打日志</p>
+</li>
+</ul>
+<p>使用实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//因为Commons Logging是第三方提供的库，所以要在工程中导入Jar包才能正常使用。</span><br><span class="hljs-comment">//commons-logging-1.2.jar</span><br><span class="hljs-keyword">import</span> org.apache.commons.logging.Log;<br><span class="hljs-keyword">import</span> org.apache.commons.logging.LogFactory;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Log</span> <span class="hljs-variable">log</span> <span class="hljs-operator">=</span> LogFactory.getLog(Main.class);<br>        log.info(<span class="hljs-string">&quot;start...&quot;</span>);<br>        log.warn(<span class="hljs-string">&quot;end.&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Commons Logging定义的六个日志级别：</p>
+<ul>
+<li>FATAL</li>
+<li>ERROR</li>
+<li>WARNING</li>
+<li>INFO ：默认</li>
+<li>DEBUG</li>
+<li>TRACE</li>
+</ul>
+<p>使用Commons Logging时，如果在静态方法中引用Log，通常直接定义一个静态类型变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 在静态方法中引用Log:</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Log</span> <span class="hljs-variable">log</span> <span class="hljs-operator">=</span> LogFactory.getLog(Main.class);<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">foo</span><span class="hljs-params">()</span> &#123;<br>        log.info(<span class="hljs-string">&quot;foo&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在实例方法中引用Log，通常定义一个实例变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 在实例方法中引用Log:</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Log</span> <span class="hljs-variable">log</span> <span class="hljs-operator">=</span> LogFactory.getLog(getClass());<br><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">foo</span><span class="hljs-params">()</span> &#123;<br>        log.info(<span class="hljs-string">&quot;foo&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意到：实例变量log的获取方式是LogFactory.getLog(getClass())，而不是LogFactory.getLog(Person.class)。这样的好处在于，子类继承Person类后，继承其属性log，所以在子类中可以直接使用该log实例，无需改动代码。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 在子类中使用父类实例化的log:</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Person</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">bar</span><span class="hljs-params">()</span> &#123;<br>        log.info(<span class="hljs-string">&quot;bar&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为Java类的动态特性，LogFactory.getLog(getClass())，在父类中相当于LogFactory.getLog(Person.class)，在子类中相当于LogFactory.getLog(Student.class)</p>
+<p>Commeons Logging的日志方法，例如info()，除了标准的info(String)外，还提供了非常有用的重载方法：info(String, Throwable)，这使得记录异常更加简单。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>    ...<br>&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>    log.error(<span class="hljs-string">&quot;got exception!&quot;</span>, e);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Log4Jj"><a href="#Log4Jj" class="headerlink" title="Log4Jj"></a>Log4Jj</h2><h3 id="简介-4"><a href="#简介-4" class="headerlink" title="简介"></a>简介</h3><p>Commons Logging可以作为“日志接口”来使用。而真正的“日志实现”可以使用Log4j。</p>
+<p>Log4j是一种非常流行的日志框架，它是一个组件化设计的日志系统。</p>
+<p>其框架大概如下：</p>
+<p><img src="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221025114909589.png" srcset="/img/loading.gif" lazyload alt="image-20221025114909589"></p>
+<ol>
+<li>Appender：</li>
+</ol>
+<p>当使用Log4j输出一条日志时，Log4j自动通过不同的Appender把一条日志输出到不同的目的地。</p>
+<ul>
+<li>console：输出到屏幕</li>
+<li>file：输出到文件</li>
+<li>socket：通过网络输出到远程计算机</li>
+<li>jdbc：输出到数据库</li>
+</ul>
+<ol start="2">
+<li>Filter：</li>
+</ol>
+<p>在输出日志的过程中，通过Filter来过滤那些log需要被输出，哪些log不需要被输出。例如，仅输出ERROR级别的日志</p>
+<ol start="3">
+<li>Layout：</li>
+</ol>
+<p>最后通过Layout来格式化日志信息，例如，自动添加日期、时间、方法名称等信息。</p>
+<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><h4 id="配置文件："><a href="#配置文件：" class="headerlink" title="配置文件："></a>配置文件：</h4><p>在实际的使用中不需要关心Log4j的API，而是通过配置文件来配置它。</p>
+<p>以XML配置为例，使用Log4j的时候，我们把一个log4j2.xml文件放到classpath下就可以让Log4j读取配置文件并按照我们的配置来输出日志。</p>
+<p>配置文件示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 定义日志格式 --&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">Property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;log.pattern&quot;</span>&gt;</span>%d&#123;MM-dd HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125;%n%msg%n%n<span class="hljs-tag">&lt;/<span class="hljs-name">Property</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 定义文件名变量 --&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">Property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file.err.filename&quot;</span>&gt;</span>log/err.log<span class="hljs-tag">&lt;/<span class="hljs-name">Property</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">Property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file.err.pattern&quot;</span>&gt;</span>log/err.%i.log.gz<span class="hljs-tag">&lt;/<span class="hljs-name">Property</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 定义Appender，即目的地 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 定义输出到屏幕 --&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- 日志格式引用上面定义的log.pattern --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;$&#123;log.pattern&#125;&quot;</span> /&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 定义输出到文件,文件名引用上面定义的file.err.filename --&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">RollingFile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;err&quot;</span> <span class="hljs-attr">bufferedIO</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;file.err.filename&#125;&quot;</span> <span class="hljs-attr">filePattern</span>=<span class="hljs-string">&quot;$&#123;file.err.pattern&#125;&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;$&#123;log.pattern&#125;&quot;</span> /&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">Policies</span>&gt;</span><br>                <span class="hljs-comment">&lt;!-- 根据文件大小自动切割日志 --&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">SizeBasedTriggeringPolicy</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;1 MB&quot;</span> /&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">Policies</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- 保留最近10份 --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">DefaultRolloverStrategy</span> <span class="hljs-attr">max</span>=<span class="hljs-string">&quot;10&quot;</span> /&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">RollingFile</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;info&quot;</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- 对info级别的日志，输出到console --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;console&quot;</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;info&quot;</span> /&gt;</span><br>            <span class="hljs-comment">&lt;!-- 对error级别的日志，输出到err，即上面定义的RollingFile --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;err&quot;</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;error&quot;</span> /&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>配置Log4j比较繁琐，但是一旦配置完成，使用起来就非常方便。</p>
+<h4 id="Jar包导入："><a href="#Jar包导入：" class="headerlink" title="Jar包导入："></a>Jar包导入：</h4><p>Log4j是一个第三方库，所以使用前需要导入其jar包：</p>
+<ul>
+<li>log4j-api-2.x.jar</li>
+<li>log4j-core-2.x.jar</li>
+<li>log4j-jcl-2.x.jar</li>
+</ul>
+<p>因为Commens Logging会自动发现并使用Log4j，所以还需要导入</p>
+<ul>
+<li>commons-logging-1.2.jar</li>
+</ul>
+<h4 id="使用日志"><a href="#使用日志" class="headerlink" title="使用日志"></a>使用日志</h4><p>只需要按照Commons Logging的写法，不需要改动任何代码，就可以得到Log4j的日志输出。</p>
+<p>在开发阶段，始终使用Commens Logging接口来写入日志，并且开发阶段无需引入Log4j。如果需要把日志写入文件，只需要把正确的配置文件和Log4j相关的jar包导入，就可以把日志自动换成Log4j写入，无需修改任何代码。</p>
+<h2 id="SLF4J和Logback"><a href="#SLF4J和Logback" class="headerlink" title="SLF4J和Logback"></a>SLF4J和Logback</h2><p>前面的Commons Logging和Log4j，他们一个充当日志API，一个负责实现日志底层实现。而SLF4J和Logback也是类似的关系。</p>
+<h3 id="SLF4J对比Commens-Logging接口"><a href="#SLF4J对比Commens-Logging接口" class="headerlink" title="SLF4J对比Commens Logging接口"></a>SLF4J对比Commens Logging接口</h3><h4 id="字符串拼接的改进"><a href="#字符串拼接的改进" class="headerlink" title="字符串拼接的改进"></a>字符串拼接的改进</h4><p>在Commens Logging中是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">score</span> <span class="hljs-operator">=</span> <span class="hljs-number">99</span>;<br>p.setScore(score);<br>log.info(<span class="hljs-string">&quot;Set score &quot;</span> + score + <span class="hljs-string">&quot; for Person &quot;</span> + p.getName() + <span class="hljs-string">&quot; ok.&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>SLF4J中是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">score</span> <span class="hljs-operator">=</span> <span class="hljs-number">99</span>;<br>p.setScore(score);<br>logger.info(<span class="hljs-string">&quot;Set score &#123;&#125; for Person &#123;&#125; ok.&quot;</span>, score, p.getName());<br></code></pre></td></tr></table></figure>
+
+<p>SLF4J传入带占位符的字符串，使用后面的变量自动替换占位符，使用起来更加自然。</p>
+<h3 id="接口对比"><a href="#接口对比" class="headerlink" title="接口对比"></a>接口对比</h3><p><img src="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/image-20221025171850623.png" srcset="/img/loading.gif" lazyload alt="image-20221025171850623"></p>
+<h3 id="使用-3"><a href="#使用-3" class="headerlink" title="使用"></a>使用</h3><ol>
+<li>使用也同Commons加Log4J类似，需要先导入对应的包：</li>
+</ol>
+<ul>
+<li>slf4j-api-1.7.x.jar</li>
+<li>logback-classic-1.2.x.jar</li>
+<li>logback-core-1.2.x.jar</li>
+</ul>
+<ol start="2">
+<li>同样需要导入一个Logback的配置文件：</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br><br>	<span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;CONSOLE&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">encoder</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>%d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">encoder</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span><br><br>	<span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;FILE&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">encoder</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>%d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">charset</span>&gt;</span>utf-8<span class="hljs-tag">&lt;/<span class="hljs-name">charset</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">encoder</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">file</span>&gt;</span>log/output.log<span class="hljs-tag">&lt;/<span class="hljs-name">file</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">rollingPolicy</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ch.qos.logback.core.rolling.FixedWindowRollingPolicy&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">fileNamePattern</span>&gt;</span>log/output.log.%i<span class="hljs-tag">&lt;/<span class="hljs-name">fileNamePattern</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">rollingPolicy</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">triggeringPolicy</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">MaxFileSize</span>&gt;</span>1MB<span class="hljs-tag">&lt;/<span class="hljs-name">MaxFileSize</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">triggeringPolicy</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span><br><br>	<span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;CONSOLE&quot;</span> /&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;FILE&quot;</span> /&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>代码中调用：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(getClass());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>异常处理</div>
+      <div>http://example.com/2022/10/24/异常处理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月24日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年10月25日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/25/%E5%8F%8D%E5%B0%84/" title="反射">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">反射</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" title="Java多线程-生产者与消费者问题">
+                        <span class="hidden-mobile">Java多线程-生产者与消费者问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
