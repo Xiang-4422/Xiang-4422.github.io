@@ -39,7 +39,7 @@
 <meta property="og:image" content="http://example.com/2022/10/29/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image-20221031224335921.png">
 <meta property="og:image" content="http://example.com/2022/10/29/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image-20221031231737824-16672294603681.png">
 <meta property="article:published_time" content="2022-10-29T15:27:48.000Z">
-<meta property="article:modified_time" content="2022-11-01T01:25:47.811Z">
+<meta property="article:modified_time" content="2022-11-01T01:59:44.693Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2022/10/29/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image-20221030102323353.png">
@@ -546,7 +546,7 @@
 </ul>
 <p>面向抽象编程原则（面向抽象编程）：</p>
 <p>如果上面的readText(Reader)方法参数从Reader改为FileReader，那么我们需要将InputStream适配为FileReader，直接使用inputStreamReader进行转换得到的是Reader，无法使用，这个时候就会跟麻烦。所以说，我们需要面向抽象编程，持有高层接口不但代码更灵活，而且把各种接口组合起来也更容易。一旦持有某个具体的子类型，想要做一些改动就会很困难。</p>
-<h2 id="7-桥接"><a href="#7-桥接" class="headerlink" title="7. 桥接"></a>7. 桥接</h2><blockquote>
+<h2 id="7-桥接（Bridge）"><a href="#7-桥接（Bridge）" class="headerlink" title="7. 桥接（Bridge）"></a>7. 桥接（Bridge）</h2><blockquote>
 <p>将抽象部分与它的实现部分分离，使它们都可以独立地变化。</p>
 </blockquote>
 <p>假设某汽车厂商生产三个品牌地汽车：Big、Tiny和Boss，每个品牌又可以选择燃油、纯电和混合动力。</p>
@@ -569,20 +569,18 @@
 </blockquote>
 </li>
 <li><p>最终，不同品牌的继承自RefinderCar。不同的引擎继承自Engine</p>
-</li>
-</ul>
 <blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BossCar</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RefinedCar</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BossCar</span><span class="hljs-params">(Engine engine)</span> &#123;<br>        <span class="hljs-built_in">super</span>(engine);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getBrand</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Boss&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HybridEngine</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Engine</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">start</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Start Hybrid Engine...&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 </blockquote>
-<ul>
-<li>客户端通过自己选择一个品牌，在配合一种引擎，得到最终的Car：</li>
-</ul>
+</li>
+<li><p>客户端通过自己选择一个品牌，在配合一种引擎，得到最终的Car：</p>
 <blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RefinedCar</span> <span class="hljs-variable">car</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BossCar</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HybridEngine</span>());<br>car.drive();<br></code></pre></td></tr></table></figure>
-</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RefinedCar</span> <span class="hljs-variable">car</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BossCar</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HybridEngine</span>());<br>car.drive();<br></code></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
 <p>桥接模式的好处在于，如果要增加一种引擎，只需要针对Engine派生一个新的子类，如果需要增加一个品牌，只需要针对RefindedCar派生一个子类。任何RefindedCar的子类和任何Engine都可以自由组合，即一辆车的两个维度：品牌和引擎都可以独立地变化。</p>
 <p><img src="/2022/10/29/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image-20221030185415196.png" srcset="/img/loading.gif" lazyload alt="image-20221030185415196"></p>
 <p>桥接模式实现比较复杂，实际应用也非常少，但是它提供的设计思想值得借鉴，即：</p>
@@ -1200,6 +1198,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/11/05/MySQL-select%E8%AF%AD%E5%8F%A5%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" title="MySQL-select语句的执行过程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL-select语句的执行过程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

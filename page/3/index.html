@@ -223,6 +223,72 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantReadWriteLock/" target="_self">
+          Java并发-ReentrantReadWriteLock
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantReadWriteLock/" target="_self">
+        <div>
+          
+          读写锁简介独占锁与共享锁：  独占式获取锁，同一时刻只有一个线程能够获取锁。 而在一些业务场景中，大部分只是读数据，写数据很少，读数据不会影响数据的正确性，使用独占锁的话会出现性能瓶颈。 读锁允许同一时刻被多个线程获取，但是写锁会阻塞所有的读写线程。   独占锁： Java关键字synchronized concurrents包中实现Lock接口的ReentrantLock   共享锁： conc
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 12:15" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+          Java并发-ReentrantLock
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+        <div>
+          
+          ReentrantLock简介ReentrantLock重入锁，是实现Lock接口的一个类。  支持重入性，表示能够对共享资源重复加锁，即当前获取该锁的线程再次获取不会被阻塞。Java关键字synchronized通过获取自增，释放自减的方式实现重入。  ReentrantLock还支持公平锁和非公平锁两种方式。   重入性的实现原理支持重入性需要解决的两个问题 在获取锁的时候，如果已经获取锁的线
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 11:04" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/16/Java%E5%B9%B6%E5%8F%91-AQS%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3/" target="_self">
           Java并发-AQS深入理解
         </a>
@@ -472,72 +538,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-09-10 14:58" pubdate>
               2022-09-10
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/04/Java%E5%9F%BA%E7%A1%80/" target="_self">
-          Java基础
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/04/Java%E5%9F%BA%E7%A1%80/" target="_self">
-        <div>
-          
-          基础基础概念1. Java语言特点 面向对象（封装、继承、多态） 平台无关性（Java虚拟机） 多线程（语言级支持） 网络编程（Java诞生就是为了简化网络编程设计） 编译与解释并存 简单易学、可靠性、安全性  2. JVM、JRE、JDK JVM  JVM是运行Java字节码的虚拟机，JVM针对不同的系统的特定实现，目的是使用相同的字节码，在不同平台的JVM上运行都能产生相同结果。   什么是字
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-04 15:19" pubdate>
-              2022-09-04
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-          MySQL进阶
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-        <div>
-          
-          编码问题在安装MySQL时已经指定了默认编码为UTF8，所以在创建数据库、创建表的时候都无需指定编码。  几个关于编码的参数：  character_set_client  服务器用来解读用户发来数据所使用的编码   character_set_results  服务器发送给客户数据的编码   character_set_connection  character_set_database  ch
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-03 09:54" pubdate>
-              2022-09-03
             </time>
           </div>
         
