@@ -223,6 +223,138 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+          异常处理
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+        <div>
+          
+          Java异常简介在程序运行中会出现各种错误，例如：  用户造成的错误： 输入错误类型 程序想要读某个文件，但是已经被用户删除了   随机出现，且无法避免的错误： 网络中断 内存耗尽，程序崩溃 用户点击“打印”，但是根本没有打印机    一个健壮的程序必须处理各种各样的错误。所谓的错误，就是程序调用某个函数的时候，如果失败，就表示出错。 程序如何获知调用失败的信息？  方法一：约定返回错误码  预定
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-24 21:36" pubdate>
+              2022-10-24
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" target="_self">
+          Java多线程-生产者与消费者问题
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" target="_self">
+        <div>
+          
+          生产者-消费者模式是一个十分经典的多线程并发协作的模式，弄懂生产者-消费者模式可以让我们加深对并发编程的理解。 所谓的生产者-消费者问题，实际上主要是包含了两类线程，一种是生产者线程用于生产数据，另一类是消费者线程用于消费数据，为了解耦生产者和消费者的关系，通常会采用共享的数据区域，就像是一个仓库，生产者生产数据后直接放置在共享数据区中，不需要关心消费者的行为，而消费者只需要从共享数据区中去获取数
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-21 17:58" pubdate>
+              2022-10-21
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/" target="_self">
+          Java并发-并发工具类
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/" target="_self">
+        <div>
+          
+          CountDownLatch简介业务场景： 在多线程协作完成业务功能时，有时候需要等待其他多个线程完成任务后，主线程才能继续往下执行业务功能。 解决方案：  使用Thread类的join方法，让主线程等待被join的线程执行完毕后，主线程才能继续往下执行。 也可以使用线程间消息通信机制（wait和notify） Java并发工具类中为我们提供了类似“倒计时”这样的工具类，也就是CountDownL
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-21 09:58" pubdate>
+              2022-10-21
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-atomic%E5%8C%85/" target="_self">
+          Java并发-atomic包
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-atomic%E5%8C%85/" target="_self">
+        <div>
+          
+          原子操作类简介并发问题： 并发编程中很容易出现并发安全的例子。比如说多线程执行i++，就可能无法获取正确的结果。常用的解决办法是使用Synchronized进行控制来达到线程安全的目的。但是synchronized采用的是悲观锁策略，并不是特别高效的一种解决方案。 高效的解决方案： 在J.U.C下的atomic包提供了一系列的操作简单，性能高效，并且能保证线程安全的更新基本类型变量，数组元素，引用
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-21 08:32" pubdate>
+              2022-10-21
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/20/Java%E5%B9%B6%E5%8F%91-FutureTask/" target="_self">
           Java并发-FutureTask
         </a>
@@ -406,138 +538,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-10-19 13:43" pubdate>
               2022-10-19
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
-          Java并发-CopyOnWriteArrayList
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
-        <div>
-          
-          CopyOnWriteArrayList简介ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。 业务场景，很多业务都是读多写少的：  比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-18 22:36" pubdate>
-              2022-10-18
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
-          Java多线程-ConcurrentHashMap
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
-        <div>
-          
-          ConcurrentHashmap简介HashMap在多线程情况下扩容可能会陷入死循环。 线程安全的map使用：  hashtable类 Collections提供的方法将map包装成线程安全的map。Map&lt;K,V&gt; synchronizedMap(Map&lt;K,V&gt; m) concurrentHashMap  上面两种方式都是通过synchronized关键字来实现线程安
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-18 16:16" pubdate>
-              2022-10-18
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
-          Java并发-LockSupport
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-LockSupport/" target="_self">
-        <div>
-          
-          LockSupport简介调用LockSupport场景：  AQS的底层实现中  锁的实现  Condition中，线程的等待&#x2F;通知机制   LockSupport位于java.util.concurrent.locks包下，LockSupport时线程的阻塞原语，用来阻塞和唤醒线程。 每个使用LockSupport的线程都会与一个许可关联，如果该许可可用，并且可以在线程中使用，则调用
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-18 13:33" pubdate>
-              2022-10-18
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-Condition/" target="_self">
-          Java并发-Condition
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-Condition/" target="_self">
-        <div>
-          
-          Condition简介等待通知机制的实现：  Object：  任何一个Java对象都是继承自Object类，在线程间实现通信往往会使用到Object的的wait()和notify()来实现等待&#x2F;通知机制。  Object的wait()和notify()是与对象监视器配合完成线程间的等待&#x2F;通知机制   Condition:  Condition实现和Object类wait()和
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-17 20:42" pubdate>
-              2022-10-17
             </time>
           </div>
         

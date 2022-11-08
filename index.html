@@ -223,6 +223,138 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/11/05/MySQL-%E5%86%85%E5%AD%98/" target="_self">
+          MySQL-内存
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/11/05/MySQL-%E5%86%85%E5%AD%98/" target="_self">
+        <div>
+          
+          Buffer Pool简介Buffer Pool的作用MySQL的数据是存储在磁盘中的，但是每次都直接从磁盘读数据，这样性能很差。为此InnoDB存储引擎设计了一个缓冲池，当数据从磁盘中取出来后，缓存在内存中，下次查询相同数据就直接从内存中读取，这样就提高了数据库的读写性能。  有了缓冲池后的读写操作：  读取数据时，如果数据存在于Buffer Pool中，客户端就直接读取Buffer Pool中
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-11-05 23:36" pubdate>
+              2022-11-05
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/11/05/MySQL-%E6%97%A5%E5%BF%97/" target="_self">
+          MySQL-日志
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/11/05/MySQL-%E6%97%A5%E5%BF%97/" target="_self">
+        <div>
+          
+          InnoDB引擎层日志：  undo log（回滚日志）  实现了事务中的原子性，主要用于事务回滚和MVCC   redo log（重做日志）  实现了事务中的持久性，主要用于掉电等故障恢复    Server层日志：  binlog（归档日志）  主要用于数据备份和主从复制    undo log（事务回滚，原子性）undo log的作用作用一、回滚因为MySQL默认开启自动提交事务，由auto
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-11-05 23:36" pubdate>
+              2022-11-05
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/11/05/MySQL-%E9%94%81/" target="_self">
+          MySQL-锁
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/11/05/MySQL-%E9%94%81/" target="_self">
+        <div>
+          
+          MySQL有哪些锁全局锁全局锁的使用 使用全局锁后，整个数据库就处于只读状态  使用全局锁： 1flush tables with read lock  释放全局锁（会话断开全局锁也会自动断开）： 1unlock tables  全局锁会阻塞其他线程的如下操作：  对数据的增删改操作，比如insert、delete、upadte等语句 对表结构的更改操作，比如alter table、drop ta
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-11-05 23:36" pubdate>
+              2022-11-05
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/11/05/MySQL-%E4%BA%8B%E5%8A%A1/" target="_self">
+          MySQL-事务
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/11/05/MySQL-%E4%BA%8B%E5%8A%A1/" target="_self">
+        <div>
+          
+          事务简介事务是什么通过一个经典的银行转账来说明。 假设我向你转账，那么转账过程由以下几个步骤组成：  这个转账过程涉及两次修改数据库的操作，一次是修改我的余额，一次是修改你的余额。 如果说在操作三后服务器掉电，那么我的余额减少，但是你的余额没有增多，前凭空消失了。 对于转账这个业务来说，这两个操作时不可分割的。要么两个操作都成功，要么两个操作都失败。 数据库中的业务就是为了达到这样的效果。在转账前
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-11-05 23:35" pubdate>
+              2022-11-05
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/11/05/MySQL-%E7%B4%A2%E5%BC%95/" target="_self">
           MySQL-索引
         </a>
@@ -406,138 +538,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-10-25 17:34" pubdate>
               2022-10-25
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
-          异常处理
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/24/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
-        <div>
-          
-          Java异常简介在程序运行中会出现各种错误，例如：  用户造成的错误： 输入错误类型 程序想要读某个文件，但是已经被用户删除了   随机出现，且无法避免的错误： 网络中断 内存耗尽，程序崩溃 用户点击“打印”，但是根本没有打印机    一个健壮的程序必须处理各种各样的错误。所谓的错误，就是程序调用某个函数的时候，如果失败，就表示出错。 程序如何获知调用失败的信息？  方法一：约定返回错误码  预定
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-24 21:36" pubdate>
-              2022-10-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" target="_self">
-          Java多线程-生产者与消费者问题
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/21/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98/" target="_self">
-        <div>
-          
-          生产者-消费者模式是一个十分经典的多线程并发协作的模式，弄懂生产者-消费者模式可以让我们加深对并发编程的理解。 所谓的生产者-消费者问题，实际上主要是包含了两类线程，一种是生产者线程用于生产数据，另一类是消费者线程用于消费数据，为了解耦生产者和消费者的关系，通常会采用共享的数据区域，就像是一个仓库，生产者生产数据后直接放置在共享数据区中，不需要关心消费者的行为，而消费者只需要从共享数据区中去获取数
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-21 17:58" pubdate>
-              2022-10-21
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/" target="_self">
-          Java并发-并发工具类
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB/" target="_self">
-        <div>
-          
-          CountDownLatch简介业务场景： 在多线程协作完成业务功能时，有时候需要等待其他多个线程完成任务后，主线程才能继续往下执行业务功能。 解决方案：  使用Thread类的join方法，让主线程等待被join的线程执行完毕后，主线程才能继续往下执行。 也可以使用线程间消息通信机制（wait和notify） Java并发工具类中为我们提供了类似“倒计时”这样的工具类，也就是CountDownL
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-21 09:58" pubdate>
-              2022-10-21
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-atomic%E5%8C%85/" target="_self">
-          Java并发-atomic包
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/21/Java%E5%B9%B6%E5%8F%91-atomic%E5%8C%85/" target="_self">
-        <div>
-          
-          原子操作类简介并发问题： 并发编程中很容易出现并发安全的例子。比如说多线程执行i++，就可能无法获取正确的结果。常用的解决办法是使用Synchronized进行控制来达到线程安全的目的。但是synchronized采用的是悲观锁策略，并不是特别高效的一种解决方案。 高效的解决方案： 在J.U.C下的atomic包提供了一系列的操作简单，性能高效，并且能保证线程安全的更新基本类型变量，数组元素，引用
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-21 08:32" pubdate>
-              2022-10-21
             </time>
           </div>
         

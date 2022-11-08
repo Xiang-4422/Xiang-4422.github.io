@@ -1,0 +1,1009 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="MySQL有哪些锁全局锁全局锁的使用 使用全局锁后，整个数据库就处于只读状态  使用全局锁： 1flush tables with read lock  释放全局锁（会话断开全局锁也会自动断开）： 1unlock tables  全局锁会阻塞其他线程的如下操作：  对数据的增删改操作，比如insert、delete、upadte等语句 对表结构的更改操作，比如alter table、drop ta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL-锁">
+<meta property="og:url" content="http://example.com/2022/11/05/MySQL-%E9%94%81/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="MySQL有哪些锁全局锁全局锁的使用 使用全局锁后，整个数据库就处于只读状态  使用全局锁： 1flush tables with read lock  释放全局锁（会话断开全局锁也会自动断开）： 1unlock tables  全局锁会阻塞其他线程的如下操作：  对数据的增删改操作，比如insert、delete、upadte等语句 对表结构的更改操作，比如alter table、drop ta">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/innodb_autoinc_lock_mode=2.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/x%E9%94%81%E5%92%8Cs%E9%94%81.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/gap%E9%94%81.drawio.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/%E4%B8%B4%E9%94%AE%E9%94%81.drawio.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/gap%E9%94%81.drawio-166773701920843.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/954708d2f29c2a619e861e57cdf74c11-166773923532748.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/54fc00f9f87a60ab7b5ba92d824a892d.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/90c1e01d0345de639e3426cea0390e80.png">
+<meta property="og:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/8ae18f10f1a89aac5e93f0e9794e469e.png">
+<meta property="article:published_time" content="2022-11-05T15:36:20.000Z">
+<meta property="article:modified_time" content="2022-11-07T03:51:21.593Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/11/05/MySQL-%E9%94%81/innodb_autoinc_lock_mode=2.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>MySQL-锁 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL-锁"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-05 23:36" pubdate>
+          2022年11月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          65 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL-锁</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年11月7日 中午
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="MySQL有哪些锁"><a href="#MySQL有哪些锁" class="headerlink" title="MySQL有哪些锁"></a>MySQL有哪些锁</h1><h2 id="全局锁"><a href="#全局锁" class="headerlink" title="全局锁"></a>全局锁</h2><h3 id="全局锁的使用"><a href="#全局锁的使用" class="headerlink" title="全局锁的使用"></a>全局锁的使用</h3><blockquote>
+<p>使用全局锁后，整个数据库就处于只读状态</p>
+</blockquote>
+<p>使用全局锁：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">flush tables with read lock<br></code></pre></td></tr></table></figure>
+
+<p>释放全局锁（会话断开全局锁也会自动断开）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">unlock tables<br></code></pre></td></tr></table></figure>
+
+<p>全局锁会阻塞其他线程的如下操作：</p>
+<ul>
+<li>对数据的增删改操作，比如insert、delete、upadte等语句</li>
+<li>对表结构的更改操作，比如alter table、drop table等语句</li>
+</ul>
+<h3 id="全局锁的应用场景"><a href="#全局锁的应用场景" class="headerlink" title="全局锁的应用场景"></a>全局锁的应用场景</h3><blockquote>
+<p>全局锁的主要应用于全库逻辑备份。使用全局锁后，在备份数据库期间不会因为数据或表结构的更新导致备份文件和预期不一致。</p>
+</blockquote>
+<p>假设在全库逻辑备份期间，不加全局锁。观察会出现什么情况：</p>
+<p>如果在全库逻辑备份期间，有用户购买了一件商品，一般购买商品的业务逻辑时会涉及到多张数据库表的更新。比如在用户表中更新用户余额，在商品表中更新商品库存。</p>
+<p>那么，在备份时，若有用户购买了商品，可能会出现如下顺序：</p>
+<ol>
+<li>先备份了用户表的数据（用户表还未修改余额，因为此时购买商品事件都还没发生）</li>
+<li>有用户发起了购买商品的操作（用户表和商品表都更新了）</li>
+<li>接着再备份商品表（此时的商品表库存已经更新）</li>
+</ol>
+<p>在这种情况下，备份的结果中，用户表的余额没有扣除，但是商品表中的库存减少了。备份的数据库出现表数据了不一致（被备份的数据库中表数据是一致的），这样用该备份恢复数据库的话，会导致用户的余额没减少，但是商品库存减少了（在实际的数据库中，购买商品还对应着订单表，用户余额没减少，但是订单依然存在），相当于用户白嫖了一件商品。</p>
+<p>在全库逻辑备份期间，加上全局锁，没有数据的更新自然就不会出现数据不一致的情况。</p>
+<h3 id="全局锁的缺点与避免"><a href="#全局锁的缺点与避免" class="headerlink" title="全局锁的缺点与避免"></a>全局锁的缺点与避免</h3><h4 id="全局锁的缺点"><a href="#全局锁的缺点" class="headerlink" title="全局锁的缺点"></a>全局锁的缺点</h4><p>加上全局锁，整个数据库都是只读状态。如果数据库很大，备份会花很长的事件，在此期间业务只能读数据，不能更新数据，造成业务停滞。</p>
+<h4 id="使用可重复读的事务代替全局锁"><a href="#使用可重复读的事务代替全局锁" class="headerlink" title="使用可重复读的事务代替全局锁"></a>使用可重复读的事务代替全局锁</h4><p>如果数据库的引擎支持可重复读的隔离级别，那么在备份数据库之前先开启事务。因为开启事务后，会先创建Read View，然后再整个事务期间都会使用该Read View来读取数据做备份，而且由于MVCC的支持，在备份期间其他业务可以正常地对数据进行更新。</p>
+<p>备份数据库地工具是mysqldump，在使用mysqldump时加上<code>-single-transaction</code>参数的时候，就会在备份数据库之间先开启事务。这种方法只适用于支持<strong>可重复读隔离级别的事务</strong>的存储引擎。</p>
+<p>InnoDB存储引擎默认的事务隔离级别就是可重复读，所以可以采用这种方法来备份数据库，MyISAM不支持事务，所以适用MyISAM引擎就需要适用全局锁来备份数据库。</p>
+<h2 id="表级锁"><a href="#表级锁" class="headerlink" title="表级锁"></a>表级锁</h2><h3 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h3><p>加表锁的命令（对学生表：t_student加锁）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">//表级别的共享锁，也就是读锁；<br>lock tables t_student read;<br><br>//表级别的独占锁，也就是写锁；<br>lock tables t_stuent write;<br></code></pre></td></tr></table></figure>
+
+<p>释放表锁的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">unlock tables<br></code></pre></td></tr></table></figure>
+
+<p>表锁除了会限制其他线程的读写外，也会限制当前线程的读写操作。也就是说对表所加的表所是对所有线程生效的，包括当前线程。例如当前线程对学生表加了共享表锁，那么当前线程对学生表执行写操作是会被阻塞的。</p>
+<p><strong>注意：尽量避免在InnoDB引擎中使用表锁。</strong>因为表锁的颗粒度太大，会影响并发性能，InnoDB的其中一个优势就在于它实现了颗粒度更小的行级锁。</p>
+<h3 id="元数据锁（MDL）"><a href="#元数据锁（MDL）" class="headerlink" title="元数据锁（MDL）"></a>元数据锁（MDL）</h3><blockquote>
+<p>我们不需要显式的使用MDL。</p>
+</blockquote>
+<h4 id="MDL锁的获取"><a href="#MDL锁的获取" class="headerlink" title="MDL锁的获取"></a>MDL锁的获取</h4><p>当我们对数据库表进行操作时，会自动给这个表加上MDL：</p>
+<ul>
+<li><p>对一张表进行CRUD操作时，加的时MDL读锁</p>
+<blockquote>
+<p>加MDL读锁，是为了防止在CRUD操作过程中其他线程对表结构做修改。</p>
+</blockquote>
+</li>
+<li><p>对一张表进行表结构变更操作时，加的是MDL写锁</p>
+<blockquote>
+<p>加MDL写锁，是为了防止在修改表结构的时候其他线程执行CRUD操作。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="MDL锁的释放"><a href="#MDL锁的释放" class="headerlink" title="MDL锁的释放"></a>MDL锁的释放</h4><p>MDL是在事务提交后才会释放。这意味着在事务执行期间会一直持有MDL锁。</p>
+<h4 id="一个由于MDL锁获取和释放机制带来的阻塞问题"><a href="#一个由于MDL锁获取和释放机制带来的阻塞问题" class="headerlink" title="一个由于MDL锁获取和释放机制带来的阻塞问题"></a>一个由于MDL锁获取和释放机制带来的阻塞问题</h4><p>如果数据库有一个长事务，那么在对表结构做变更操作的时候可能会导致大量的select语句阻塞导致数据库线程爆满。</p>
+<p>比如下面这个顺序的场景：</p>
+<ol>
+<li>线程A先启动一个长事务（一直不提交），在事务中执行select语句，这样该事务就持有了该表的MDL读锁</li>
+<li>然后，线程B对该表执行select语句，此时并不会阻塞，因为读锁是共享的</li>
+<li>接着，线程C尝试修改表字段，因为线程A持有表的MDL读锁，所以线程C无法申请到MDL写锁，就会被一直阻塞</li>
+<li>在线程C被阻塞后，后续所有对该表的select语句都会被阻塞。如果此时有对该表的大量select语句请求到来，就会有大量被阻塞的线程，导致数据库线程爆满</li>
+</ol>
+<p>为什么线程申请不到MDL写锁，会导致后续申请读锁的查询操作阻塞？</p>
+<p>因为申请锁的操作会形成一个队列，按照队列顺序来申请锁。队列中写锁申请优先级高于读锁申请，所以说一旦出现MDL写锁申请阻塞，那么后续的读锁申请都会被阻塞，也就是无法进行对该表的CRUD操作。</p>
+<p>避免该问题的办法：</p>
+<p>在对表结构做变更之前，若有长事务对该表加上了MDL读锁，可以考虑kill掉该长事务后再做表结构的更改。</p>
+<h3 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h3><blockquote>
+<p>意向锁的目的是为了快速判断表里是否有记录被加锁。</p>
+</blockquote>
+<h4 id="意向锁的获取"><a href="#意向锁的获取" class="headerlink" title="意向锁的获取"></a>意向锁的获取</h4><p>在使用InnoDB引擎时，对表中的某些行记录加上共享锁&#x2F;独占锁之前，需要先给表加上一个意向共享&#x2F;独占锁。</p>
+<p>也就是当执行插入、更新、删除操作时，因为这些操作会获取行锁，需要在获取行锁之前对表加上意向独占锁。普通的select是不会加行级锁的，自然不需要对表加意向锁。因为普通select语句是利用MVCC来实现一致性读，是无锁的。</p>
+<h4 id="锁之间的互斥关系：意向锁、表锁、行锁"><a href="#锁之间的互斥关系：意向锁、表锁、行锁" class="headerlink" title="锁之间的互斥关系：意向锁、表锁、行锁"></a>锁之间的互斥关系：意向锁、表锁、行锁</h4><ul>
+<li><p>意向锁是表级锁，不会于行锁发生冲突</p>
+</li>
+<li><p>意向锁之间也不会发生冲突</p>
+</li>
+<li><p>意向锁只会和表锁之间冲突</p>
+</li>
+<li><p>表锁和行锁之间是读读共享、读写互斥、谢谢互斥的</p>
+</li>
+</ul>
+<h4 id="意向锁的作用"><a href="#意向锁的作用" class="headerlink" title="意向锁的作用"></a>意向锁的作用</h4><p>因为InnoDB是支持行锁的，如果没有意向锁，那么想要加表锁时，就需要遍历表中的记录，查看是否有行记录存在独占锁，这样效率很低。</p>
+<p>有了意向锁，由于在对行记录加行锁之前，会对表加上意向锁。那么其他线程若要对表加表锁，可以直接查表是否有冲突得意向锁，而不用到表中一条一条的遍历行记录的行锁。</p>
+<h3 id="AUTO-INC锁"><a href="#AUTO-INC锁" class="headerlink" title="AUTO-INC锁"></a>AUTO-INC锁</h3><blockquote>
+<p>AUTO-INC锁是是实现主键自增的特殊表锁机制</p>
+</blockquote>
+<p>主键设置为自增，是通过对主键字段声明<code>AUTO_INCREMENT</code>属性实现的。</p>
+<p>在插入数据时，会对表加一个AUTO-INC锁，然后自增字段被赋递增的值，等插入语句执行完成后，才释放AUTO-INC锁。</p>
+<p>这是为了保证自增值的唯一性，在插入数据时阻塞其他插入操作，避免多个线程同时插入出现自增值相同的情况。</p>
+<h4 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h4><p>AUTO-INC锁要在插入完成后才释放锁，当有大量插入操作时，因为整个插入过程都持有锁，导致大量插入操作被阻塞。在MySQL 5.1.22版本开始，InnoDB引擎提供了一种轻量级的锁用以实现自增。</p>
+<p>该轻量级锁和AUTO-INC锁的区别在于释放锁的时机不同。轻量级锁在插入数据时，为自增字段赋予自增值后就释放锁，不需要等到整个插入语句执行完成才释放锁。降低了持有锁的时间，减少插入阻塞。</p>
+<h4 id="InnoDB中自增锁的选择"><a href="#InnoDB中自增锁的选择" class="headerlink" title="InnoDB中自增锁的选择"></a>InnoDB中自增锁的选择</h4><p>InnoDB存储引擎提供了<code>innodb_autoinc_lock_mode</code>变量用于选择自增时的锁：</p>
+<ul>
+<li>为0时，采用AUTO-INC锁，语句执行完后才释放锁。</li>
+<li>为2时，采用轻量级锁，申请完自增主键后释放锁。</li>
+<li>为1时，普通insert语句，采用轻量级锁；类似insert … select这样的批量插入数据语句，使用AUTO-INC语句。</li>
+</ul>
+<h4 id="使用轻量级锁搭配binlog日志格式为statement时，在“主从复制场景”中的数据不一致问题"><a href="#使用轻量级锁搭配binlog日志格式为statement时，在“主从复制场景”中的数据不一致问题" class="headerlink" title="使用轻量级锁搭配binlog日志格式为statement时，在“主从复制场景”中的数据不一致问题"></a>使用轻量级锁搭配binlog日志格式为statement时，在“主从复制场景”中的数据不一致问题</h4><p>场景如下：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/innodb_autoinc_lock_mode=2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>session A往表t中共插入了4行数据，然后sessionB复制了一份相同的表t2，然后两个session同时往表t2中插入数据。</p>
+<p>因为轻量级锁，在申请自增主键后就释放锁，所以说插入语句时并发执行的，就可能出现这种情况：</p>
+<ol>
+<li>session B先插入两个记录：（1，1，1）、（2，2，2）</li>
+<li>然后session A获得轻量级锁，插入记录：（3，5，5）</li>
+<li>之后，session 继续插入两条记录：（4，3，3）、（5，4，4）</li>
+</ol>
+<p>可以看到session B的insert语句插入的四条记录生成的id不连续。</p>
+<p>因为binlog的日志格式为statement，那么binlog只会记录这两条insert语句。建立从库是按照binlog中的SQL语句来建立建立，因为该操作是在同一线程中，SQL语句会一条一条地执行。那么就不会发生像在主库中两个session同时向表t2中插入数据的场景。所以在从库中执行session B的insert语句生成的四条记录id是连续的。这时主从库就发生了数据不一致。</p>
+<p>解决办法：</p>
+<p>将binlog日志格式设置为row，这样在binlog中记录的就是主库的行记录，而不是执行的语句。在主库中分配的自增值已经在binlog中了，从库执行binlog，就不需要自己分配自增值，和主库自增值保持一致。</p>
+<h2 id="行级锁"><a href="#行级锁" class="headerlink" title="行级锁"></a>行级锁</h2><blockquote>
+<p>InnoDB引擎支持行级锁，而MyISAM引擎不支持行级锁。</p>
+</blockquote>
+<h3 id="记录锁（Record-Lock）"><a href="#记录锁（Record-Lock）" class="headerlink" title="记录锁（Record Lock）"></a>记录锁（Record Lock）</h3><blockquote>
+<p>记录锁锁住的是一条记录。而且分为S（Share）锁和X（exclusive）锁。</p>
+</blockquote>
+<p>普通的select语句时不会对记录加锁的，因为它属于快照读。</p>
+<p>如果要在查询时对记录加行锁，可以使用以下范式查询，称为<strong>锁定读</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">//对读取的记录加共享锁<br>select ... lock in share mode;<br><br>//对读取的记录加独占锁<br>select ... for update;<br></code></pre></td></tr></table></figure>
+
+<p>上面这两条语句必须要在一个事务中，因为当事务提交的时候会释放锁，若不再事务中，锁一直被占用。所以在使用这两条语句前一定要加上begin、start transaction或set autocommit &#x3D; 0来开启事务。</p>
+<p>共享锁和独占锁之间的互斥性：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/x%E9%94%81%E5%92%8Cs%E9%94%81.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="间隙锁（Gap-Lock）"><a href="#间隙锁（Gap-Lock）" class="headerlink" title="间隙锁（Gap Lock）"></a>间隙锁（Gap Lock）</h3><blockquote>
+<p>间隙锁只存在于可重复读隔离级别，目的是为例解决可重复读隔离级别下当前读的幻读现象。</p>
+</blockquote>
+<p>假设表中有一个范围id为（3，5）的间隙锁，那么其他事务就无法插入id为4的记录，这样就有效的防止了幻读现象的发生。如图所示：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/gap%E9%94%81.drawio.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>间隙锁虽然存在S型和X型间隙锁，但是并没有什么区别。间隙锁之间不是互斥的，即两个事务可以同时持有包含相同间隙范围的间隙锁，因为间隙锁的目的是防止插入幻影记录而提出的。</p>
+<h3 id="Next-key-Lock"><a href="#Next-key-Lock" class="headerlink" title="Next-key Lock"></a>Next-key Lock</h3><blockquote>
+<p>Next-key Lock称为临键锁，是Record Lock + Gap Lock的组合，锁定一个范围，并且锁定记录本身。</p>
+</blockquote>
+<p>假设有一个范围id为（3，5]的next-key lock，那么其他事务不能插入id &#x3D; 4或id &#x3D; 5的记录：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/%E4%B8%B4%E9%94%AE%E9%94%81.drawio.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>next-key lock即能保护该记录，又能组织其他事务将新纪录插入到被保护记录前的间隙中。</p>
+<p>因为next-key lock是间隙锁 + 记录锁，记录锁之间是由互斥性的，所以next-key lock之间也是由互斥性的。</p>
+<h3 id="插入意向锁"><a href="#插入意向锁" class="headerlink" title="插入意向锁"></a>插入意向锁</h3><blockquote>
+<p> 插入意向锁是一种特殊的间隙锁。</p>
+</blockquote>
+<p>一个事务在插入一条记录的时候，需要判断插入位置是否已被其他事务加入了间隙锁（next-key lock也包含间隙锁）。如果有，插入操作会阻塞，直到间隙锁释放，在阻塞期间会生成一个插入意向锁，表明有事务想在该区间插入数据。</p>
+<p>假设事务A已经对表加了一个范围id为（3，5）的间隙锁：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/gap%E9%94%81.drawio-166773701920843.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>当事务A还未提交的时候，事务B向该表插入一条id &#x3D; 4的记录，这时会判断到插入位置有间隙锁，于是事务B生成一个插入意向锁，将锁的状态设置未等待状态（MySQL加锁，是先生成锁结构，再设置锁状态。此时生成了插入意向锁，但是锁状态未等待状态，不代表事务获取到了锁，只有当锁状态未正常状态是，才代表事务成功获取到了锁），此时事务B阻塞，直到事务A提交。</p>
+<p>插入意向锁和间隙锁的关系：</p>
+<ul>
+<li>如果说间隙锁锁住的是一个区间，那么插入意向锁锁住的就是一个点。从这个角度来说，插入意向锁就是一种特殊的间隙锁。</li>
+<li>插入意向锁和间隙锁之间互斥。即两个事务不能再同一时间内一个拥有间隙锁，另一个拥有间隙锁区间内的插入意向锁</li>
+</ul>
+<h1 id="MySQL如何加锁"><a href="#MySQL如何加锁" class="headerlink" title="MySQL如何加锁"></a>MySQL如何加锁</h1><blockquote>
+<p><strong>给记录加锁的基本单位：next-key lock</strong></p>
+<p>它是由记录锁和间隙锁组合而成。next-key是前开后闭区间，而间隙锁是前开后开区间。但是在一些场景下，<strong>next-key lock会退化</strong>成记录锁或间隙锁。</p>
+</blockquote>
+<p>在使用update、delete、select … for update这些语句时，都是当前读，需要通过加锁来解决幻读问题。并且这些语句都会使用where条件，不同的where条件的加锁情况不同。</p>
+<p>下面以select … for update来说明加锁的情况（update和delete加锁情况一样）：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/954708d2f29c2a619e861e57cdf74c11-166773923532748.png" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<h2 id="唯一索引等值查询"><a href="#唯一索引等值查询" class="headerlink" title="唯一索引等值查询"></a>唯一索引等值查询</h2><ul>
+<li><p>当查询的记录存在。next-key lock退化成记录锁</p>
+<blockquote>
+<p>因为是唯一索引，所以当查询到记录后，不会插入新的相同索引的记录。所以只需要记录锁避免修改行记录即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select * from t_test where id = 16 for update;<br></code></pre></td></tr></table></figure>
+
+<p>next-key lock锁住区间(8, 16]，因为记录16存在，然后退化为Record lock 16。</p>
+</blockquote>
+</li>
+<li><p>当查询的记录不存在。next-key lock退化成间隙锁</p>
+<blockquote>
+<p>记录不存在，只需要锁住查询记录所在区间，避免在该区间内插入数据，就不会出现幻读。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select * from t_test where id = 10 for update;<br></code></pre></td></tr></table></figure>
+
+<p>next-key lock锁住(8, 16]，因为记录10不存在，然后退化为gap lock(8, 16)。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="非唯一索引等值查询"><a href="#非唯一索引等值查询" class="headerlink" title="非唯一索引等值查询"></a>非唯一索引等值查询</h2><ul>
+<li><p>当查询的记录存在，除了加next-key lock外，还额外加间隙锁，也就是会加两把锁</p>
+<blockquote>
+<p>因为非唯一索引可以插入索引相同的记录。在该索引记录存在的情况下，如果插入相同索引的记录，可能在当前索引前，也可能在当前索引后。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select * from t_test where b = 16 for update;<br></code></pre></td></tr></table></figure>
+
+<p>next-key lock先锁住(8, 16]，然后因为是非唯一索引且查询记录存在，所以往后遍历查找到第一个不符合条件的值才停止，因此间隙锁为(16, 32)。即最终锁为next-key lock(8, 16]和gap lock(16, 32)。</p>
+</blockquote>
+</li>
+<li><p>当查询的记录不存在，只会加next-key lock，然后退化为间隙锁</p>
+<blockquote>
+<p>同唯一索引查询一样</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a>范围查询</h2><ul>
+<li><p>唯一索引的范围查询</p>
+<blockquote>
+<p>会从找到满足条件的第一行，以等值查询方式加锁，然后往后查找满足条件的记录，若记录不在查找范围内，则会退化为间隙锁。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select * from i_test where id &gt;= 8 and id &lt; 9 for update;<br></code></pre></td></tr></table></figure>
+
+<p>第一行id &#x3D; 8，所以next-key lock锁住(4, 8]，并退化成记录锁，只锁住8。然后进行范围查找，找到第一个不符合条件的记录id &#x3D; 16，然后next-key lock锁住(8, 16]，因为16不满足条件，所以退化为 (8, 16)。所以说最终的锁是record lock 8和gap lock (8, 16)。</p>
+</blockquote>
+</li>
+<li><p>非唯一索引的范围查询</p>
+<blockquote>
+<p>跟唯一索引的范围查询的区别在于next-key lock不会退化。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">select * from i_test where b &gt;= 8 and b &lt; 9 for update;<br></code></pre></td></tr></table></figure>
+
+<p> 有两个next-key lock，(4, 8]和(8, 16]。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="没有使用索引"><a href="#没有使用索引" class="headerlink" title="没有使用索引"></a>没有使用索引</h2><p>当没有使用索引的时候，会进行全表扫描，于是会对所有的记录加上next-key lock，那么就相当于整张表被锁住了（但是不是表锁，只是锁住所有记录，效果和表锁相似）。</p>
+<p>在执行update、delete、select … for update等具有加锁性质的语句，一定要检查语句是否走了索引，如果是全表扫描，那么会对每一条记录加next-key lock，整张表都被锁住，其余所有的需要加锁的操作都会被阻塞。这是很严重的问题。</p>
+<h2 id="Insert-语句的加锁"><a href="#Insert-语句的加锁" class="headerlink" title="Insert 语句的加锁"></a>Insert 语句的加锁</h2><p>Insert 语句在正常执行时是不会生成锁结构的。它是靠聚簇索引记录自带的trx_id隐藏列来作为隐式锁来保护记录的，在特殊情况下，才会将隐式锁转换为显式锁。</p>
+<p>隐式锁：</p>
+<p>当事务需要加锁时，如果这个锁不可能发生冲突，InnoDB会跳过加锁环节，这种机制叫做隐式锁。隐式锁时InnoDB实现的一种延迟加锁机制，其特点是只有在可能发生冲突时才加锁，从而减少锁的数量，提高系统整体性能。</p>
+<p>隐式锁转换为显式锁的场景：</p>
+<ul>
+<li><p>记录之间加有间隙锁</p>
+<blockquote>
+<p>在插入一条新记录前，如果待插入记录的下一条记录上已经被加上了间隙锁，此时会生成一个插入意向锁，并将锁设置为等待状态。然后insert语句会被阻塞。</p>
+</blockquote>
+</li>
+<li><p>遇到唯一键冲突</p>
+<blockquote>
+<p>主键索引冲突：插入新记录的事务会给已存在的主键值重复的聚簇索引记录添加S型记录锁</p>
+<p>唯一二级索引冲突：插入新记录的事务会给已存在的二级索引列值重复的二级索引记录添加S型next-key lock。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="MySQL死锁"><a href="#MySQL死锁" class="headerlink" title="MySQL死锁"></a>MySQL死锁</h1><h2 id="死锁的发生"><a href="#死锁的发生" class="headerlink" title="死锁的发生"></a>死锁的发生</h2><h3 id="发生死锁的业务场景："><a href="#发生死锁的业务场景：" class="headerlink" title="发生死锁的业务场景："></a>发生死锁的业务场景：</h3><p>在新增订单时做幂等性检验。做法是在新增订单前，先通过select … for update查询订单是否存在，若不存在才插入订单记录。</p>
+<h3 id="模拟发生死锁的场景："><a href="#模拟发生死锁的场景：" class="headerlink" title="模拟发生死锁的场景："></a>模拟发生死锁的场景：</h3><p>表结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE TABLE `t_order` (<br>  `id` int NOT NULL AUTO_INCREMENT,<br>  `order_no` int DEFAULT NULL,<br>  `create_date` datetime DEFAULT NULL,<br>  PRIMARY KEY (`id`),<br>  KEY `index_order` (`order_no`) USING BTREE<br>) ENGINE=InnoDB ;<br></code></pre></td></tr></table></figure>
+
+<p> 现有表记录：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/54fc00f9f87a60ab7b5ba92d824a892d.png" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p>此时有两个事务，一个插入订单1007，一个插入1008：</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/90c1e01d0345de639e3426cea0390e80.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="为什么不用普通的select语句做幂等性检验"><a href="#为什么不用普通的select语句做幂等性检验" class="headerlink" title="为什么不用普通的select语句做幂等性检验"></a>为什么不用普通的select语句做幂等性检验</h3><p>如果使用普通的select语句做幂等性检验，若两个相同订单号请求进来，就会出现重复的订单。因为普通select语句不会对记录加锁。</p>
+<p><img src="/2022/11/05/MySQL-%E9%94%81/8ae18f10f1a89aac5e93f0e9794e469e.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="死锁分析"><a href="#死锁分析" class="headerlink" title="死锁分析"></a>死锁分析</h3><p>在可重复读隔离级别下存在幻读问题。InnoDB引擎为了解决可重复读隔离级别下的幻读问题，引入了next-key lock。锁的释放时机是事务提交过后，而不是一条语句执行完。这就是造成死锁的原因。</p>
+<p>事务A和事务B执行select … for update后都持有二级索引范围(1006, +∞]的next-key lock。在接下来的插入操作为了获取到插入意向锁，都在等待对方释放间隙锁，造成了循环等待，导致死锁。</p>
+<h2 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h2><p>死锁条件：互斥、占有且等待、不可强占、循环等待</p>
+<p>死锁发生后，通过打破<strong>循环等待</strong>来解除死锁：</p>
+<ul>
+<li><p>设置事务等待锁的超时时间。</p>
+<blockquote>
+<p>当一个事务的等待时间超过设定值后，就对事务进行回滚（相当于只要超过等待时间就当作发生了死锁）。</p>
+<p>参数<code>innodb_lock_wait_timeout</code> 用于设置超时时间，默认50秒。</p>
+</blockquote>
+</li>
+<li><p>开启主动死锁检测。</p>
+<blockquote>
+<p>系统主动检测到发生死锁后，主动回滚死锁链条中的某一事务，让其他事务得以继续执行。</p>
+<p>将参数<code>innodb_deadlock_detect</code>设置为on，表示开启死锁检测，默认开启。</p>
+</blockquote>
+</li>
+</ul>
+<p>更好的方式是避免死锁的发生：</p>
+<p>对于上面发生死锁的业务场景，可以通过对order_no字段设置唯一索引列，利用它的唯一性保证订单表不出现重复的订单。有一点不好的地方在于若插入一个已存在的订单记录会抛出异常。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL-锁</div>
+      <div>http://example.com/2022/11/05/MySQL-锁/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月5日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年11月7日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/11/05/MySQL-%E6%97%A5%E5%BF%97/" title="MySQL-日志">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL-日志</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/05/MySQL-%E4%BA%8B%E5%8A%A1/" title="MySQL-事务">
+                        <span class="hidden-mobile">MySQL-事务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
