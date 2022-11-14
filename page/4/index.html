@@ -223,6 +223,276 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+          Java并发-ReentrantLock
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/17/Java%E5%B9%B6%E5%8F%91-ReentrantLock/" target="_self">
+        <div>
+          
+          ReentrantLock简介ReentrantLock重入锁，是实现Lock接口的一个类。  支持重入性，表示能够对共享资源重复加锁，即当前获取该锁的线程再次获取不会被阻塞。Java关键字synchronized通过获取自增，释放自减的方式实现重入。  ReentrantLock还支持公平锁和非公平锁两种方式。   重入性的实现原理支持重入性需要解决的两个问题 在获取锁的时候，如果已经获取锁的线
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-17 11:04" pubdate>
+              2022-10-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/16/Java%E5%B9%B6%E5%8F%91-AQS%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3/" target="_self">
+          Java并发-AQS深入理解
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/16/Java%E5%B9%B6%E5%8F%91-AQS%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3/" target="_self">
+        <div>
+          
+          AQS简介在同步组件的实现中，AQS是核心部分 同步组件的实现者通过AQS提供的模板方法实现同步组件的同步语义 AQS则实现了对同步状态的管理，以及对阻塞线程的排队、等待和通知等一些底层的实现 AQS核心：  同步队列 独占式锁的获取于释放 共享锁的获取和释放 可中断锁、超时等待锁获取  AQS提供的模板方法：  独占式锁  void acquire(int arg)  独占式获取同步状态，如果获
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-16 11:45" pubdate>
+              2022-10-16
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/15/Java%E5%B9%B6%E5%8F%91-Lock%E4%B8%8EAQS%E5%88%9D%E8%AF%86/" target="_self">
+          Java并发-Lock与AQS初识
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/15/Java%E5%B9%B6%E5%8F%91-Lock%E4%B8%8EAQS%E5%88%9D%E8%AF%86/" target="_self">
+        <div>
+          
+          concurrent包包结构： atomic子包 locks子包 阻塞队列以及executors  concurrent包的实现 底层依赖volatile和CAS   Lock简介锁使用来控制多个线程访问共享资源的方式，一般来说，一个锁能够防止多个线程同时访问共享资源。 Lock接口与syncronized在Lock接口出现之前，Java程序主要靠synchronized关键字实现锁。 Lock拥
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-15 20:12" pubdate>
+              2022-10-15
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/14/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%85%B3%E9%94%AE%E5%AD%97/" target="_self">
+          Java并发-并发关键字
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/14/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%85%B3%E9%94%AE%E5%AD%97/" target="_self">
+        <div>
+          
+          synchronizedsynchronized简介线程安全问题的主要来源于JMM的设计，集中在  主内存和工作内存导致内存可见性问题 重排序导致的有序性问题  多线程的意义在于多个线程协作共同完成一件事情，那么多个线程就必然需要访问共享数据。 如何保证共享数据的线程安全问题？即每个线程依次访问该共享变量，synchronize关键字具有让每个线程依次访问共享数据的功能。它是并发容器实现的基础。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-14 21:25" pubdate>
+              2022-10-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2022/10/14/Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" target="_self">
+          Java并发-Java内存模型
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/14/Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" target="_self">
+        <div>
+          
+          线程安全问题什么是线程安全线程不安全：  在多线程中代码执行的结果与预期正确的结果不一致，那么这个线程就是线程不安全的  线程安全：  当多个线程访问同一个对象时，如果：  不用考虑这些线程在运行时环境下的调度和交替运行  不需要进行额外的同步  不需要在调用方进行任何其他的协调操作   调用这个对象的行为都可以获取正确的结果，那么这个对象是线程安全的  出现线程不安全的原因 主内存和工作内存数据
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-14 13:37" pubdate>
+              2022-10-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80/" target="_self">
           Java并发-并发基础
         </a>
@@ -332,6 +602,27 @@
           </div>
         
         
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
         
       </div>
     </article>
@@ -366,6 +657,13 @@
         
         
         
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AE%97%E6%B3%95/">#算法</a>
+            
+          </div>
+        
       </div>
     </article>
   </div>
@@ -398,170 +696,26 @@
           </div>
         
         
-        
-      </div>
-    </article>
-  </div>
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
 
-  <div class="row mx-auto index-card">
+<span class="category-chains">
+  
+  
     
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E8%AF%AD%E8%A8%80/" class="category-chain-item">Java语言</a>
+  
+  
+
+      </span>
     
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-          MySQL进阶
-        </a>
-      </h1>
+  
+</span>
 
-      <a class="index-excerpt" href="/2022/09/03/MySQL%E8%BF%9B%E9%98%B6/" target="_self">
-        <div>
-          
-          编码问题在安装MySQL时已经指定了默认编码为UTF8，所以在创建数据库、创建表的时候都无需指定编码。  几个关于编码的参数：  character_set_client  服务器用来解读用户发来数据所使用的编码   character_set_results  服务器发送给客户数据的编码   character_set_connection  character_set_database  ch
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-03 09:54" pubdate>
-              2022-09-03
-            </time>
           </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/02/MySQL%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" target="_self">
-          MySQL入门笔记
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/02/MySQL%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" target="_self">
-        <div>
-          
-          SQL简介 什么是 SQL  结构化查询语言（Structured Query Language）   SQL 的作用  客户端使用SQL来操作服务器   语法规范   SQL语句可以在单行或多行书写, 以分号结尾 可以使用空格和缩进来增强语句的可读性 MySQL不区分大小写, 但是建议使用大写    SQL语句分类   DDL(Data Definition Language): 数据定义语言
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-02 12:50" pubdate>
-              2022-09-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/02/MySQL45%E8%AE%B2/" target="_self">
-          MySQL45讲笔记
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/02/MySQL45%E8%AE%B2/" target="_self">
-        <div>
-          
-          学习MySQL原理的意义即使是MySQL的使用者，而非开发者，也需要理解MySQL的原理  提升数据库的性能 更快速的定位并解决问题  一条MySQL语句是怎么执行的MySQL的基本架构 Server层连接器 管理连接，权限验证   数据库连接命令:  mysql -h$ip -P$port -u$user -p  用户的权限在建立连接的时候获取, 对于已经成功建立连接的用户, 管理员再修改其权限
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-02 08:36" pubdate>
-              2022-09-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/01/MarkDownBase/" target="_self">
-          MarkDown入门
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/01/MarkDownBase/" target="_self">
-        <div>
-          
-          总览一、基本语法1. 标题 # H1  ## H2 ### H3 H1H2H3 2. 粗体 *bold text* bold text  3. 斜体 *italicized text* italicized text  4. 引用块 &gt; blockquote  blockquote   5. 有序列表  First item Second item Third item   6. 无序列表
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-01 22:31" pubdate>
-              2022-09-01
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/09/01/HexoBlogBuild/" target="_self">
-          Hexo博客搭建
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/09/01/HexoBlogBuild/" target="_self">
-        <div>
-          
-          Hexo博客 搭建+美化+使用一、搭建1. 前期准备1.1 注意事项 命令可以使用Windows的cmd和git bash来完成，cmd可能会有一些问题，建议全部使用git bash执行 hexo版本差异大，网上一些配置信息基于2.x，注意区别 hexo中有两种_config.yml文件，一个hexo根目录下的,一个是各个theme目录下的  1.2 安装所需软件 node.js 官网：http
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-09-01 20:39" pubdate>
-              2022-09-01
-            </time>
-          </div>
-        
         
         
       </div>
@@ -572,7 +726,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span>
+      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
