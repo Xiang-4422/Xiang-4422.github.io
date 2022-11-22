@@ -1,0 +1,1310 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="JVM全局知识体系图示 类字节码计算机是不能运行java代码，必须先运行java虚拟机，再由java虚拟机运行编译后的java代码。这个编译后的java代码，就是java字节码。 为什么jvm不能直接运行java代码？因为在cpu层面看来计算机中所有的操作都是一个个指令的运行汇集而成，java是高级语言，只有人类才能理解其逻辑，计算机是无法识别的，所有java代码必须要先编译成字节码文件，JVM才">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM-类加载">
+<meta property="og:url" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="JVM全局知识体系图示 类字节码计算机是不能运行java代码，必须先运行java虚拟机，再由java虚拟机运行编译后的java代码。这个编译后的java代码，就是java字节码。 为什么jvm不能直接运行java代码？因为在cpu层面看来计算机中所有的操作都是一个个指令的运行汇集而成，java是高级语言，只有人类才能理解其逻辑，计算机是无法识别的，所有java代码必须要先编译成字节码文件，JVM才">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-overview.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-class-1.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-class-2.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-1.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-2.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-3.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-4.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-6.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-7.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-8.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_2.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_1.png">
+<meta property="og:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_3.png">
+<meta property="article:published_time" content="2022-11-14T14:09:33.000Z">
+<meta property="article:modified_time" content="2022-11-22T00:40:38.877Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-overview.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>JVM-类加载 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="JVM-类加载"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-14 22:09" pubdate>
+          2022年11月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          25k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          210 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">JVM-类加载</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年11月22日 早上
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="JVM全局知识体系图示"><a href="#JVM全局知识体系图示" class="headerlink" title="JVM全局知识体系图示"></a>JVM全局知识体系图示</h1><p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-overview.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h1 id="类字节码"><a href="#类字节码" class="headerlink" title="类字节码"></a>类字节码</h1><p>计算机是不能运行java代码，必须先运行java虚拟机，再由java虚拟机运行编译后的java代码。这个编译后的java代码，就是java字节码。</p>
+<p>为什么jvm不能直接运行java代码？因为在cpu层面看来计算机中所有的操作都是一个个指令的运行汇集而成，java是高级语言，只有人类才能理解其逻辑，计算机是无法识别的，所有java代码必须要先编译成字节码文件，JVM才能正确识别代码转换后的指令并运行。</p>
+<ul>
+<li>Java代码间接翻译成字节码，存储字节码的文件再交由不同平台上的JVM虚拟机去读取执行，从而实现一次编写，到处运行的目的。</li>
+<li>JVM也不再只支持Java，由此衍生出许多基于JVM的编程语言，如Groovy、Scala、Koltin等等。</li>
+</ul>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-class-1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="字节码文件"><a href="#字节码文件" class="headerlink" title="字节码文件"></a>字节码文件</h2><p>class文件本质上是一个以8字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑的排列再class文件中。JVM根据其特定的规则解析该二进制数据，从而得到相关信息。</p>
+<p>Class文件采用一个伪结构来存储，它有两种类型：无符号数和表。这里暂不详细的讲。</p>
+<h3 id="Class文件的结构属性"><a href="#Class文件的结构属性" class="headerlink" title="Class文件的结构属性"></a>Class文件的结构属性</h3><p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-jvm-class-2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="一个简单的Class的字节码"><a href="#一个简单的Class的字节码" class="headerlink" title="一个简单的Class的字节码"></a>一个简单的Class的字节码</h3><p>一个简单的Main.java文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//Main.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> m;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">inc</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> m + <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>使用<code>javac Main.java</code>编译生成Main.class文件，以文本形式打开生成的class文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java">cafe babe <span class="hljs-number">0000</span> <span class="hljs-number">0034</span> <span class="hljs-number">0013</span> 0a00 <span class="hljs-number">0400</span> 0f09<br><span class="hljs-number">0003</span> <span class="hljs-number">0010</span> <span class="hljs-number">0700</span> <span class="hljs-number">1107</span> <span class="hljs-number">0012</span> <span class="hljs-number">0100</span> <span class="hljs-number">016d</span> <span class="hljs-number">0100</span><br>0149 <span class="hljs-number">0100</span> 063c 696e <span class="hljs-number">6974</span> <span class="hljs-number">3e01</span> <span class="hljs-number">0003</span> <span class="hljs-number">2829</span><br><span class="hljs-number">5601</span> <span class="hljs-number">0004</span> <span class="hljs-number">436f</span> <span class="hljs-number">6465</span> <span class="hljs-number">0100</span> 0f4c 696e 654e<br><span class="hljs-number">756d</span> <span class="hljs-number">6265</span> <span class="hljs-number">7254</span> <span class="hljs-number">6162</span> 6c65 <span class="hljs-number">0100</span> 0369 <span class="hljs-number">6e63</span><br><span class="hljs-number">0100</span> 0328 <span class="hljs-number">2949</span> <span class="hljs-number">0100</span> 0a53 6f75 <span class="hljs-number">7263</span> <span class="hljs-number">6546</span><br>696c <span class="hljs-number">6501</span> 0009 4d61 696e 2e6a <span class="hljs-number">6176</span> 610c<br><span class="hljs-number">0007</span> 0008 0c00 <span class="hljs-number">0500</span> <span class="hljs-number">0601</span> <span class="hljs-number">0010</span> <span class="hljs-number">636f</span> 6d2f<br><span class="hljs-number">7268</span> <span class="hljs-number">7974</span> <span class="hljs-number">686d</span> <span class="hljs-number">372f</span> 4d61 696e <span class="hljs-number">0100</span> 106a<br><span class="hljs-number">6176</span> <span class="hljs-number">612f</span> 6c61 <span class="hljs-number">6e67</span> 2f4f 626a <span class="hljs-number">6563</span> <span class="hljs-number">7400</span><br><span class="hljs-number">2100</span> <span class="hljs-number">0300</span> <span class="hljs-number">0400</span> <span class="hljs-number">0000</span> <span class="hljs-number">0100</span> <span class="hljs-number">0200</span> <span class="hljs-number">0500</span> <span class="hljs-number">0600</span><br><span class="hljs-number">0000</span> <span class="hljs-number">0200</span> <span class="hljs-number">0100</span> <span class="hljs-number">0700</span> 0800 <span class="hljs-number">0100</span> 0900 <span class="hljs-number">0000</span><br>1d00 <span class="hljs-number">0100</span> <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> 052a b700 01b1 <span class="hljs-number">0000</span><br><span class="hljs-number">0001</span> 000a <span class="hljs-number">0000</span> <span class="hljs-number">0006</span> <span class="hljs-number">0001</span> <span class="hljs-number">0000</span> <span class="hljs-number">0003</span> <span class="hljs-number">0001</span><br>000b 000c <span class="hljs-number">0001</span> 0009 <span class="hljs-number">0000</span> <span class="hljs-number">001f</span> <span class="hljs-number">0002</span> <span class="hljs-number">0001</span><br><span class="hljs-number">0000</span> <span class="hljs-number">0007</span> 2ab4 <span class="hljs-number">0002</span> <span class="hljs-number">0460</span> ac00 <span class="hljs-number">0000</span> <span class="hljs-number">0100</span><br>0a00 <span class="hljs-number">0000</span> <span class="hljs-number">0600</span> <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> 0800 <span class="hljs-number">0100</span> 0d00<br><span class="hljs-number">0000</span> <span class="hljs-number">0200</span> 0e<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>文件开头四个字节<code>cafe babe</code>称之为<code>魔数</code>，唯有以“cafe babe”开头的class文件方可被虚拟机所接受，这4个字节就是字节码文件的身份识别。</li>
+<li><code>0000</code>是编译器JDK版本的次版本号为0，<code>0034</code>转化为十进制52，是主版本号。java的版本号从45开始，除了1.0和1.1都是使用45.x外，后每升一个大版本，版本号就加一。也就是说，编译该class文件的jdk版本为1.8.0 。</li>
+<li>后续的文件内容为常量池，通过反编译来分析…</li>
+</ul>
+<h3 id="反编译上述Class的字节码"><a href="#反编译上述Class的字节码" class="headerlink" title="反编译上述Class的字节码"></a>反编译上述Class的字节码</h3><blockquote>
+<p>java内置的一个反编译工具javap可以反编译字节码文件。</p>
+</blockquote>
+<p>javap的用法为：<code>javap &lt;options&gt; &lt;classes&gt;</code>。其中<options>选项包括的内容:</options></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">-help  --help  -?        输出此用法消息<br>-version                 版本信息<br>-v  -verbose             输出附加信息<br>-l                       输出行号和本地变量表<br>-public                  仅显示公共类和成员<br>-protected               显示受保护的/公共类和成员<br>-package                 显示程序包/受保护的/公共类和成员 (默认)<br>-p  -private             显示所有类和成员<br>-c                       对代码进行反汇编<br>-s                       输出内部类型签名<br>-sysinfo                 显示正在处理的类的系统信息 (路径, 大小, 日期, MD5 散列)<br>-constants               显示最终常量<br>-classpath &lt;path&gt;        指定查找用户类文件的位置<br>-cp &lt;path&gt;               指定查找用户类文件的位置<br>-bootclasspath &lt;path&gt;    覆盖引导类文件的位置<br></code></pre></td></tr></table></figure>
+
+<p>输入命令<code>javap -v -p Main.class</code>的输出内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//字节码文件信息</span><br>Classfile /E:/JavaCode/TestProj/out/production/TestProj/com/rhythm7/Main.<span class="hljs-keyword">class</span><br>  <span class="hljs-title class_">Last</span> modified <span class="hljs-number">2018</span>-<span class="hljs-number">4</span>-<span class="hljs-number">7</span>; size <span class="hljs-number">362</span> bytes<br>  MD5 checksum 4aed8540b098992663b7ba08c65312de<br>  Compiled from <span class="hljs-string">&quot;Main.java&quot;</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">com</span>.rhythm7.Main<br>  minor version: <span class="hljs-number">0</span><br>  major version: <span class="hljs-number">52</span><br>  flags: ACC_PUBLIC, ACC_SUPER<br>      <br><span class="hljs-comment">//常量池</span><br>Constant pool:<br>   #<span class="hljs-number">1</span> = Methodref          #<span class="hljs-number">4.</span>#<span class="hljs-number">18</span>         <span class="hljs-comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">2</span> = Fieldref           #<span class="hljs-number">3.</span>#<span class="hljs-number">19</span>         <span class="hljs-comment">// com/rhythm7/Main.m:I</span><br>   #<span class="hljs-number">3</span> = Class              #<span class="hljs-number">20</span>            <span class="hljs-comment">// com/rhythm7/Main</span><br>   #<span class="hljs-number">4</span> = Class              #<span class="hljs-number">21</span>            <span class="hljs-comment">// java/lang/Object</span><br>   #<span class="hljs-number">5</span> = Utf8               m<br>   #<span class="hljs-number">6</span> = Utf8               I<br>   #<span class="hljs-number">7</span> = Utf8               &lt;init&gt;<br>   #<span class="hljs-number">8</span> = Utf8               ()V<br>   #<span class="hljs-number">9</span> = Utf8               Code<br>  #<span class="hljs-number">10</span> = Utf8               LineNumberTable<br>  #<span class="hljs-number">11</span> = Utf8               LocalVariableTable<br>  #<span class="hljs-number">12</span> = Utf8               <span class="hljs-built_in">this</span><br>  #<span class="hljs-number">13</span> = Utf8               Lcom/rhythm7/Main;<br>  #<span class="hljs-number">14</span> = Utf8               inc<br>  #<span class="hljs-number">15</span> = Utf8               ()I<br>  #<span class="hljs-number">16</span> = Utf8               SourceFile<br>  #<span class="hljs-number">17</span> = Utf8               Main.java<br>  #<span class="hljs-number">18</span> = NameAndType        #<span class="hljs-number">7</span>:#<span class="hljs-number">8</span>          <span class="hljs-comment">// &quot;&lt;init&gt;&quot;:()V</span><br>  #<span class="hljs-number">19</span> = NameAndType        #<span class="hljs-number">5</span>:#<span class="hljs-number">6</span>          <span class="hljs-comment">// m:I</span><br>  #<span class="hljs-number">20</span> = Utf8               com/rhythm7/Main<br>  #<span class="hljs-number">21</span> = Utf8               java/lang/Object<br>      <br><span class="hljs-comment">//方法表合集</span><br>&#123;<br>  <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> m;<br>    descriptor: I<br>    flags: ACC_PRIVATE<br><br>  <span class="hljs-keyword">public</span> com.rhythm7.Main();<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">1</span>, locals=<span class="hljs-number">1</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: invokespecial #<span class="hljs-number">1</span>                  <span class="hljs-comment">// Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>         <span class="hljs-number">4</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">3</span>: <span class="hljs-number">0</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>       <span class="hljs-number">5</span>     <span class="hljs-number">0</span>  <span class="hljs-built_in">this</span>   Lcom/rhythm7/Main;<br><br>  <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">inc</span><span class="hljs-params">()</span>;<br>    descriptor: ()I<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">2</span>, locals=<span class="hljs-number">1</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: getfield      #<span class="hljs-number">2</span>                  <span class="hljs-comment">// Field m:I</span><br>         <span class="hljs-number">4</span>: iconst_1<br>         <span class="hljs-number">5</span>: iadd<br>         <span class="hljs-number">6</span>: ireturn<br>      LineNumberTable:<br>        line <span class="hljs-number">8</span>: <span class="hljs-number">0</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>       <span class="hljs-number">7</span>     <span class="hljs-number">0</span>  <span class="hljs-built_in">this</span>   Lcom/rhythm7/Main;<br>&#125;<br><br><span class="hljs-comment">//类名</span><br>SourceFile: <span class="hljs-string">&quot;Main.java&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Part-1-字节码文件信息"><a href="#Part-1-字节码文件信息" class="headerlink" title="Part 1 字节码文件信息"></a>Part 1 字节码文件信息</h3><p>开头七行得信息：</p>
+<ul>
+<li>class文件当前所在位置</li>
+<li>最后修改时间</li>
+<li>文件大小</li>
+<li>MD5值</li>
+<li>编译自哪个文件</li>
+<li>类得全限定名</li>
+<li>jdk次版本号、主版本号</li>
+</ul>
+<p>再接着是该类得访问标志，访问标志含义如下：</p>
+<ul>
+<li>ACC_PUBLIC：是否为Public类型</li>
+<li>ACC_FINAL：是否被声明为final，只有类可以设置</li>
+<li>ACC_INTERFACE：标志这是一个接口</li>
+<li>ACC_ABSTRACT：是否为abstract类型，对于接口或抽象类来说，此标志为真，其他类型为假</li>
+<li>ACC_ANNOTATION：标志这是一个注解</li>
+<li>ACC_ENUM：标志这是一个枚举</li>
+<li>ACC_SUPER：是否允许使用invokespecial字节码指令得新语义</li>
+<li>ACC_SYNTHETIC：标志这个类并非由用户代码生成</li>
+</ul>
+<h3 id="Part-2-常量池"><a href="#Part-2-常量池" class="headerlink" title="Part 2 常量池"></a>Part 2 常量池</h3><p>常量池可以理解成Class文件中的资源仓库。</p>
+<p>主要存放的是两大类常量：</p>
+<ul>
+<li><p>字面量（Literal）</p>
+<blockquote>
+<p>字面量类似于java中的常量概念，如文本字符串，final常量等。</p>
+</blockquote>
+</li>
+<li><p>符号引用（Symbolic References）</p>
+<blockquote>
+<p>符号引用类似于编译原理方面的概念，包括以下三种：</p>
+<ul>
+<li>类和接口的全限定名（Fully Qualified Name）</li>
+<li>字段的名称和描述符号（Descriptor）</li>
+<li>方法的名称和描述符</li>
+</ul>
+<p>不同于C&#x2F;C++，JVM是再加载Class文件的时候才进行动态链接，也就是说这些字段和方法符号引用只有在运行期转换后才能获得真正的内存入口地址。当虚拟机运行时，需要从常量池获取对应的符号引用，再在类创建或运行时解析并翻译到具体的内存地址中。</p>
+</blockquote>
+</li>
+</ul>
+<p>通过反编译的文件来查看字节码内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">1</span> = Methodref          #<span class="hljs-number">4.</span>#<span class="hljs-number">18</span>         <span class="hljs-comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>#<span class="hljs-number">4</span> = Class              #<span class="hljs-number">21</span>            <span class="hljs-comment">// java/lang/Object</span><br>#<span class="hljs-number">7</span> = Utf8               &lt;init&gt;<br>#<span class="hljs-number">8</span> = Utf8               ()V<br>#<span class="hljs-number">18</span> = NameAndType        #<span class="hljs-number">7</span>:#<span class="hljs-number">8</span>          <span class="hljs-comment">// &quot;&lt;init&gt;&quot;:()V</span><br>#<span class="hljs-number">21</span> = Utf8               java/lang/Object<br></code></pre></td></tr></table></figure>
+
+<p>第一个常量是一个方法定义，指向了第4和第8个常量，以此类推，最后可以拼接成第一个常量右侧注释内容：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">java/lang/Object.<span class="hljs-string">&quot;&lt;init&gt;&quot;</span>:()V<br></code></pre></td></tr></table></figure>
+
+<p>该段可以理解为该类的实例构造器的声明，由于Main类没有重写构造方法，所以调用的是父类的构造方法。此处也说明了Main类的直接父类是Object，该方法默认返回V，也就是void，无返回值。</p>
+<p>关于字节码的类型对应如下：</p>
+<ul>
+<li>B：byte</li>
+<li>C：char</li>
+<li>D：double</li>
+<li>F：float</li>
+<li>I：int</li>
+<li>S：short</li>
+<li>Z：boolean</li>
+<li>V：void</li>
+<li>L：对象类型，以分号结尾。如Ljava&#x2F;lang&#x2F;Object;</li>
+<li>[：数组类型，每一维使用一个前置的<code>[</code>字符来描述。例如定义一个java.lang.String[][]类型的二维数组，将被记录为 [[Ljava&#x2F;lang&#x2F;String;</li>
+</ul>
+<h3 id="Part-3-方法表集合"><a href="#Part-3-方法表集合" class="headerlink" title="Part 3 方法表集合"></a>Part 3 方法表集合</h3><p>在常量池之后是对类内部的方法描述，在字节码中以表的集合形式表现。</p>
+<p>反编译后的方法表中的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//这里声明了一个私有变量m，类型为int，返回值为int。</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> m;<br>  descriptor: I<br>  flags: ACC_PRIVATE<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//这是构造方法：Main()，返回值为void，公开方法。</span><br><span class="hljs-keyword">public</span> com.rhythm7.Main();<br>   descriptor: ()V<br>   flags: ACC_PUBLIC<br>   <span class="hljs-comment">//方法体信息</span><br>   Code:<br>     stack=<span class="hljs-number">1</span>, locals=<span class="hljs-number">1</span>, args_size=<span class="hljs-number">1</span><br>        <span class="hljs-number">0</span>: aload_0<br>        <span class="hljs-number">1</span>: invokespecial #<span class="hljs-number">1</span>                  <span class="hljs-comment">// Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>        <span class="hljs-number">4</span>: <span class="hljs-keyword">return</span><br>     LineNumberTable:<br>       line <span class="hljs-number">3</span>: <span class="hljs-number">0</span><br>     LocalVariableTable:<br>       Start  Length  Slot  Name   Signature<br>           <span class="hljs-number">0</span>       <span class="hljs-number">5</span>     <span class="hljs-number">0</span>  <span class="hljs-built_in">this</span>   Lcom/rhythm7/Main;<br></code></pre></td></tr></table></figure>
+
+<p>code内的主要属性：</p>
+<ul>
+<li><p>stack（最大操作数栈）</p>
+<blockquote>
+<p>JVM运行时会根据这个值来分配栈帧（Frame） 中的操作栈深度，此处为1。</p>
+</blockquote>
+</li>
+<li><p>locals（局部变量所需的存储空间）</p>
+<blockquote>
+<p>单位为slot，slot时虚拟机为局部变量分配内存时所使用的最小单位，为四字节大小。方法参数（包括隐藏的参数this）、显示异常处理器的参数（try catch中的catch块中所定义的异常）、方法体中定义的局部变量都需要使用局部变量表来存放。值得一提的是locals的大小并不一定等于所有局部变量所占的Slot之和，因为局部变量中的Slot可以重用。</p>
+</blockquote>
+</li>
+<li><p>arg_size（方法参数的个数）</p>
+<blockquote>
+<p>这里是1，因为每个实例方法都会有一个隐藏参数this。</p>
+</blockquote>
+</li>
+<li><p>attribute_info（方法体内容）</p>
+<blockquote>
+<p>0，1，4为字节码“行号”，该段代码的意思是将第一个引用类型本地变量推送至栈顶，然后执行该类型的实例方法，也就是常量池存放的第一个变量（java&#x2F;lang&#x2F;Object.””:()V），然后执行返回语句，结束方法。</p>
+</blockquote>
+</li>
+<li><p>LineNumberTable（字节码偏移量）</p>
+<blockquote>
+<p>该属性的作用是描述源码行号于字节码行号之间的关系。可以使用-g:none或-g:lines选项来取消或要求生成这项信息，如果选择不生成LineNumberTable，当程序运行异常时午饭获取到发生异常的源码行号，也就无法按照源码的行数来调试程序。</p>
+</blockquote>
+</li>
+<li><p>LocalVariableTable</p>
+<blockquote>
+<p>该属性的作用时描述栈帧中局部变量与源码中定义的变量之间的关系。可以使用-g:none或-g:vars来取消或生成该项信息，如果没有生成这项信息，那么当别人引用这个方法时，将无法获取到参数名称，取而代之的是arg0，arg1这样的占位符。</p>
+<ul>
+<li>start：表示该局部变量在哪一行开始可见</li>
+<li>length：表示可见行数</li>
+<li>Slot：代表所在栈帧位置</li>
+<li>Name：变量名称</li>
+<li>Signature：类型签名</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="Part-4-类名"><a href="#Part-4-类名" class="headerlink" title="Part 4 类名"></a>Part 4 类名</h3><p>最后就是源码文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">SourceFile: <span class="hljs-string">&quot;Main.java&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="字节码的增强技术"><a href="#字节码的增强技术" class="headerlink" title="字节码的增强技术"></a>字节码的增强技术</h2><blockquote>
+<p>字节码增强技术就是一类对现有字节码进行修改或者动态生成全新字节码文件的技术。</p>
+</blockquote>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="字节码增强技术"><a href="#字节码增强技术" class="headerlink" title="字节码增强技术"></a>字节码增强技术</h3><h4 id="ASM"><a href="#ASM" class="headerlink" title="ASM"></a>ASM</h4><p>对于需要手工操纵字节码的需求，可以使用ASM，它可以直接生产.class字节码文件，也可以在被类加载入JVM之前动态修改类行为：</p>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>ASM的应用场景由有AOP（CGLIB就是基于ASM）、热部署、修改其他jar包中的类等。这些操作都涉及比较底层的步骤，实现起来比较麻烦。后面通过介绍ASM的两种API，并使用ASM来实现一个比较粗糙的AOP，然后更快地理解ASM的处理流程。</p>
+<h5 id="ASM-API"><a href="#ASM-API" class="headerlink" title="ASM API"></a>ASM API</h5><h6 id="核心API"><a href="#核心API" class="headerlink" title="核心API"></a>核心API</h6><blockquote>
+<p>ASM Core API可以类比解析XML文件的SAX方式，不需要把整个类的结构读取进来，就可以使用流式的方式来处理字节码文件。</p>
+</blockquote>
+<p>好处是非常节约内存，但是编程难度大。然而出于性能考虑，一般情况下编程都使用Core API。其中的几个关键类：</p>
+<ul>
+<li><p>ClassReader</p>
+<blockquote>
+<p>用于读取已经编译好的.class文件</p>
+</blockquote>
+</li>
+<li><p>ClassWriter</p>
+<blockquote>
+<p> 用于重新构建编译后的类。如修改类名、属性以及方法，也可以生成新的类的字节码文件。</p>
+</blockquote>
+</li>
+<li><p>各种Visitor类</p>
+<blockquote>
+<p>如上所述，Core API根据字节码从上到下依次处理，对于字节码文件中不同区域有不同的Visitor：</p>
+<ul>
+<li>MethodeVisitor：用于访问方法（实现AOP主要使用该Visitor）</li>
+<li>FieldVisitor：用于访问类变量</li>
+<li>AnnotationVisitor：用于访问注释</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h6 id="树形API"><a href="#树形API" class="headerlink" title="树形API"></a>树形API</h6><blockquote>
+<p>ASM Tree API可以类比解析XML文件的DOM方式，把整个类的结构读入内存，生成属性结构。</p>
+</blockquote>
+<p>缺点是消耗内存多，但是编程比较简单。Tree API不同于Core API，Tree API通过各种Node类来映射字节码的各个区域。类比DOM节点，就可以很好的理解这种编程方式。</p>
+<h5 id="直接使用ASM实现AOP"><a href="#直接使用ASM实现AOP" class="headerlink" title="直接使用ASM实现AOP"></a>直接使用ASM实现AOP</h5><blockquote>
+<p>利用ASM的Core API来增强类。实现在方法调用前、后增加逻辑。</p>
+</blockquote>
+<p>首先定义一个Base类：其中只包含一个process()方法，方法中输出一行“process”。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">process</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;process&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>增强后，我们期望在方法执行前输出“start”，执行后输出“end”。</p>
+<p>使用ASM实现AOP需要定义的两个类：</p>
+<ul>
+<li><p>MyClassVisitor</p>
+<blockquote>
+<p>用于visit字节码以及修改字节码</p>
+</blockquote>
+</li>
+<li><p>Generator</p>
+<blockquote>
+<p>在该类中定义ClassReader和ClassWriter。</p>
+</blockquote>
+</li>
+</ul>
+<p>其中的逻辑是ClassReader读取字节码，然后交给MyClassVisitor类处理，处理完后由ClassWriter写字节码并将旧的字节码替换掉。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.objectweb.asm.ClassReader;<br><span class="hljs-keyword">import</span> org.objectweb.asm.ClassVisitor;<br><span class="hljs-keyword">import</span> org.objectweb.asm.ClassWriter;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Generator</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>		<span class="hljs-comment">//读取</span><br>        <span class="hljs-type">ClassReader</span> <span class="hljs-variable">classReader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassReader</span>(<span class="hljs-string">&quot;meituan/bytecode/asm/Base&quot;</span>);<br>        <span class="hljs-type">ClassWriter</span> <span class="hljs-variable">classWriter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassWriter</span>(ClassWriter.COMPUTE_MAXS);<br>        <span class="hljs-comment">//处理</span><br>        <span class="hljs-type">ClassVisitor</span> <span class="hljs-variable">classVisitor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyClassVisitor</span>(classWriter);<br>        classReader.accept(classVisitor, ClassReader.SKIP_DEBUG);<br>        <span class="hljs-type">byte</span>[] data = classWriter.toByteArray();<br>        <span class="hljs-comment">//输出</span><br>        <span class="hljs-type">File</span> <span class="hljs-variable">f</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;operation-server/target/classes/meituan/bytecode/asm/Base.class&quot;</span>);<br>        <span class="hljs-type">FileOutputStream</span> <span class="hljs-variable">fout</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(f);<br>        fout.write(data);<br>        fout.close();<br>        System.out.println(<span class="hljs-string">&quot;now generator cc success!!!!!&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.objectweb.asm.ClassVisitor;<br><span class="hljs-keyword">import</span> org.objectweb.asm.MethodVisitor;<br><span class="hljs-keyword">import</span> org.objectweb.asm.Opcodes;<br><br><span class="hljs-comment">//继承自ClassVisitor，用于对字节码的观察</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyClassVisitor</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ClassVisitor</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Opcodes</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyClassVisitor</span><span class="hljs-params">(ClassVisitor cv)</span> &#123;<br>        <span class="hljs-built_in">super</span>(ASM5, cv);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visit</span><span class="hljs-params">(<span class="hljs-type">int</span> version, <span class="hljs-type">int</span> access, String name, String signature,</span><br><span class="hljs-params">                      String superName, String[] interfaces)</span> &#123;<br>        cv.visit(version, access, name, signature, superName, interfaces);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> MethodVisitor <span class="hljs-title function_">visitMethod</span><span class="hljs-params">(<span class="hljs-type">int</span> access, String name, String desc, String signature, String[] exceptions)</span> &#123;<br>        <span class="hljs-type">MethodVisitor</span> <span class="hljs-variable">mv</span> <span class="hljs-operator">=</span> cv.visitMethod(access, name, desc, signature,<br>                exceptions);<br>        <span class="hljs-comment">//Base类中有两个方法：无参构造以及process方法，这里不增强构造方法</span><br>        <span class="hljs-keyword">if</span> (!name.equals(<span class="hljs-string">&quot;&lt;init&gt;&quot;</span>) &amp;&amp; mv != <span class="hljs-literal">null</span>) &#123;<br>            mv = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyMethodVisitor</span>(mv);<br>        &#125;<br>        <span class="hljs-keyword">return</span> mv;<br>    &#125;<br>    <br>    <span class="hljs-comment">//内部类，继承自MethodVisitor用于对类内方法的观察</span><br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyMethodVisitor</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">MethodVisitor</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Opcodes</span> &#123;<br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyMethodVisitor</span><span class="hljs-params">(MethodVisitor mv)</span> &#123;<br>            <span class="hljs-built_in">super</span>(Opcodes.ASM5, mv);<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visitCode</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-built_in">super</span>.visitCode();<br>            <span class="hljs-comment">//方法进入后，打印&quot;start&quot;</span><br>            mv.visitFieldInsn(GETSTATIC, <span class="hljs-string">&quot;java/lang/System&quot;</span>, <span class="hljs-string">&quot;out&quot;</span>, <span class="hljs-string">&quot;Ljava/io/PrintStream;&quot;</span>);<br>            mv.visitLdcInsn(<span class="hljs-string">&quot;start&quot;</span>);<br>            mv.visitMethodInsn(INVOKEVIRTUAL, <span class="hljs-string">&quot;java/io/PrintStream&quot;</span>, <span class="hljs-string">&quot;println&quot;</span>, <span class="hljs-string">&quot;(Ljava/lang/String;)V&quot;</span>, <span class="hljs-literal">false</span>);<br>        &#125;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">visitInsn</span><span class="hljs-params">(<span class="hljs-type">int</span> opcode)</span> &#123;<br>            <span class="hljs-keyword">if</span> ((opcode &gt;= Opcodes.IRETURN &amp;&amp; opcode &lt;= Opcodes.RETURN)<br>                    || opcode == Opcodes.ATHROW) &#123;<br>                <span class="hljs-comment">//方法在返回之前，打印&quot;end&quot;</span><br>                mv.visitFieldInsn(GETSTATIC, <span class="hljs-string">&quot;java/lang/System&quot;</span>, <span class="hljs-string">&quot;out&quot;</span>, <span class="hljs-string">&quot;Ljava/io/PrintStream;&quot;</span>);<br>                mv.visitLdcInsn(<span class="hljs-string">&quot;end&quot;</span>);<br>                mv.visitMethodInsn(INVOKEVIRTUAL, <span class="hljs-string">&quot;java/io/PrintStream&quot;</span>, <span class="hljs-string">&quot;println&quot;</span>, <span class="hljs-string">&quot;(Ljava/lang/String;)V&quot;</span>, <span class="hljs-literal">false</span>);<br>            &#125;<br>            mv.visitInsn(opcode);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>对字节码做修改的步骤：</p>
+<ol>
+<li>通过MyClassVisitor类中的visitMethod方法，判断当前字节码读到哪个方法了。跳过构造方法<code>&lt;init&gt;</code>后，将需要被增强的方法交给内部类MyMethodVisiter来进行处理。</li>
+<li>接下来，进入内部类MyMethodVisitor中的visitCode方法，它会在ASM开始访问某一个方法的Code区时被调用，重写visitCode方法，将AOP中的前置逻辑就放在这里。MyMethodVisitor继续读取字节码指令，每当ASM访问到无参数指令时，都会调用MyMethodVisitor中的visitInsn方法。我们判断了当前指令给是否为无参数的“return”指令，如果是就在它的前面添加一些指令，也就是将AOP的后置逻辑放在该方法中。</li>
+<li>综上，重写MyMethodeVisitor中的两个方法，就可以实现AOP了，而重写方法时就需要用ASM的写法，手动写入或修改字节码。通过调用methodVisitor的visitXXXXInsn()方法就可以实现字节码的插入，XXXX对应相应的操作码助记符类型，例如mv.visitLdcInsn(“end”)对应的操作码就是Ldc“end”即将字符串“end”压入栈。</li>
+<li>完成这两个类后，运行Generator中的main方法完成对Base类的字节码增强，增强后的结果可以在编译后的target文件夹中找到Base.class文件进行查看，可以看到反编译后的代码已经改变。</li>
+</ol>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h5 id="ASM工具"><a href="#ASM工具" class="headerlink" title="ASM工具"></a>ASM工具</h5><p>利用ASM手写字节码时，需要利用一系列visitXXXXInsn()方法来写对应的助记符，所以需要先将每一行源码转化为一个个的助记符，然后通过ASM的语法转换为visitXXXXInsn()这种写法。第一步将源码转化为助记符就已经够麻烦了不熟悉字节码操作集合的话，需要我们将代码编译后再反编译才能得到源代码对应的助记符。第二步利用ASM写字节码时，如何传参也很令人头疼。</p>
+<p>ASM社区为了解决上面的问题，提供了IDEA插件工具ASM byte Outline：</p>
+<p>安装后，右键选择“Show Bytecode Outline”，在新标签页中选择“ASMified”这个tab，如图所示：</p>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>在图中就可以看到这个类中的代码对应ASM写法了。图中上下两个红框分别对应AOP中前置逻辑与后置逻辑，将这两块直接复制到visitor中的visitMethod()以及visitInsn()方法中，就可以了。</p>
+<h4 id="Javassist"><a href="#Javassist" class="headerlink" title="Javassist"></a>Javassist</h4><blockquote>
+<p>ASM是在指令层面上操作字节码的，操作比较晦涩。另外一类框架Javassist：强调源代码层次操作字节码。</p>
+</blockquote>
+<p>利用Javassist实现字节码增强时，可以无需关注字节码刻板的结构，其优点就在于编程简单。直接使用java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构或者动态生成类。其中最重要的是ClassPool、CtClass、CtMethod、CtField这四个类：</p>
+<ul>
+<li><p>CtClass（compile-time class）</p>
+<blockquote>
+<p>编译时类信息，它是一个class文件在代码中的抽象表现形式，可以通过一个类的全限定名来获取一个CtClass对象，用来表示这个类文件。</p>
+</blockquote>
+</li>
+<li><p>ClassPool</p>
+<blockquote>
+<p>从开发视角来看，ClassPool是一张保存CtClass信息的HashTable，key为类名，value为类名对应的CtClass对象。当我们需要对某个类进行修改时，就是通过pool.getCtClass(“className”)方法从pool中获取到对应的CtClass。</p>
+</blockquote>
+</li>
+<li><p>CtMethod、CtField</p>
+<blockquote>
+<p>对应类的方法和属性。</p>
+</blockquote>
+</li>
+</ul>
+<p>使用上述四个类，写一个小Demo来展示Javassist的简单、快速的特点。同样是对Vas的process()方法进行增强，在方法调用前后输出“start”和“end”。实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.meituan.mtrace.agent.javassist.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JavassistTest</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException, IOException &#123;<br>        <span class="hljs-type">ClassPool</span> <span class="hljs-variable">cp</span> <span class="hljs-operator">=</span> ClassPool.getDefault();<br>        <span class="hljs-comment">//从ClassPool中获取到相应的CtClass对象</span><br>        <span class="hljs-type">CtClass</span> <span class="hljs-variable">cc</span> <span class="hljs-operator">=</span> cp.get(<span class="hljs-string">&quot;meituan.bytecode.javassist.Base&quot;</span>);<br>        <span class="hljs-comment">//获取CtClass对象中的方法</span><br>        <span class="hljs-type">CtMethod</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> cc.getDeclaredMethod(<span class="hljs-string">&quot;process&quot;</span>);<br>        <span class="hljs-comment">//在方法执行前后插入需要增强的java代码</span><br>        m.insertBefore(<span class="hljs-string">&quot;&#123; System.out.println(\&quot;start\&quot;); &#125;&quot;</span>);<br>        m.insertAfter(<span class="hljs-string">&quot;&#123; System.out.println(\&quot;end\&quot;); &#125;&quot;</span>);<br>        <br>        <span class="hljs-type">Class</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> cc.toClass();<br>        cc.writeFile(<span class="hljs-string">&quot;/Users/zen/projects&quot;</span>);<br>        <span class="hljs-type">Base</span> <span class="hljs-variable">h</span> <span class="hljs-operator">=</span> (Base)c.newInstance();<br>        h.process();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="运行时类的重载"><a href="#运行时类的重载" class="headerlink" title="运行时类的重载"></a>运行时类的重载</h3><h4 id="问题的引入"><a href="#问题的引入" class="headerlink" title="问题的引入"></a>问题的引入</h4><p>上面介绍了两种不同类型的字节码增强框架，且都利用它们实现了较为粗糙的AOP。在上面的AOP实现中都不涉及重加载类，都是先对编译好的class文件进行修改，修改后再通过new新建对象并调用。</p>
+<p>但是，如果我们在一个JVM中，先加载一个类，再对其进行字节码增强并重新加载就会报错，因为JVM不允许再运行时动态重载一个类。</p>
+<p>显然，如果只能再类加载前对类进行强化，那么字节码增强技术的使用场景就很窄了。我们期望的效果是：在一个持续运行并已经加载了所有类的JVM中，还能利用字节码增强技术对其中的类行为做替换并重新加载。</p>
+<p>为了模拟这这种情况，我们将Base类做改写，在其中编写main方法，每五秒调用一次process()方法，在process()方法中输出一行“process”。我们的目的是在JVM运行中的时候，将process()方法做替换，也就是在运行中时，每五秒打印的内容由”process”变为打印”start process end”。改写的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> ManagementFactory.getRuntimeMXBean().getName();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> name.split(<span class="hljs-string">&quot;@&quot;</span>)[<span class="hljs-number">0</span>];<br>        <span class="hljs-comment">//打印当前Pid</span><br>        System.out.println(<span class="hljs-string">&quot;pid:&quot;</span>+s);<br>        <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                Thread.sleep(<span class="hljs-number">5000L</span>);<br>            &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>            process();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">process</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;process&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面介绍JVM运行时重加载类信息的一些Java类库。</p>
+<h4 id="Instrument"><a href="#Instrument" class="headerlink" title="Instrument"></a>Instrument</h4><blockquote>
+<p>instrument是JVM提供的一个可以修改已加载类的类库，专门为Java语言编写的插桩服务提供支持。需要依赖JVMTI的Attach API机制实现。</p>
+</blockquote>
+<p> 要使用instrument的类修改功能，我们需要实现它提供的ClassFileTransfromer接口，定义一个类文件转换器。接口中的transform()方法会在类文件被加载时调用，而在transform方法里，我们可以利用上文中的ASM或Javassist对传入的字节码进行改写或替换，生成新的字节码数组后返回。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.instrument.ClassFileTransformer;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestTransformer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ClassFileTransformer</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">byte</span>[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, <span class="hljs-type">byte</span>[] classfileBuffer) &#123;<br>        System.out.println(<span class="hljs-string">&quot;Transforming &quot;</span> + className);<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">ClassPool</span> <span class="hljs-variable">cp</span> <span class="hljs-operator">=</span> ClassPool.getDefault();<br>            <span class="hljs-type">CtClass</span> <span class="hljs-variable">cc</span> <span class="hljs-operator">=</span> cp.get(<span class="hljs-string">&quot;meituan.bytecode.jvmti.Base&quot;</span>);<br>            <span class="hljs-type">CtMethod</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> cc.getDeclaredMethod(<span class="hljs-string">&quot;process&quot;</span>);<br>            m.insertBefore(<span class="hljs-string">&quot;&#123; System.out.println(\&quot;start\&quot;); &#125;&quot;</span>);<br>            m.insertAfter(<span class="hljs-string">&quot;&#123; System.out.println(\&quot;end\&quot;); &#125;&quot;</span>);<br>            <span class="hljs-keyword">return</span> cc.toBytecode();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>现在有了Transformer，还需要将其注入到运行的JVM中。</p>
+<p>定义一个Agent，借助Agent的能力将Instrument注入到JVM中。Agent中的一个类Instrumentation可以做启动后的Instrument、本地代码的Instrument，以及动态改变Classpath等等。我们可以向Instrumentation中添加上文中定义的Transformer，并指定要被重加载的类，这样当Agent被Attach到一个JVM中时，就会执行类字节码替换并重载入JVM的操作。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.instrument.Instrumentation;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAgent</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">agentmain</span><span class="hljs-params">(String args, Instrumentation inst)</span> &#123;<br>        <span class="hljs-comment">//指定我们自己定义的Transformer，在其中利用Javassist做字节码替换</span><br>        inst.addTransformer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TestTransformer</span>(), <span class="hljs-literal">true</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">//重定义类并载入新的字节码</span><br>            inst.retransformClasses(Base.class);<br>            System.out.println(<span class="hljs-string">&quot;Agent Load Done.&quot;</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;agent load failed!&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="JVMTI-amp-Agent-amp-Attach-API"><a href="#JVMTI-amp-Agent-amp-Attach-API" class="headerlink" title="JVMTI &amp; Agent &amp; Attach API"></a>JVMTI &amp; Agent &amp; Attach API</h4><p>首先需要介绍JPDA（Java Platform Debugger Architecture）。如果JVM启动时开启了JPDA，那么类是允许被重新加载的。在这种情况下，已经被加载的就版本类信息可以被卸载，然后重新加载新版本的类。正如JPDA名称中的Debugger，JDPA其实是一套用于调试Java程序的标准，任何JDK都必须实现该标准。</p>
+<p>JPDA定义了一套完整的体系，它将调试体系分为三部分，并规定了三者之间的通信接口。三部分由低到高分别是：JVMTI（Java虚拟机工具接口）、JDWP（Java调试协议）、JDI（Java调试接口）。三者关系如下：</p>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-6.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><strong>JVMTI：</strong></p>
+<p>借助JVMTI的一部分能力，帮助动态重载类信息。JVMTI是JVM提供的一套对JVM进行操作的工具接口。通过JVMTI，可以实现对JVM的多种操作，它通过接口注册各种事件钩子，在JVM事件触发时，同时触发预定义的钩子，实现对各个 JVM事件的相应，事件包括文件加载、异常的产生与捕获、线程启动和结束、进入和退出临界区、成员变量修改、GC开始和结束、方法调用进入和退出、临界区竞争与等待、VM启动与退出等等。</p>
+<p><strong>Agent：</strong></p>
+<p>而Agent就是JVMTI的一种实现，Agent有两种启动方式，一是随Java进程启动而启动，经常见到的java -agentlib就是这种方式；二是运行时载入，通过Attach API，将模块（jar包）动态地Attach到指定进程id的Java进程中。</p>
+<p><strong>Attach API：</strong></p>
+<p>Attach API的作用时提供JVM进程间通信的能力，比如我们为了让另外一个JVM进程把线上服务的线程Dump出来，会运行jstack或jmap的进程，并传递pid的参数，告诉它要对哪个线程进行线程Dump，这就是Attach API做的事情。</p>
+<p>下面我们通过Attach API的loadAgent()方法，将打包好的Agent jar包动态Attach到目标JVM上。具体实现如下：</p>
+<ol>
+<li><p>定义Agent，并在其中实现AgentMain方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.instrument.Instrumentation;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAgent</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">agentmain</span><span class="hljs-params">(String args, Instrumentation inst)</span> &#123;<br>        <span class="hljs-comment">//指定我们自己定义的Transformer，在其中利用Javassist做字节码替换</span><br>        inst.addTransformer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TestTransformer</span>(), <span class="hljs-literal">true</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">//重定义类并载入新的字节码</span><br>            inst.retransformClasses(Base.class);<br>            System.out.println(<span class="hljs-string">&quot;Agent Load Done.&quot;</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;agent load failed!&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>然后将TestAgent类打包成一个含有MANIFEST.MF的jar包，其中MANIFEST.MF文件中将Agent-Class属性指定为TestAgent的全限定名，如下图所示：</p>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+</li>
+<li><p>最后利用Attach API，将我们打包好的jar包Attach到JVM pid上，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.tools.attach.VirtualMachine;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Attacher</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> AttachNotSupportedException, IOException, AgentLoadException, AgentInitializationException &#123;<br>        <span class="hljs-comment">// 传入目标 JVM pid</span><br>        <span class="hljs-type">VirtualMachine</span> <span class="hljs-variable">vm</span> <span class="hljs-operator">=</span> VirtualMachine.attach(<span class="hljs-string">&quot;39333&quot;</span>);<br>        vm.loadAgent(<span class="hljs-string">&quot;/Users/zen/operation_server_jar/operation-server.jar&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>由于在MANIFEST.MF中指定了Agent-Class，所以在Attach后，目标JVM在运行时会走到TestAgent类中定义的agentmain()方法，而在这个方法中，我们利用Instrumentation，将指定的类的字节码通过定义的类转化器TestTransformer做了Base类的字节码替换（通过javassist），并完成了类的重新加载。由此，我们完成了“在JVM运行时，改变类的字节码并重新载入类信息”的目的。</p>
+</li>
+</ol>
+<p>以下为运行时重新载入类的效果：</p>
+<ul>
+<li>先运行Base中的main方法，启动一个JVM</li>
+<li>可以看到控制台每五秒输出一次“process”</li>
+<li>接着执行Attacher中的main()方法，启动一个新的JVM，并将上一个JVM的pid传入。</li>
+<li>此时回到上一个mian()方法的控制台，可以看到控制台每五秒输出“process”前后分别输出“start”和“end”。也就是说完成了运行时的字节码增强，并重新载入了这个类。</li>
+<li><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java-class-enhancer-8.png" srcset="/img/loading.gif" lazyload alt="img"></li>
+</ul>
+<h4 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h4><ul>
+<li><p>热部署</p>
+<blockquote>
+<p>不部署服务而对线上服务做修改，可以做打点、增加日志等操作。</p>
+</blockquote>
+</li>
+<li><p>Mock</p>
+<blockquote>
+<p>测试的时候对某些服务做Mock。</p>
+</blockquote>
+</li>
+<li><p>性能诊断工具</p>
+<blockquote>
+<p>比如bTrace就是利用Instrument，实现无侵入地跟踪一个正在运行地JVM，监控到类和方法级别地状态信息。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>字节码增强技术相当于是一把打开运行时JVM的钥匙，利用它可以动态地对运行中的程序做修改，也可以跟踪JVM运行中程序的状态。此为，我们平时使用的动态代理、AOP也与字节码增强密切相关，它们本质上还是利用各种手段生成符合规范的字节码文件。</p>
+<p>综上所述，掌握字节码增强后可以高效地定位并快速修复一些棘手地问题（如线上性能问题、方法出现不可控地出入参需要紧急加日志等问题），也可以在开发中减少冗余代码，大大提高开发效率。</p>
+<h1 id="Java类加载机制"><a href="#Java类加载机制" class="headerlink" title="Java类加载机制"></a>Java类加载机制</h1><h2 id="类的生命周期"><a href="#类的生命周期" class="headerlink" title="类的生命周期"></a>类的生命周期</h2><p>如图所示：</p>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>其中加载、验证、准备、初始化这四个阶段是按顺序开始的，而不是按顺序进行或完成，因为这些阶段通常都是相互交叉地混合进行地，通常在一个阶段执行地过程中调用或激活另一个阶段。</p>
+<p>而解析阶段地开始时间不一定，它在某些情况下可以在初始化阶段后开始，这是为了支持Java语言的运行时绑定（也称为动态绑定或晚期绑定）。</p>
+<h3 id="加载（查找并加载类的二进制数据）"><a href="#加载（查找并加载类的二进制数据）" class="headerlink" title="加载（查找并加载类的二进制数据）"></a>加载（查找并加载类的二进制数据）</h3><p>加载是类加载过程的第一个阶段，在加载阶段，虚拟机需要完成以下三件事：</p>
+<ul>
+<li>通过一个类的全限定名来获取其定义的二进制字节流</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在Java堆中生成一个代表这个类的java.lang.Class对象，作为对方法区中这些数据的访问入口。</li>
+</ul>
+<p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>相对于类加载的其他阶段而言，加载阶段（准确地来说，是加载阶段获取类的二进制字节流的动作）是可控性最强的阶段，因为开发人员即可以使用系统提供的类加载器来完成加载，也可以自定义自己的类加载器来完成加载。</p>
+<p>加载阶段完成后，虚拟机外部的二进制字节流就按照虚拟机所需的格式存储在方法区中，而且在Java堆中也创建一个java.lang.Class类的对象，这样便可以通过该对象访问方法区中的这些数据。</p>
+<p>类加载器并不需要等到某个类被“首次组东使用”时再加载它，JVM规范允许类加载器在预料某个类将要被使用时就预先加载它，如果在预先加载的过程中遇到了.class文件缺失或存在错误，类加载器必须在程序首次主动使用该类时才报告错误（LinkageError错误），如果这个类一直没有被程序主动使用，那么类加载器就不会报告错误。</p>
+<p>加载.class文件有多种方式：</p>
+<ul>
+<li>从本地系统中直接加载</li>
+<li>通过网络下载.class文件</li>
+<li>从zip、jar等归档文件中加载.class文件</li>
+<li>从专有数据库中提取.class文件</li>
+<li>将Java源文件动态编译.class文件</li>
+</ul>
+<h3 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h3><h4 id="验证（确保被加载的类的正确性）"><a href="#验证（确保被加载的类的正确性）" class="headerlink" title="验证（确保被加载的类的正确性）"></a>验证（确保被加载的类的正确性）</h4><blockquote>
+<p>验证时连接阶段的第一步，这一阶段的目的时为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。</p>
+</blockquote>
+<p>验证阶段是非常重要的，但不是必须的，它对程序运行期没有影响，如果所引用的类经过反复验证，那么可以考虑采用<code>-Xverifynone</code>参数来关闭大部分的类验证措施，以缩短虚拟类加载的时间。</p>
+<p>验证阶段大致会完成4个阶段的检验动作：</p>
+<ul>
+<li><p>文件格式验证</p>
+<blockquote>
+<p>验证字节流是否符合Class文件格式的规范。例如：是否以<code>0xCAFEBABE</code>开头、主次版本号是否在当前虚拟机的处理范围之内、常量池中的常量是否有被支持的类型。</p>
+</blockquote>
+</li>
+<li><p>元数据验证</p>
+<blockquote>
+<p>对字节码描述的信息进行语义分析（注意：对比<code>javac</code>编译阶段的语义分析），以保证其描述的信息符合Java语言规范的要求。例如：这个类是否有父类，除了<code>java.lang.Object</code>之外。</p>
+</blockquote>
+</li>
+<li><p>字节码验证</p>
+<blockquote>
+<p>通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的。</p>
+</blockquote>
+</li>
+<li><p>符号引用验证</p>
+<blockquote>
+<p>确保解析动作能正确执行。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="准备（为类的静态变量分配内存、并将其初始化为默认值）"><a href="#准备（为类的静态变量分配内存、并将其初始化为默认值）" class="headerlink" title="准备（为类的静态变量分配内存、并将其初始化为默认值）"></a>准备（为类的静态变量分配内存、并将其初始化为默认值）</h4><blockquote>
+<p>准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。</p>
+</blockquote>
+<p>需要重点关注的两点：</p>
+<ul>
+<li><p>准备阶段进行内存分配的仅是类变量。不包括实例变量，实例变量会在对象实例化时随着对象一块分配在Java堆中。</p>
+</li>
+<li><p>这里所设置的初始值是数据类型默认的零值，而不是在Java代码中被显式赋予的值。</p>
+<blockquote>
+<p>假设一个类变量定义为：<code>public static int value = 3</code>。那么变量value在准备阶段后的值为0，而不是3，因为这个时候尚未开始执行任何Java方法。把value赋值为3的<code>put static</code>指令在程序编译后，存放于类构造器<code>&lt;clinit&gt;()</code>方法中，所以把value赋值为3的动作将在初始化阶段才会被执行。</p>
+</blockquote>
+</li>
+</ul>
+<p>其余需要注意的几点：</p>
+<ul>
+<li><p>对基本数据类型来说。类变量和全局变量，如果不显式赋值，系统会赋予默认零值；局部变量必须在使用前显式赋值，否则不能通过编译。</p>
+</li>
+<li><p>对于引用数据类型来说。如数组引用、对象引用等，如果没有对其进行显式地赋值而直接使用，系统都会为其赋予默认的零值<code>null</code>。</p>
+</li>
+<li><p>如果在数组初始化时没有对数组中的各元素赋值，那么其中的元素将根据对应的数据类型而被赋予默认零值。</p>
+</li>
+<li><p>同时被<code>static</code>和<code>final</code>修饰的常量，必须在声明时为其显式地赋值，否则编译不通过。而只被<code>final</code>修饰地常量则既可以在声明时显式地赋值，也可以在类初始化时显式地为其赋值，总之，系统不会为其赋予默认零值，需要在使用前显式地赋值。</p>
+</li>
+<li><p>如果类字段的字段属性表中存在ConstantValue属性，即同时被final和static修饰，那么在准备阶段，变量value就会被初始化为ConstValue属性所指定的值。</p>
+<blockquote>
+<p>假设上面的类变量定义为：<code>public static final int value = 3</code>。编译时javac将会为value生成ConstantValue属性，在准备阶段虚拟机就会根据ConstantValue的设置将value赋值为3。可以理解为<code>static final</code>常量在编译期就将其结果放入了调用它的类的常量池中。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="解析（把类中的符号引用转换为直接引用）"><a href="#解析（把类中的符号引用转换为直接引用）" class="headerlink" title="解析（把类中的符号引用转换为直接引用）"></a>解析（把类中的符号引用转换为直接引用）</h4><blockquote>
+<p>解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。</p>
+</blockquote>
+<p>符号引用就是一组符号用来描述目标，可以是任何字面量。主要有如下七类：</p>
+<ul>
+<li>类或接口</li>
+<li>字段</li>
+<li>类方法</li>
+<li>接口方法</li>
+<li>方法类型</li>
+<li>方法句柄</li>
+<li>调用点</li>
+</ul>
+<p>直接引用就是直接指向目标的指针、相对偏移量或一个简介定位到目标的句柄。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>JVM负责对类进行初始化，主要是对类的静态变量进行初始化。</p>
+<p>Java中对类变量进行初始值设定有两种方式：</p>
+<ul>
+<li>声明类变量时指定初始值</li>
+<li>使用静态代码块为类变量指定初始值</li>
+</ul>
+<p>JVM初始化步骤：</p>
+<ol>
+<li>假如这个类还没有被加载和连接，则程序先加载并连接该类</li>
+<li>假如该类的直接父类还没有被初始化，则先初始化其父类</li>
+<li>假如类中有初始化语句，则系统依次执行这些初始化语句</li>
+</ol>
+<p>类初始化时机：只有对类的主动使用的时候才会导致类的初始化。类的主动使用包括以下六种：</p>
+<ul>
+<li>创建类的实例，也就是new一个对象。</li>
+<li>访问某个类或接口的静态变量，或对该静态变量赋值</li>
+<li>调用类的静态方法</li>
+<li>反射（如Class.forName(“com.pdai.jvm.Test”)）</li>
+<li>初始化某个类的子类，则其父类也会被初始化</li>
+<li>Java虚拟机启动时被标明为启动类的类，直接使用java.exe命令来与运行某个主类</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>类访问方法区中数据结构的接口，对象时Heap区的数据</p>
+<h3 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h3><p>Java虚拟机将结束生命周期的几种情况：</p>
+<ul>
+<li>执行了System.exit()方法</li>
+<li>程序正常执行结束</li>
+<li>程序在执行过程中遇到了异常或错误而异常终止</li>
+<li>由于操作系统出现错误而导致Java虚拟机进程终止</li>
+</ul>
+<h2 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h2><h3 id="类加载器的层次"><a href="#类加载器的层次" class="headerlink" title="类加载器的层次"></a>类加载器的层次</h3><p><img src="/2022/11/14/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD/java_jvm_classload_3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>注意：这里父类加载器并不是通过继承关系类实现的，而是采用组合实现的。</p>
+<p>站在Java虚拟机的角度来说，只存在两种不同的类加载器：</p>
+<ul>
+<li><p>启动类加载器</p>
+<blockquote>
+<p>它使用C++实现（仅限Hotspot，其他虚拟机有使用java实现的），它是虚拟机自身的一部分。</p>
+</blockquote>
+</li>
+<li><p>其他类加载器</p>
+<blockquote>
+<p>这些类加载器都是由Java语言实现，独立于虚拟机之外，并且全部继承自抽象类java.lang.ClassLoader，这些类加载器需要由启动类加载器加载到内存中后才能去加载其他的类。</p>
+</blockquote>
+</li>
+</ul>
+<p>站在Java开发人员的角度，类加载器可以大致分为三类：</p>
+<ul>
+<li><p>启动类加载器（Bootstrap ClassLoader）</p>
+<blockquote>
+<p>负责加载存放在 JDK&#x2F;jre&#x2F;lib 下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库（如rt.jar，所有的java.*开头的类）。启动类加载器是无法被Java程序直接引用的。</p>
+</blockquote>
+</li>
+<li><p>扩展类加载器（Extension ClassLoader）</p>
+<blockquote>
+<p>该加载器由<code>sun.misc.Launcher$ExtClassLoader</code>实现，它负责加载 JDK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库（如javax.*开头的类），开发者可以直接使用扩展类加载器。</p>
+</blockquote>
+</li>
+<li><p>应用程序类加载器（Application ClassLoader）</p>
+<blockquote>
+<p>该类加载器由<code>sun.misc.Launcher$AppClassLoader</code>来实现，它负责加载用户类路径（ClassPath）所指定的类，开发者可以直接使用该类加载器。如果应用程序中没有定义过自己的类加载器，一般情况下这个就是程序中默认的类加载器。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p>应用程序都是由上述三种类加载器互相配合进行加载的。如果有必要，我们还可以加入自定义的类加载器，因为JVM自带的ClassLoader只懂得从本地文件系统加载标准的Java class文件，因此如果编写了自己的ClassLoader，便可以做到如下几点：</p>
+<ul>
+<li>在执行非置信代码前，自动验证数字签名</li>
+<li>动态地创建符合用户特定需要地定制化构建类</li>
+<li>从特定地场所取得java class，例如从数据库和网络中</li>
+</ul>
+<p>自定义类加载器一般继承自ClassLoader类，只需要重写其中的findClass方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.pdai.jvm.classloader;<br><span class="hljs-keyword">import</span> java.io.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyClassLoader</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ClassLoader</span> &#123;<br><br>    <span class="hljs-keyword">private</span> String root;<br><br>    <span class="hljs-keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="hljs-keyword">throws</span> ClassNotFoundException &#123;<br>        <span class="hljs-type">byte</span>[] classData = loadClassData(name);<br>        <span class="hljs-keyword">if</span> (classData == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassNotFoundException</span>();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">return</span> defineClass(name, classData, <span class="hljs-number">0</span>, classData.length);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">byte</span>[] loadClassData(String className) &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">fileName</span> <span class="hljs-operator">=</span> root + File.separatorChar<br>                + className.replace(<span class="hljs-string">&#x27;.&#x27;</span>, File.separatorChar) + <span class="hljs-string">&quot;.class&quot;</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">InputStream</span> <span class="hljs-variable">ins</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(fileName);<br>            <span class="hljs-type">ByteArrayOutputStream</span> <span class="hljs-variable">baos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayOutputStream</span>();<br>            <span class="hljs-type">int</span> <span class="hljs-variable">bufferSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">1024</span>;<br>            <span class="hljs-type">byte</span>[] buffer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[bufferSize];<br>            <span class="hljs-type">int</span> <span class="hljs-variable">length</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">while</span> ((length = ins.read(buffer)) != -<span class="hljs-number">1</span>) &#123;<br>                baos.write(buffer, <span class="hljs-number">0</span>, length);<br>            &#125;<br>            <span class="hljs-keyword">return</span> baos.toByteArray();<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getRoot</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> root;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setRoot</span><span class="hljs-params">(String root)</span> &#123;<br>        <span class="hljs-built_in">this</span>.root = root;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>  &#123;<br><br>        <span class="hljs-type">MyClassLoader</span> <span class="hljs-variable">classLoader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyClassLoader</span>();<br>        classLoader.setRoot(<span class="hljs-string">&quot;D:\\temp&quot;</span>);<br><br>        Class&lt;?&gt; testClass = <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            testClass = classLoader.loadClass(<span class="hljs-string">&quot;com.pdai.jvm.classloader.Test2&quot;</span>);<br>            <span class="hljs-type">Object</span> <span class="hljs-variable">object</span> <span class="hljs-operator">=</span> testClass.newInstance();<br>            System.out.println(object.getClass().getClassLoader());<br>        &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (InstantiationException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (IllegalAccessException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>自定义类加载器的核心在于对字节码文件的获取，如果是加密的字节码则需要在自定义类加载器中进行解密。</p>
+<p>需要注意的几点：</p>
+<ul>
+<li>这里传递的文件名需要时类的全限定名。即<code>com.pdai.jvm.classloader.Test2</code>格式的，因为defineClass方法是按这种格式进行处理。</li>
+<li>最好不要重写loadClass文件。因为这样容易破坏双亲委派模式。</li>
+<li>这类Test类本身可以被AppClassLoader类加载，因此我们不能将com&#x2F;pdai&#x2F;jvm&#x2F;classloader&#x2F;Test2.class放在类路径下，否则由于双亲委派机制的存在，会导致该类被AppClassLoader直接加载，而不会通过我们自定义类加载器加载。</li>
+</ul>
+<h3 id="寻找类加载器"><a href="#寻找类加载器" class="headerlink" title="寻找类加载器"></a>寻找类加载器</h3><p>寻找类加载器的一个小例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.pdai.jvm.classloader;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ClassLoaderTest</span> &#123;<br>     <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ClassLoader</span> <span class="hljs-variable">loader</span> <span class="hljs-operator">=</span> Thread.currentThread().getContextClassLoader();<br>        System.out.println(loader);<br>        System.out.println(loader.getParent());<br>        System.out.println(loader.getParent().getParent());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">sun.misc.Launcher$AppClassLoader@64fef26a<br>sun.misc.Launcher$ExtClassLoader@1ddd40f3<br><span class="hljs-literal">null</span><br></code></pre></td></tr></table></figure>
+
+<p>从上面的结果可以看出，并没有获取到<code>ExtClassLoader</code> 的父Loader。原因是<code>BootstrapLoader</code>是用c语言实现的，找不到一个确定返回父Loader的方式，于是就返回<code>null</code>。</p>
+<h2 id="JVM类加载机制"><a href="#JVM类加载机制" class="headerlink" title="JVM类加载机制"></a>JVM类加载机制</h2><h3 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h3><p>类加载有三种方式：</p>
+<ul>
+<li>命令行启动应用时由JVM初始化加载</li>
+<li>通过Class.forName()方法动态加载</li>
+<li>通过ClassLoader.loadClass()方法动态加载</li>
+</ul>
+<p>Class.forName()和ClassLoader.loadClass()的区别：</p>
+<ul>
+<li>ClassLoader.loadClass()只做一件事，就是将.class文件加载到JVM中，不会执行static中的内容，只有在newInstance才会执行static块。</li>
+<li>Class.forName()除了将.class文件加载到JVM中，还会对类进行解析，执行类中的static块。</li>
+<li>Class.forName(name, initialize, loader)带参函数也可以控制是否加载static块。并且只有调用了newInstance()方法才会调用构造函数，创建类的对象。</li>
+</ul>
+<h3 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h3><ul>
+<li><p>全盘负责</p>
+<blockquote>
+<p>当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显式使用另一个类加载器来载入</p>
+</blockquote>
+</li>
+<li><p>父类委托</p>
+<blockquote>
+<p>先让父类加载器尝试加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类</p>
+</blockquote>
+</li>
+<li><p>缓存机制</p>
+<blockquote>
+<p>缓存机制将会保存所有加载过的Class都会被缓存。当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换为Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效。</p>
+</blockquote>
+</li>
+<li><p>双亲委派机制</p>
+<blockquote>
+<p>如果一个类加载器收到类加载请求，它首先不会自己去尝试加载这个类，而时把请求委托给父加载器去完成，依次向上，因此所有的类加载器请求最终都会被传递到顶层的启动类加载器，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。</p>
+</blockquote>
+</li>
+</ul>
+<p>双亲委派机制过程：</p>
+<ol>
+<li>当AppClassLoader加载一个class时，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成。</li>
+<li>当ExtClassLoader加载一个class时，它首先也不会自己尝试加载这个类，而是把类加载请求委派给BootStrapClassLoader去完成。</li>
+<li>如果BootStrapClassLoader加载失败（例如在$JAVA_HOME&#x2F;jre&#x2F;lib里未查找到该class），会使用ExtClassLoader来尝试加载。</li>
+<li>如ExtClassLoader也加载失败，则会使用AppClassLoader来加载，如果AppClassLoader也加载失败，则会报出异常ClassNotFoundException。</li>
+</ol>
+<p>双亲委派机制的代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Class&lt;?&gt; loadClass(String name)<span class="hljs-keyword">throws</span> ClassNotFoundException &#123;<br>            <span class="hljs-keyword">return</span> loadClass(name, <span class="hljs-literal">false</span>);<br>&#125;<br><br><span class="hljs-keyword">protected</span> <span class="hljs-keyword">synchronized</span> Class&lt;?&gt; loadClass(String name, <span class="hljs-type">boolean</span> resolve)<span class="hljs-keyword">throws</span> ClassNotFoundException &#123;<br>    <span class="hljs-comment">// 首先判断该类型是否已经被加载</span><br>    <span class="hljs-type">Class</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> findLoadedClass(name);<br>    <span class="hljs-comment">// 如果没有被加载，就委托给父类加载或者委派给启动类加载器加载</span><br>    <span class="hljs-keyword">if</span> (c == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">if</span> (parent != <span class="hljs-literal">null</span>) &#123;<br>                <span class="hljs-comment">//如果存在父类加载器，就委派给父类加载器加载</span><br>                c = parent.loadClass(name, <span class="hljs-literal">false</span>);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-comment">//如果不存在父类加载器，就由启动类加载器加载</span><br>                c = findBootstrapClass0(name);<br>            &#125;<br>        &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException e) &#123;<br>            <span class="hljs-comment">// 如果父类加载器和启动类加载器都不能完成加载任务，才调用自身的加载功能</span><br>            c = findClass(name);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (resolve) &#123;<br>        resolveClass(c);<br>    &#125;<br>    <span class="hljs-keyword">return</span> c;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>双亲委派机制的优势：</p>
+<ul>
+<li>系统类防止内存中出现多份同样的字节码</li>
+<li>保证Java程序安全稳定运行</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/JVM/" class="category-chain-item">JVM</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>JVM-类加载</div>
+      <div>http://example.com/2022/11/14/JVM-类加载/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月14日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年11月22日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/11/14/JVM-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" title="JVM-内存结构">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">JVM-内存结构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/" title="设计模式的七大原则">
+                        <span class="hidden-mobile">设计模式的七大原则</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
