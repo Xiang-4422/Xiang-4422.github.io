@@ -223,6 +223,60 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
+          Java并发-CopyOnWriteArrayList
+        </a>
+      </h1>
+
+      <a class="index-excerpt" href="/2022/10/18/Java%E5%B9%B6%E5%8F%91-CopyOnWriteArrayList/" target="_self">
+        <div>
+          
+          CopyOnWriteArrayList简介ArrayList并不是线程安全的，可以使用Vector，或者Collections的静态方法将ArrayList包装成一个线程安全的类，这两种方式都是使用synchronized加锁的方式，利用独占锁来保证线程安全的，效率低。 业务场景，很多业务都是读多写少的：  比如系统配置信息，除了在初始进行系统配置的时候需要写入数据，其他大部分时刻都只需要读取配
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-10-18 22:36" pubdate>
+              2022-10-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2022/10/18/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-ConcurrentHashMap/" target="_self">
           Java多线程-ConcurrentHashMap
         </a>
@@ -673,60 +727,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-10-14 13:37" pubdate>
               2022-10-14
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/Java%E5%B9%B6%E5%8F%91/" class="category-chain-item">Java并发</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80/" target="_self">
-          Java并发-并发基础
-        </a>
-      </h1>
-
-      <a class="index-excerpt" href="/2022/10/13/Java%E5%B9%B6%E5%8F%91-%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80/" target="_self">
-        <div>
-          
-          并发缺点1. 频繁的上下文切换为什么会有频繁的多线程切换： 真多线程：多核CPU，每个线程在不同的CPU上执行  宏观多线程：CPU分配给每个线程一定的时间片，CPU通过不断切换线程，宏观上就是多个线程同时执行  每次切换线程需要保存线程当前状态，加载下一个线程之前保存的状态，这就是上下文切换，每个线程执行的时间很短，所以说上下文切换就很频繁。    减少上下文切换的方法： 无锁并发编程  参考c
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-10-13 22:04" pubdate>
-              2022-10-13
             </time>
           </div>
         
