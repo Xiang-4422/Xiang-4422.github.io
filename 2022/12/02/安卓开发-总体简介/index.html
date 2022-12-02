@@ -1,0 +1,1022 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="安卓系统架构 1、Linux 内核层 安卓平台的基础是Linux内核。   ART依靠linux内核执行底层功能。例如线程和内存管理。 硬件制造商在该层为硬件开发底层驱动。  2、硬件抽象层 硬件抽象层（HAL）提供标准界面，向更高级别的Java API框架显式设备硬件功能。  HAL包含多个库模块，其中每个模块都为特定硬件组件实现一个界面，例如相机、蓝牙模块。当框架API要求访问硬件设备时，系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓开发-总体简介">
+<meta property="og:url" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="安卓系统架构 1、Linux 内核层 安卓平台的基础是Linux内核。   ART依靠linux内核执行底层功能。例如线程和内存管理。 硬件制造商在该层为硬件开发底层驱动。  2、硬件抽象层 硬件抽象层（HAL）提供标准界面，向更高级别的Java API框架显式设备硬件功能。  HAL包含多个库模块，其中每个模块都为特定硬件组件实现一个界面，例如相机、蓝牙模块。当框架API要求访问硬件设备时，系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/android-stack_2x.png">
+<meta property="og:image" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202151503735.png">
+<meta property="og:image" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202153942362.png">
+<meta property="og:image" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202154757132.png">
+<meta property="article:published_time" content="2022-12-02T05:43:25.000Z">
+<meta property="article:modified_time" content="2022-12-02T09:13:12.169Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/android-stack_2x.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>安卓开发-总体简介 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="安卓开发-总体简介"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-02 13:43" pubdate>
+          2022年12月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          42 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">安卓开发-总体简介</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年12月2日 下午
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="安卓系统架构"><a href="#安卓系统架构" class="headerlink" title="安卓系统架构"></a><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1415759">安卓系统架构</a></h1><p><img src="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/android-stack_2x.png" srcset="/img/loading.gif" lazyload alt="Android 软件堆栈"></p>
+<h2 id="1、Linux-内核层"><a href="#1、Linux-内核层" class="headerlink" title="1、Linux 内核层"></a>1、Linux 内核层</h2><blockquote>
+<p>安卓平台的基础是Linux内核。</p>
+</blockquote>
+<ul>
+<li>ART依靠linux内核执行底层功能。例如线程和内存管理。</li>
+<li>硬件制造商在该层为硬件开发底层驱动。</li>
+</ul>
+<h2 id="2、硬件抽象层"><a href="#2、硬件抽象层" class="headerlink" title="2、硬件抽象层"></a>2、硬件抽象层</h2><blockquote>
+<p>硬件抽象层（HAL）提供标准界面，向更高级别的Java API框架显式设备硬件功能。</p>
+</blockquote>
+<p>HAL包含多个库模块，其中每个模块都为特定硬件组件实现一个界面，例如相机、蓝牙模块。当框架API要求访问硬件设备时，系统将为该硬件组件加载库模块。</p>
+<h2 id="3、系统运行时库层"><a href="#3、系统运行时库层" class="headerlink" title="3、系统运行时库层"></a>3、系统运行时库层</h2><blockquote>
+<p>该层包含很多C&#x2F;C++编写的原生库还有Android Runtime。</p>
+</blockquote>
+<h3 id="ART"><a href="#ART" class="headerlink" title="ART"></a>ART</h3><p>每个应用都在其自己的进程中运行，都单独拥有一个ART实例。</p>
+<p>ART编写为通过执行DEX文件来运行多个虚拟机。DEX文件是专为Android设计的字节码格式，经过优化，使用内存很少。编译工具链（如Jack）可以将Java源码编译为DEX字节码，使其在Android平台运行。</p>
+<p>ART的主要功能：</p>
+<ul>
+<li>预先编译（AOT）和即时编译（JIT）</li>
+<li>垃圾回收（GC）</li>
+<li>DEX字节码转化为机器码</li>
+<li>更好的调试支持</li>
+</ul>
+<p>安卓还包含一套核心运行时库，可提供给 Java API 框架 Java 编程语言的大部分功能。</p>
+<h3 id="原生C-x2F-C-库"><a href="#原生C-x2F-C-库" class="headerlink" title="原生C&#x2F;C++库"></a>原生C&#x2F;C++库</h3><p>许多核心Android系统组件和服务（例如ART、HAL）构建自原生代码。Android 平台提供 Java API框架以向应用层提供部分原生库的功能。</p>
+<p>例如，可以通过 Android 框架的 Java OpenGL API 访问 OpenGL ES， 以支持在应用中绘制和操作 2D 和 3D 图形。如果开发的是需要 C&#x2F;C++ 代码的应用，可以使用 Android NDK 直接从原生代码访问某些原生平台库。</p>
+<h2 id="4、API框架层"><a href="#4、API框架层" class="headerlink" title="4、API框架层"></a>4、API框架层</h2><blockquote>
+<p>应用可以调用通过 Java 语言编写的 API 从而使用 Android OS的整个功能集。</p>
+</blockquote>
+<p>这些 API 形成创建 Android 应用所需的构建块，它们可以简化核心模块化系统组件和服务重复使用。</p>
+<p>包含的组件和服务：</p>
+<ul>
+<li><p>视图系统</p>
+<blockquote>
+<p>用于构件应用的UI，包括列表、网格、文本框、按钮以及可嵌入的网络浏览器。</p>
+</blockquote>
+</li>
+<li><p>资源管理器</p>
+<blockquote>
+<p>用于访问非代码资源，例如本地化的字符串、图形和布局文件。</p>
+</blockquote>
+</li>
+<li><p>通知管理器</p>
+<blockquote>
+<p>可让所有应用在状态栏中显式自定义提醒。</p>
+</blockquote>
+</li>
+<li><p>活动管理器</p>
+<blockquote>
+<p>用于管理应用的生命周期，提供常见的导航返回栈。</p>
+</blockquote>
+</li>
+<li><p>内容提供程序</p>
+<blockquote>
+<p>可让应用访问其他应用中的数据，或共享本应用的数据。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="5、应用层"><a href="#5、应用层" class="headerlink" title="5、应用层"></a>5、应用层</h2><blockquote>
+<p>Android系统自带很多核心应用，例如邮件、短信、日历、浏览器、联系人等。</p>
+</blockquote>
+<p>系统自带应用和第三方应用一样，没有特殊状态。因此可使用一些第三方应用替换系统自带应用，系统应用可作为用户的应用，以及提供开发者访问，例如若第三方软件需要发送短信，可以直接调用系统的短信应用，而无需自己构建该功能。</p>
+<h1 id="安卓应用开发的特色"><a href="#安卓应用开发的特色" class="headerlink" title="安卓应用开发的特色"></a>安卓应用开发的特色</h1><h2 id="四大组件"><a href="#四大组件" class="headerlink" title="四大组件"></a>四大组件</h2><ul>
+<li><p>活动（Activity）</p>
+<blockquote>
+<p>活动是安卓应用的门面，在应用中看得见的都放在活动中。</p>
+</blockquote>
+</li>
+<li><p>服务（Service）</p>
+<blockquote>
+<p>服务在后台运行，无法看到，应用退出后仍可以运行。</p>
+</blockquote>
+</li>
+<li><p>广播接收器（Broadcast Receiver）</p>
+<blockquote>
+<p>广播接收器允许应用接收来自各处的广播，例如电话、短信等。同时应用也可以对外发送广播消息。</p>
+</blockquote>
+</li>
+<li><p>内容提供器（Content Provider）</p>
+<blockquote>
+<p>内容提供器为跨应用分享数据提供可能，例如读取系统电话簿应用中的联系人信息。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="系统控件"><a href="#系统控件" class="headerlink" title="系统控件"></a>系统控件</h2><p>系统提供了丰富的系统控件用于编写界面。同时也可以定制自己的控件使用。</p>
+<h2 id="SQLite数据库"><a href="#SQLite数据库" class="headerlink" title="SQLite数据库"></a>SQLite数据库</h2><p>安卓系统自带了SQLite数据库。</p>
+<p>其特点：</p>
+<ul>
+<li>轻量化、速度快、嵌入式、关系型数据库</li>
+<li>支持标准SQL语法</li>
+<li>Android封装了API用于操作该数据库</li>
+</ul>
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><p><img src="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202151503735.png" srcset="/img/loading.gif" lazyload alt="image-20221202151503735"></p>
+<h2 id="基本无需修改文件"><a href="#基本无需修改文件" class="headerlink" title="基本无需修改文件"></a>基本无需修改文件</h2><ul>
+<li><p>.gradle 和 .idea文件夹</p>
+<blockquote>
+<p>由 Android Studio自动生成，无需关心，无需编辑。</p>
+</blockquote>
+</li>
+<li><p>gradle文件夹</p>
+<blockquote>
+<p>包含了 gradle wrapper 的配置文件。Android会根据本地的缓存情况自动决定是否下载 gradle wrapper。默认没有启用 gralde wrapper。</p>
+</blockquote>
+</li>
+<li><p>.gitignore</p>
+<blockquote>
+<p>用于将指定目录或文件排除在版本控制之外。</p>
+</blockquote>
+</li>
+<li><p>build.gradle</p>
+<blockquote>
+<p>项目全局的gredle构建脚本。通常不需要修改。</p>
+</blockquote>
+</li>
+<li><p>gradle.properties</p>
+<blockquote>
+<p>全局的gradle配置文件，这里配置的属性会影响到项目中所有的gradle编译脚本。</p>
+</blockquote>
+</li>
+<li><p>gradlew和gradlew.bat</p>
+<blockquote>
+<p>用于在命令行界面执行gradle命令。</p>
+</blockquote>
+</li>
+<li><p>local.properties</p>
+<blockquote>
+<p>用于指定本机中 Android SDK 路径，通常自动生成，不需要修改。</p>
+</blockquote>
+</li>
+<li><p>settings.gradle</p>
+<blockquote>
+<p>用于指定项目中所有引用的模块。通常情况下模块应用都是自动完成的，需要手动修改的场景较少。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="app文件夹"><a href="#app文件夹" class="headerlink" title="app文件夹"></a>app文件夹</h2><p><img src="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202153942362.png" srcset="/img/loading.gif" lazyload alt="image-20221202153942362"></p>
+<h3 id="基本无需修改文件-1"><a href="#基本无需修改文件-1" class="headerlink" title="基本无需修改文件"></a>基本无需修改文件</h3><ul>
+<li><p>build文件夹</p>
+<blockquote>
+<p>类似于外层builde目录，包含一些编译时自动生成的文件。</p>
+</blockquote>
+</li>
+<li><p>libs文件夹</p>
+<blockquote>
+<p>项目中使用到的第三方jar包放在该目录下。在该目录中的jar包会被自动添加到构建路径中。</p>
+</blockquote>
+</li>
+<li><p>.gitignore</p>
+<blockquote>
+<p>同外层.gitignore文件一样，该文件用于将app模块中指定的目录或文件排除在版本控制之外。</p>
+</blockquote>
+</li>
+<li><p>proguard-rules.pro</p>
+<blockquote>
+<p>用于指定项目代码混淆规则，防止代码被破解。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="src文件夹"><a href="#src文件夹" class="headerlink" title="src文件夹"></a>src文件夹</h3><p><img src="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%80%BB%E4%BD%93%E7%AE%80%E4%BB%8B/image-20221202154757132.png" srcset="/img/loading.gif" lazyload alt="image-20221202154757132"></p>
+<h4 id="androidTest-和test-文件夹"><a href="#androidTest-和test-文件夹" class="headerlink" title="androidTest 和test 文件夹"></a>androidTest 和test 文件夹</h4><blockquote>
+<p>这两个目录用于存放编写的测试用例，一个是Android test测试用例，一个是Unit test测试用例。</p>
+</blockquote>
+<h4 id="main-文件夹"><a href="#main-文件夹" class="headerlink" title="main 文件夹"></a>main 文件夹</h4><blockquote>
+<p>该文件夹中存放的就是我们真正编写的安卓应用代码。</p>
+</blockquote>
+<h5 id="1-java"><a href="#1-java" class="headerlink" title="1. java"></a>1. java</h5><blockquote>
+<p>此处就是用于存放我们所有的Java代码。</p>
+</blockquote>
+<h5 id="2-res"><a href="#2-res" class="headerlink" title="2. res"></a>2. res</h5><blockquote>
+<p>此处用于存放项目中使用到的资源。</p>
+</blockquote>
+<p>包含的文件夹内容：</p>
+<ul>
+<li>layout：布局文件</li>
+<li>values：字符串、样式、主题等配置</li>
+<li>drawable：图片</li>
+<li>mipmap：应用图标</li>
+<li>dpi后缀文件夹：设备适配（一般使用xxhdpi）</li>
+</ul>
+<p>res中的的文件基本都是xml文件，例如res&#x2F;values&#x2F;string.xml文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">resources</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">string</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;app_name&quot;</span>&gt;</span>HelloWorld<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">resources</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>引用res中资源的方式：</p>
+<ul>
+<li>在Java代码中引用：通过<code>R.string.app_name</code>可获取上面字符串的引用。</li>
+<li>在XML文件中引用：通过<code>@string/app_name</code>可获取上面字符串的引用。</li>
+</ul>
+<p>其中的string可以替换为drawable、mipmap、layout用于引用图片、图标、布局。</p>
+<h5 id="3-AndroidManifest-xml"><a href="#3-AndroidManifest-xml" class="headerlink" title="3. AndroidManifest.xml"></a>3. AndroidManifest.xml</h5><blockquote>
+<p>Android项目的配置文件。</p>
+</blockquote>
+<ul>
+<li>在项目中定义的四大组件需要在该文件中注册</li>
+<li>应用的所需权限在该文件中声明</li>
+</ul>
+<h3 id="build-gradle"><a href="#build-gradle" class="headerlink" title="build.gradle"></a>build.gradle</h3><blockquote>
+<p>Android Studio 使用 Gradle 来构建项目。Gradle是一种给长先进的项目构建工具，基于Groovy的领域特定语言来声明项目设置，摒弃了传统基于XML（如Maven）的各种繁琐配置。</p>
+</blockquote>
+<p>外层的build.gradle:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs groovy"><span class="hljs-comment">// 应用插件</span><br>plugins &#123;<br>    id <span class="hljs-string">&#x27;com.android.application&#x27;</span> version <span class="hljs-string">&#x27;7.3.1&#x27;</span> apply <span class="hljs-literal">false</span>	<span class="hljs-comment">// 应用程序模块，可直接运行</span><br>    id <span class="hljs-string">&#x27;com.android.library&#x27;</span> version <span class="hljs-string">&#x27;7.3.1&#x27;</span> apply <span class="hljs-literal">false</span>		<span class="hljs-comment">//库模块，依附于应用程序模块与逆行</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>内层的build.gradle:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs groovy">plugins &#123;<br>    id <span class="hljs-string">&#x27;com.android.application&#x27;</span><br>&#125;<br><br><span class="hljs-comment">// 配置项目构建的各个属性</span><br>android &#123;<br>    namespace <span class="hljs-string">&#x27;com.xy.materialdesign&#x27;</span><br>    compileSdk <span class="hljs-number">32</span>	<span class="hljs-comment">// 用于编译的SDK版本</span><br><br>    <span class="hljs-comment">// 项目细节配置</span><br>    defaultConfig &#123;<br>        applicationId <span class="hljs-string">&quot;com.xy.materialdesign&quot;</span>	<span class="hljs-comment">// 项目包名</span><br>        minSdk <span class="hljs-number">21</span>								<span class="hljs-comment">// 最低兼容安卓版本</span><br>        targetSdk <span class="hljs-number">32</span>							<span class="hljs-comment">// 目标兼容安卓版本（高于该版本的功能和特性不会开启）</span><br>        versionCode <span class="hljs-number">1</span>							<span class="hljs-comment">// 版本号</span><br>        versionName <span class="hljs-string">&quot;1.0&quot;</span>						<span class="hljs-comment">// 版本名称</span><br><br>        testInstrumentationRunner <span class="hljs-string">&quot;androidx.test.runner.AndroidJUnitRunner&quot;</span><br>    &#125;<br><br>    <span class="hljs-comment">// 指定生成安装文件的配置</span><br>    buildTypes &#123;<br>        <span class="hljs-comment">// 除了release还可以有一个debug闭包，用于指定测试版安装文件配置</span><br>        release &#123;<br>            minifyEnabled <span class="hljs-literal">false</span>	<span class="hljs-comment">// 是否开启代码混淆</span><br>            proguardFiles getDefaultProguardFile(<span class="hljs-string">&#x27;proguard-android-optimize.txt&#x27;</span>), <span class="hljs-string">&#x27;proguard-rules.pro&#x27;</span> <span class="hljs-comment">// 混淆时使用的规则文件</span><br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// 编译配置</span><br>    compileOptions &#123;<br>        sourceCompatibility JavaVersion.VERSION_1_8<br>        targetCompatibility JavaVersion.VERSION_1_8<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 指定项目的依赖关系，有三种依赖方式：远程依赖、本地依赖、库依赖</span><br>dependencies &#123;<br>    <span class="hljs-comment">// 远程依赖格式 &#x27;域名:组名:版本号&#x27;</span><br>    implementation <span class="hljs-string">&#x27;androidx.appcompat:appcompat:1.4.1&#x27;</span><br>    <span class="hljs-comment">// 本地依赖格式 fileTree(dit: &#x27;目录&#x27;, include: [&#x27;过滤格式&#x27;])</span><br>    implementation fileTree(<span class="hljs-attr">dir:</span> <span class="hljs-string">&#x27;libs&#x27;</span>, <span class="hljs-attr">include:</span> [<span class="hljs-string">&#x27;*.jar&#x27;</span>])<br>    <span class="hljs-comment">// 库依赖格式 project(&#x27;:库名称&#x27;)</span><br>    implementation project(<span class="hljs-string">&#x27;:mylibrary&#x27;</span>)<br>    <br>    <span class="hljs-comment">// 测试依赖</span><br>    testImplementation <span class="hljs-string">&#x27;junit:junit:4.13.2&#x27;</span><br>    androidTestImplementation <span class="hljs-string">&#x27;androidx.test.ext:junit:1.1.3&#x27;</span><br>    androidTestImplementation <span class="hljs-string">&#x27;androidx.test.espresso:espresso-core:3.4.0&#x27;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="日志工具"><a href="#日志工具" class="headerlink" title="日志工具"></a>日志工具</h1><blockquote>
+<p>安卓提供的日志工具时Log（android.util.Log）。</p>
+</blockquote>
+<p>Log提供了五种方法用于打印日志，分别对应不同的日志级别：</p>
+<ul>
+<li><p>Log.v()</p>
+<blockquote>
+<p>verbose：用于打印最为琐碎、意义最小的日志信息。</p>
+</blockquote>
+</li>
+<li><p>Log.d()</p>
+<blockquote>
+<p>debug：用于打印一些对调试程序和分析问题有用的调试信息。</p>
+</blockquote>
+</li>
+<li><p>Log.i()</p>
+<blockquote>
+<p>important：用于打印一些比较重要的数据。这些数据应该是你想要看到的、可以帮助你分析用户行为的数据。</p>
+</blockquote>
+</li>
+<li><p>Log.w()</p>
+<blockquote>
+<p>用于打印一些警告信息。提示程序潜在的风险，最好去修复出现警告的地方。</p>
+</blockquote>
+</li>
+<li><p>Log.e()</p>
+<blockquote>
+<p>用于打印程序中的错误信息。当出现错误信息时（例如进入catch块），一般代表程序出现严重问题，必须尽快修复。</p>
+</blockquote>
+</li>
+</ul>
+<p>方法所需的参数：</p>
+<ul>
+<li>String tag：一般传入当前类名即可，主要用于对打印信息进行过滤。</li>
+<li>String msg：传入想要打印的具体内容。</li>
+</ul>
+<p>Log的快捷使用：</p>
+<ul>
+<li>在java类中输入logt，再按下Tab键，就会以当前类名生成一个TAG常量。</li>
+<li>输入logd，再按下Tab键，会自动补全一条log语句，tag参数默认是TAG常量。</li>
+</ul>
+<p>为什么不使用 System.out.println 打印日志?</p>
+<p>因为除了方便之外，全是缺点：</p>
+<ul>
+<li>日志打印不可控</li>
+<li>打印时间无法确定</li>
+<li>不能添加过滤器</li>
+<li>日志没有级别区分</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Android/" class="category-chain-item">Android</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>安卓开发-总体简介</div>
+      <div>http://example.com/2022/12/02/安卓开发-总体简介/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月2日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年12月2日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6-Activity/" title="安卓开发-四大组件-Activity">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">安卓开发-四大组件-Activity</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/29/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" title="网络模型">
+                        <span class="hidden-mobile">网络模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
