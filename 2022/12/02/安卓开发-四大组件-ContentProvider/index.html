@@ -16,13 +16,15 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="程序间共享数据的必要性：  有些程序中拥有可供其他程序进行二次开发的基础性数据，例如电话簿中的联系人信息以及短信和媒体库等。若没有这些程序共享数据，那么很多应用的功能都要大打折扣。  使用内容提供器的必要性：  原本的Android持久化技术，包括文件存储、SharedPreferences存储都提供了MODE_WORLD_READABLE和MODE_WORLD_WRITEABLE两种操作模式，">
+<meta property="og:type" content="article">
 <meta property="og:title" content="安卓开发-四大组件-ContentProvider">
 <meta property="og:url" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6-ContentProvider/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="程序间共享数据的必要性：  有些程序中拥有可供其他程序进行二次开发的基础性数据，例如电话簿中的联系人信息以及短信和媒体库等。若没有这些程序共享数据，那么很多应用的功能都要大打折扣。  使用内容提供器的必要性：  原本的Android持久化技术，包括文件存储、SharedPreferences存储都提供了MODE_WORLD_READABLE和MODE_WORLD_WRITEABLE两种操作模式，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-02T05:49:18.000Z">
-<meta property="article:modified_time" content="2022-12-02T06:00:38.251Z">
+<meta property="article:modified_time" content="2022-12-04T13:09:42.833Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -216,7 +218,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          5.7k 字
         
       </span>
     
@@ -227,7 +229,7 @@
         
         
         
-          1 分钟
+          48 分钟
         
       </span>
     
@@ -288,14 +290,140 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年12月2日 下午
+                    本文最后更新于：2022年12月4日 晚上
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              
+              <ul>
+<li>程序间共享数据的必要性：</li>
+</ul>
+<p>有些程序中拥有可供其他程序进行二次开发的基础性数据，例如电话簿中的联系人信息以及短信和媒体库等。若没有这些程序共享数据，那么很多应用的功能都要大打折扣。</p>
+<ul>
+<li>使用内容提供器的必要性：</li>
+</ul>
+<p>原本的Android持久化技术，包括文件存储、SharedPreferences存储都提供了MODE_WORLD_READABLE和MODE_WORLD_WRITEABLE两种操作模式，用于供其他程序访问当前应用的数据。但是在Android 4.2版本中已经被废弃了，因为Android提供了更为安全的跨程序数据共享技术，也就是内容提供器技术。</p>
+<ul>
+<li>内容提供器简介：</li>
+</ul>
+<p>内容提供器主要用于在不同的应用程序之间实现数据共享的功能。它提供了一套完整的机制，允许一个程序访问另一个程序中的数据，同时还能保证被访问数据的安全性（内容提供器可以选择只对部分数据进行分享，保证我们程序中的隐私数据不会被泄漏）。目前内容提供器时Android实现跨程序共享数据的标准方式。</p>
+<h1 id="运行时权限"><a href="#运行时权限" class="headerlink" title="运行时权限"></a>运行时权限</h1><h2 id="Android的权限机制"><a href="#Android的权限机制" class="headerlink" title="Android的权限机制"></a>Android的权限机制</h2><p>在低于6.0的安卓系统中，应用权限会统一在安装应用时获取，如果你不接受应用申请的权限，可以拒绝安装。但是离不开的日常软件，普遍存在权限滥用，你不得不使用该软件，所以你也不得不接收它所申请的一切权限。在6.0加入了运行时权限功能，用户不需要在安装软件的时候对所有申请的权限授权，可以在软件运行时再对用到的权限授权，我们呢即使拒绝运行时申请的权限我们也能使用应用的其他功能。</p>
+<p>Android将权限分为两类：</p>
+<ul>
+<li><p>普通权限</p>
+<blockquote>
+<p>普通权限指的是不会直接威胁到用户的安全和隐私的权限，系统会自动进行授权。</p>
+</blockquote>
+</li>
+<li><p>危险权限</p>
+<blockquote>
+<p>危险权限指的是可能触及用户隐私或对设备安全造成影响的权限，例如联系人信息、设备定位信息等，对于这部分权限的申请，必须要由用户手动点击授权才行。</p>
+<p>系统权限很多，危险权限总共就9组24个，每个权限都属于一个权限组，我们申请时使用的是权限名，但是用户统一后，同组的其他权限也会被授权。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="在程序运行时申请权限"><a href="#在程序运行时申请权限" class="headerlink" title="在程序运行时申请权限"></a>在程序运行时申请权限</h2><p>普通权限的获取：在AndroidManifest.xml中添加以下权限声明即可。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.CALL_PHONE&quot;</span> /&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>而对于危险权限则需要在声明的同时，还需要在代码中动态获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 权限检查</span><br><span class="hljs-keyword">if</span> (ContextCompat.checkSelfPermission(MainActivity.<span class="hljs-built_in">this</span>, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) &#123;<br>    <span class="hljs-comment">// 未获取权限</span><br>    <span class="hljs-comment">// 动态申请权限（三个参数：1. Context，2. 申请的权限数组，3. 唯一的请求码）</span><br>    Activity.requestPermissions(MainActivity.<span class="hljs-built_in">this</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[] &#123;Manifest.permission.CALL_PHONE&#125;, <span class="hljs-number">1</span>);<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 已经获取权限</span><br>    <span class="hljs-comment">// do something</span><br>&#125;<br><br><span class="hljs-meta">@Override</span><br><span class="hljs-comment">//动态申请权限的回调方法（当动态申请权限时，会弹出权限申请对话框，用户选择同意或拒绝授权后，会回调该方法）</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onRequestPermissionResult</span><span class="hljs-params">(<span class="hljs-type">int</span> requestCode, String[] permissions, <span class="hljs-type">int</span>[] grantResults)</span> &#123;<br>    <span class="hljs-comment">//根据上面的请求码，执行不同的回调操作</span><br>    <span class="hljs-keyword">switch</span> (requestCode) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">if</span> (grantResults.length &gt; <span class="hljs-number">0</span> &amp;&amp; grantResult[<span class="hljs-number">0</span>] == PackagerManager.PERMISSION_GRANTED) &#123;<br>                <span class="hljs-comment">// 用户同意授权</span><br>                <span class="hljs-comment">// do something</span><br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-comment">// 用户拒绝授权</span><br>                <span class="hljs-comment">// do somthing</span><br>            &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="通过ContentResolver访问其他程序中的数据"><a href="#通过ContentResolver访问其他程序中的数据" class="headerlink" title="通过ContentResolver访问其他程序中的数据"></a>通过ContentResolver访问其他程序中的数据</h1><blockquote>
+<p>对于应用程序来说，若要访问内容提供器中共享的数据，一定要借助于ContentResolver类。可以通过Context的getContentResolver()方法获取该类实例。</p>
+</blockquote>
+<p>ContentResoler提供了一系列方法用于对数据进行CRUD操作：insert()、update()、delete()、query()。</p>
+<h2 id="内容URI"><a href="#内容URI" class="headerlink" title="内容URI"></a>内容URI</h2><blockquote>
+<p>ContentResolver与SQLiteDatabase的使用类似。但是ContentResolver的CRUD方法不接受表名参数，而是使用一个Uri对象参数代替，这个参数被称为内容URI。</p>
+</blockquote>
+<p>Uri对象通过Uri的静态方法parse()解析内容URI获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Uri</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> Uri.parse(<span class="hljs-string">&quot;content://com.example.app.provider/table1&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>内容URI由两部分组成，为内容提供器中的数据建立了唯一的标识符（注意要在开头加上<code>content://</code>协议说明）：</p>
+<ul>
+<li>authority：用于对不同应用程序做区分</li>
+<li>path：用于对同一应用程序中的不同表做区分</li>
+</ul>
+<h2 id="ContentResolver方法的使用"><a href="#ContentResolver方法的使用" class="headerlink" title="ContentResolver方法的使用"></a>ContentResolver方法的使用</h2><blockquote>
+<p>返回的结果时Cursor，和处理SQLiteDatabase获取的结果一致，同样新增和修改也是使用的ContentValues对象。</p>
+</blockquote>
+<h3 id="query"><a href="#query" class="headerlink" title="query()"></a>query()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Cursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> getContentResolver.query(<br>	uri,		<span class="hljs-comment">//FROM table_name</span><br>	projection,	<span class="hljs-comment">//SELECT column1, column2</span><br>	selection,	<span class="hljs-comment">//WHERE column = value</span><br>	selectionArgs,<br>	sortOrder	<span class="hljs-comment">//ORDER BY column1, column2</span><br>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="insert-、update-、delete"><a href="#insert-、update-、delete" class="headerlink" title="insert()、update()、delete()"></a>insert()、update()、delete()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//增</span><br><span class="hljs-type">ContentValues</span> <span class="hljs-variable">values</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ContentValues</span>();<br>values.put(<span class="hljs-string">&quot;column1&quot;</span>, <span class="hljs-string">&quot;text&quot;</span>);<br>values.put(<span class="hljs-string">&quot;column2&quot;</span>, <span class="hljs-number">1</span>);<br>getContentResolver().insert(uri, values);<br><span class="hljs-comment">//改</span><br><span class="hljs-type">ContentValues</span> <span class="hljs-variable">values</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ContentValues</span>();<br>values.put(<span class="hljs-string">&quot;column1&quot;</span>, <span class="hljs-string">&quot;text updated&quot;</span>);<br>getContentResolver().update(uri, values, <span class="hljs-string">&quot;column1 = ? and column2 = ?&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[] &#123;<span class="hljs-string">&quot;text&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>&#125;);<br><span class="hljs-comment">//删</span><br>getContentResolver().delete(uri, <span class="hljs-string">&quot;column2 = ?&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[] &#123;<span class="hljs-string">&quot;1&quot;</span>&#125;)<br></code></pre></td></tr></table></figure>
+
+<h1 id="创建自己的内容提供器"><a href="#创建自己的内容提供器" class="headerlink" title="创建自己的内容提供器"></a>创建自己的内容提供器</h1><h2 id="一、创建内容提供器"><a href="#一、创建内容提供器" class="headerlink" title="一、创建内容提供器"></a>一、创建内容提供器</h2><blockquote>
+<p>自定义内容提供器需要继承ContentProvider，并重写其6个方法</p>
+</blockquote>
+<h3 id="六个需要重写的方法"><a href="#六个需要重写的方法" class="headerlink" title="六个需要重写的方法"></a>六个需要重写的方法</h3><ul>
+<li><p>boolean onCreate()</p>
+<blockquote>
+<p>初始化内容跟提供器的时候调用。通常在这里完成对数据库的创建和升级等操作，返回一个boolean值用以表示初始化是否成功。</p>
+</blockquote>
+</li>
+<li><p>query()、insert()、update()、delete()</p>
+<blockquote>
+<p>前面使用ContentResolver已经详细介绍过这几个方法了</p>
+</blockquote>
+</li>
+<li><p>String getType(Uri uri)</p>
+<blockquote>
+<p>根据传入内容URI来返回相应的MIME类型</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="UriMatcher"><a href="#UriMatcher" class="headerlink" title="UriMatcher"></a>UriMatcher</h3><blockquote>
+<p>内容提供器中重写的方法几乎都有一个uri参数，UriMatcher可以根据传入的uri解析出希望访问的表和数据。</p>
+</blockquote>
+<p>内容URI的主要格式有两种：</p>
+<ul>
+<li><p>以路径结尾：表示希望访问该表中所有数据</p>
+<blockquote>
+<p>content:&#x2F;&#x2F;com.xy.app.provider&#x2F;table1</p>
+</blockquote>
+</li>
+<li><p>以id结尾：表示期望访问该表中对应id的数据</p>
+<blockquote>
+<p>content:&#x2F;&#x2F;com.xy.app.provider&#x2F;table1&#x2F;1</p>
+</blockquote>
+</li>
+</ul>
+<p>我们可以使用通配符来匹配内容URI：</p>
+<ul>
+<li><p><code>*</code>：表示匹配任意长度的的任意字符</p>
+<blockquote>
+<p><code>content://com.xy.app.provider/*</code>表示匹配任意表</p>
+</blockquote>
+</li>
+<li><p><code>#</code>：表示匹配任意长度的数字</p>
+<blockquote>
+<p><code>content://com.xy.app.provider/table1/#</code>表示匹配table1表中任意一行</p>
+</blockquote>
+</li>
+</ul>
+<p>使用UriMatch类来实现匹配内容URI的功能：</p>
+<ul>
+<li>addURI()方法：接收3个参数，分别是authority、path、自定义代码</li>
+<li>match()方法：接收一个Uri对象，返回能匹配这个Uri对象的自定义代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DatabaseProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ContentProvider</span> &#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">BOOK_DIR</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">BOOK_ITEM</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">CATEGORY_DIR</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">CATEGORY_ITEM</span> <span class="hljs-operator">=</span> <span class="hljs-number">3</span>;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">AUTHORITY</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;com.xy.databasetest.provider&quot;</span>;<br>    <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> UriMatcher uriMatcher;<br>    <br>    <span class="hljs-keyword">private</span> MyDatabaseHelper dbHelper;<br>    <br>    <span class="hljs-keyword">static</span> &#123;<br>        uriMatcher = <span class="hljs-keyword">new</span> <span class="hljs-title class_">UriMatcher</span>(UriMatcher.NO_MATCH);<br>        uriMatcher.addURI(AUTHORITY, <span class="hljs-string">&quot;book&quot;</span>, BOOK_DIR);<br>        uriMatcher.addURI(AUTHORITY, <span class="hljs-string">&quot;book/#&quot;</span>, BOOK_ITEM);<br>        uriMatcher.addURI(AUTHORITY, <span class="hljs-string">&quot;category&quot;</span>, CATEGORY_DIR);<br>        uriMatcher.addURI((AUTHORITY, <span class="hljs-string">&quot;category/#&quot;</span>, CATEGORY_ITEM));<br>    &#125;<br>    <br>    ...<br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Cursor <span class="hljs-title function_">query</span><span class="hljs-params">(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)</span> &#123;<br>        <span class="hljs-type">SQLiteDatabase</span> <span class="hljs-variable">db</span> <span class="hljs-operator">=</span> dbHelper.getReadableDatabase();<br>        <span class="hljs-type">Cursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">switch</span> (uriMatcher.match(uri)) &#123;<br>            <span class="hljs-keyword">case</span> BOOK_DIR:<br>                <span class="hljs-comment">//TODO</span><br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> BOOK_ITEM:<br>                <span class="hljs-comment">//TODO</span><br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> CATEGORY_DIR:<br>                <span class="hljs-comment">//TODO</span><br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> CATEGORY_ITEM:<br>                <span class="hljs-comment">//TODO</span><br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-keyword">break</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> cursor;<br>    &#125;<br>    <br>    ...<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="MIME"><a href="#MIME" class="headerlink" title="MIME"></a>MIME</h3><p>getType()方法用于返回传入Uri对象对应的MIME字符串。</p>
+<p>MIME字符串由3部分组成：</p>
+<ul>
+<li>由vnd开头</li>
+<li>根据内容URI不同结尾后接不同部分<ul>
+<li>以路径结尾，则后接android.cursor.dir&#x2F;</li>
+<li>以id结尾，则后接android.cursor.item&#x2F;</li>
+</ul>
+</li>
+<li>最后接上vnd.&lt;authority&gt;.&lt;path&gt;</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DatabaseProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ContentProvider</span> &#123;<br>    <br>    ...<br>    <br>	<span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getType</span><span class="hljs-params">(<span class="hljs-meta">@NonNull</span> Uri uri)</span> &#123;<br>        <span class="hljs-keyword">switch</span> (uriMatcher.match(uri)) &#123;<br>            <span class="hljs-keyword">case</span> BOOK_DIR:<br>                <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;vnd.android.cursor.dir/vnd.com.example.databasetest.provider.book&quot;</span>;<br>            ...<br><br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>    <br>    ...<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、注册内容提供器"><a href="#二、注册内容提供器" class="headerlink" title="二、注册内容提供器"></a>二、注册内容提供器</h2><p>使用Android Studio的快捷方式创建的内容提供器会在AndroidManifest.xml中自动注册。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">manifest</span> <span class="hljs-attr">...</span> &gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">application</span> <span class="hljs-attr">...</span> &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">provider</span></span><br><span class="hljs-tag">            <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;.DatabaseProvider&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">android:authorties</span>=<span class="hljs-string">&quot;com.xy.databasetest.provider&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">android:enable</span>=<span class="hljs-string">&quot;true&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">android:exported</span>=<span class="hljs-string">&quot;true&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">provider</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">application</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">manifest</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
               
             </div>
             <hr/>
@@ -351,7 +479,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年12月2日</div>
+          <div>2022年12月4日</div>
         </div>
       
       <div class="license-meta-item">

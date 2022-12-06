@@ -16,13 +16,15 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="在程序中使用的变量都属于是临时数据，存储在内存中，程序重启后就会消失，所以对于一些关键数据就需要使用数据持久化技术。 数据持久化技术就是将内存中的临时数据保存到存储设备中，持久化技术提供了一种机制让数据在内存和硬盘之间传输。 Android提供了三种方式来实现数据的持久化：  文件存储 SharedPreferences存储 数据库存储  文件存储 它不对存储内容进行任何的格式化处理，所有数据原封">
+<meta property="og:type" content="article">
 <meta property="og:title" content="安卓开发-持久化技术">
 <meta property="og:url" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E6%8C%81%E4%B9%85%E5%8C%96%E6%8A%80%E6%9C%AF/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="在程序中使用的变量都属于是临时数据，存储在内存中，程序重启后就会消失，所以对于一些关键数据就需要使用数据持久化技术。 数据持久化技术就是将内存中的临时数据保存到存储设备中，持久化技术提供了一种机制让数据在内存和硬盘之间传输。 Android提供了三种方式来实现数据的持久化：  文件存储 SharedPreferences存储 数据库存储  文件存储 它不对存储内容进行任何的格式化处理，所有数据原封">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-02T05:49:06.000Z">
-<meta property="article:modified_time" content="2022-12-02T05:54:08.666Z">
+<meta property="article:modified_time" content="2022-12-04T06:21:48.305Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -216,7 +218,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          8.3k 字
         
       </span>
     
@@ -227,7 +229,7 @@
         
         
         
-          1 分钟
+          69 分钟
         
       </span>
     
@@ -288,14 +290,300 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年12月2日 下午
+                    本文最后更新于：2022年12月4日 下午
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              
+              <p>在程序中使用的变量都属于是临时数据，存储在内存中，程序重启后就会消失，所以对于一些关键数据就需要使用数据持久化技术。</p>
+<p>数据持久化技术就是将内存中的临时数据保存到存储设备中，持久化技术提供了一种机制让数据在内存和硬盘之间传输。</p>
+<p>Android提供了三种方式来实现数据的持久化：</p>
+<ul>
+<li>文件存储</li>
+<li>SharedPreferences存储</li>
+<li>数据库存储</li>
+</ul>
+<h1 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h1><blockquote>
+<p>它不对存储内容进行任何的格式化处理，所有数据原封不动的存储到文件中。因此，它适合存储一些简单的文本数据或二进制数据。若要存储较复杂的文本数据，就需要自定义一套格式规范，用于将取出的数据重新解析。</p>
+</blockquote>
+<p>Context类提供了openFileOutput()、openFileInput()方法用于读写文件。</p>
+<h2 id="存储数据"><a href="#存储数据" class="headerlink" title="存储数据"></a>存储数据</h2><blockquote>
+<p>使用文件存储，文件都存储在&#x2F;data&#x2F;data&#x2F;&lt;package name&gt;&#x2F;files&#x2F;路径下</p>
+</blockquote>
+<p>openFileOutput() 方法的参数与返回值：</p>
+<ul>
+<li><p>参数一：文件名</p>
+<blockquote>
+<p>文件创建时使用的就是这个名字</p>
+<p>名字不能包含路径，因为每个程序有默认的存储路径：</p>
+</blockquote>
+</li>
+<li><p>参数二：文件操作模式</p>
+<blockquote>
+<p>MODE_PRIVATE：默认的操作模式，当文件存在时，所写入的内容会覆盖原文件内容</p>
+<p>MODE_APPEND：若文件存在，则往文件中追加内容</p>
+</blockquote>
+</li>
+<li><p>返回值：方法返回的是一个FileOutputStream对象</p>
+</li>
+</ul>
+<p>一个使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">dataSaved</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Data to save&quot;</span>;<br><span class="hljs-type">FileOutPutStream</span> <span class="hljs-variable">out</span> <span class="hljs-operator">=</span> openFileOutput(<span class="hljs-string">&quot;dataSaved&quot;</span>, Context.MODE_PRIVATE);<br><span class="hljs-type">BufferedWriter</span> <span class="hljs-variable">writer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedWriter</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">OutputStreamWriter</span>(out));<br><span class="hljs-comment">//通过writer存储数据</span><br>writer.write(data);<br></code></pre></td></tr></table></figure>
+
+<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><p>一个使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">FileInputStream</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> openFileInput(<span class="hljs-string">&quot;data&quot;</span>);<br><span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(in));<br><span class="hljs-comment">//从reader中读取数据</span><br><span class="hljs-type">StringBuilder</span> <span class="hljs-variable">dataReadBuilder</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>();<br><span class="hljs-keyword">for</span>(<span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;&quot;</span>; line = reader.readLine() != <span class="hljs-literal">null</span>; ) &#123;<br>    dataRead.append(line);<br>&#125;<br><span class="hljs-type">String</span> <span class="hljs-variable">dataRead</span> <span class="hljs-operator">=</span> dataReadBuilder.toString();<br></code></pre></td></tr></table></figure>
+
+<h1 id="SharedPreferences存储"><a href="#SharedPreferences存储" class="headerlink" title="SharedPreferences存储"></a>SharedPreferences存储</h1><blockquote>
+<p>不同于文件的存储方式，SheredPreferences使用的是键值对的方式来存储数据。</p>
+</blockquote>
+<p>当保存一条数据的时候，需要给这条数据提供一个String类型的键，这样在读取数据的时候就可以通过这个键把相应的值取出来。而且SharedPreferences支持多种类型的数据类型存储，存储的是什么类型，通过键取出来的就是什么类型。</p>
+<h2 id="获取SharedPreferences对象"><a href="#获取SharedPreferences对象" class="headerlink" title="获取SharedPreferences对象"></a>获取SharedPreferences对象</h2><ul>
+<li><p>Context类中的getSharedPreferences()方法</p>
+<blockquote>
+<p>方法接收两个参数：</p>
+<ul>
+<li>参数一：指定SharedPreferences文件的名称。</li>
+<li>参数二：指定操作模式。只有MODE_PRIVATE一种模式可选，表示只有当前应用程序才能对该文件进行读写。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Activity类中的getPreferences()方法</p>
+<blockquote>
+<p>与Context类的getSharedPrederences()方法类似。但这个方法只需要一个参数：操作模式，会自动使用Activity的类名作为文件名。</p>
+</blockquote>
+</li>
+<li><p>PreferenceManager类中的getDefaultSharedPreferences()方法</p>
+<blockquote>
+<p> 这是一个静态方法，接收要给Context参数。会自动使用当前应用的包名作为前缀来命名SharedPreferences文件。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="存储数据-1"><a href="#存储数据-1" class="headerlink" title="存储数据"></a>存储数据</h2><blockquote>
+<p>SharedPreferences文件都是存放在&#x2F;data&#x2F;data&#x2F;&lt;package name&gt;&#x2F;shared_prefs&#x2F;路径下</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 1. 通过SharedPreferences对象获取editor对象</span><br>SharedPreferences.<span class="hljs-type">Editor</span> <span class="hljs-variable">editor</span> <span class="hljs-operator">=</span> getSharedPreferences(<span class="hljs-string">&quot;dataSaved&quot;</span>, MODE_PRIVATE).edit();<br><span class="hljs-comment">// 2. 往editor对象中添加数据</span><br>editor.putString(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;XY&quot;</span>);<br>editor.putInt(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">22</span>);<br>editor.putBoolean(<span class="hljs-string">&quot;married&quot;</span>, <span class="hljs-literal">false</span>);<br><span class="hljs-comment">// 3. 提交添加的数据</span><br>editor.apply();<br></code></pre></td></tr></table></figure>
+
+<h2 id="读取数据-1"><a href="#读取数据-1" class="headerlink" title="读取数据"></a>读取数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 获取SharedPreferences对象</span><br><span class="hljs-type">SharedPreferences</span> <span class="hljs-variable">pref</span> <span class="hljs-operator">=</span> getSharedPreferences(<span class="hljs-string">&quot;data&quot;</span>, MODE_PRIVATE);<br><span class="hljs-comment">// 从SharedPreferences对象中取数据</span><br><span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> pref.getString(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);	<span class="hljs-comment">//方法中的第二参数为若没有找到key为“name”时返回的默认值</span><br><span class="hljs-type">Int</span> <span class="hljs-variable">age</span> <span class="hljs-operator">=</span> pref.getInt(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">0</span>);<br><span class="hljs-type">boolean</span> <span class="hljs-variable">married</span> <span class="hljs-operator">=</span> pref.getBoolean(<span class="hljs-string">&quot;married&quot;</span>, <span class="hljs-literal">false</span>);<br></code></pre></td></tr></table></figure>
+
+<h1 id="数据库存储"><a href="#数据库存储" class="headerlink" title="数据库存储"></a>数据库存储</h1><h2 id="SQLite数据库"><a href="#SQLite数据库" class="headerlink" title="SQLite数据库"></a>SQLite数据库</h2><blockquote>
+<p>Android系统内置数据库，支持标准SQL语法，遵循数据库的ACID事务。</p>
+</blockquote>
+<h3 id="数据库的创建与升级"><a href="#数据库的创建与升级" class="headerlink" title="数据库的创建与升级"></a>数据库的创建与升级</h3><blockquote>
+<p>Android提供了一个SQLiteOpenHelper帮助类，借助这个类可以非常简单的对数据库进行创建和升级。</p>
+</blockquote>
+<p>SQLiteOpenHelper是一个抽象类，若我们要使用它，就需要创建一个自己的帮助类去继承它。</p>
+<ul>
+<li><p>SQLiteOpenHelper中有两个抽象方法：onCreate()、onUpgrade()，我们必须在自己的帮助类中重写这两个方法，在这两个方法中去实现创建、升级数据库的逻辑。</p>
+<ul>
+<li><p>数据库的创建：onCreate()方法中会传入一个参数：SQLiteDatabase</p>
+<blockquote>
+<p>在onCreate方法方法中通过SQLiteDatabase对象执行SQL的建表语句</p>
+<p>该方法只会在数据库创建的时候执行一次</p>
+</blockquote>
+</li>
+<li><p>数据库的升级：onUpgrade()方法中传入三个参数：SQLiteDatabase对象、旧版本号、新版本号</p>
+<blockquote>
+<p>若数据库已经存在，再次执行数据库的构造函数，指定比之前大的版本号，在构造数据库的时候就会执行onUpgrade()方法而不是onCreate()方法。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>SQLiteOpenHelper中有两个构造方法可供重写，一般使用参数少的哪个。该构造方法共接收4个参数：</p>
+<ol>
+<li><p>Context</p>
+</li>
+<li><p>数据库名</p>
+</li>
+<li><p>自定义Cursor：该参数允许我们在查询数据的时候返回一个自定义的Cursor，一般传入null</p>
+</li>
+<li><p>数据版本号：使用版本号可对数据库进行升级操作</p>
+<blockquote>
+<p>若是第一次构造，则会根据该版本号，执行onCreate()方法创建数据库</p>
+<p>若不是第一次构造，则当传入版本号大于之前的版本号时，执行onUpgrade ()方法更新数据库</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyDatabaseHelper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">SQLiteOpenHelper</span> &#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">CREATE_BOOK</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;建表SQL语句&quot;</span>;<br>    <br>    <span class="hljs-comment">//用来保存创建MyDatabaseHelper的Context</span><br>    Context mContext;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyDatabaseHelper</span><span class="hljs-params">(<span class="hljs-meta">@Nullable</span> Context context, <span class="hljs-meta">@Nullable</span> String name, <span class="hljs-meta">@Nullable</span> SQLiteDatabase.CursorFactory factory, <span class="hljs-type">int</span> version)</span> &#123;<br>        <span class="hljs-built_in">super</span>(context, name, factory, version);<br>        mContext = context;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onCreate</span><span class="hljs-params">(SQLiteDatabase db)</span> &#123;<br>        db.execSQL(CREATE_BOOK);<br>        Toast.makeText(mContext, <span class="hljs-string">&quot;Create succeeded&quot;</span>, Toast.LENGTH_SHORT).show();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onUpgrade</span><span class="hljs-params">(SQLiteDatabase db, <span class="hljs-type">int</span> oldVersion, <span class="hljs-type">int</span> newVersion)</span> &#123;<br>        db.execSQL(<span class="hljs-string">&quot;drop table if exists Book&quot;</span>);<br>        onCreate(db);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="CRUD操作"><a href="#CRUD操作" class="headerlink" title="CRUD操作"></a>CRUD操作</h3><blockquote>
+<p>通过调用SQLiteOpenHelper中的getReadableDatabase()、getWriteDatabase()这两个方法，都打开一个数据库（若不存在则新建），并返回一个SQLiteDatabase对象。不同点在于，当数据库不可写入时（如磁盘已满），getReadableDatabase()方法返回的对象将以只读方式打开数据库，而getWriteableDatabase()方法则会出现异常。</p>
+</blockquote>
+<h4 id="添加（Create）"><a href="#添加（Create）" class="headerlink" title="添加（Create）"></a>添加（Create）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//创建数据库</span><br><span class="hljs-type">MyDatabaseHelper</span> <span class="hljs-variable">dbHelper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyDatabaseHelper</span>(<span class="hljs-built_in">this</span>, <span class="hljs-string">&quot;BookStore.db&quot;</span>, <span class="hljs-literal">null</span>, <span class="hljs-number">1</span>);<br><span class="hljs-comment">//获取数据库对象</span><br><span class="hljs-type">SQLiteDatabase</span> <span class="hljs-variable">db</span> <span class="hljs-operator">=</span> dbHelper.getWritableDatabase();<br><span class="hljs-comment">//创建数据</span><br><span class="hljs-type">ContentValues</span> <span class="hljs-variable">values</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ContentValues</span>();<br>values.put(<span class="hljs-string">&quot;列名1&quot;</span>, 数据<span class="hljs-number">1</span>);<br>values.put(<span class="hljs-string">&quot;列名2&quot;</span>, 数据<span class="hljs-number">2</span>);<br>values.put(<span class="hljs-string">&quot;列名3&quot;</span>, 数据<span class="hljs-number">3</span>);<br><span class="hljs-comment">//插入数据到数据库</span><br>db.insert(<span class="hljs-string">&quot;Book&quot;</span>, <span class="hljs-literal">null</span>, values);<br></code></pre></td></tr></table></figure>
+
+<p>insert方法的三个参数：</p>
+<ul>
+<li>参数一：指定表名</li>
+<li>参数二：用于在未指定添加数据的情况下可为某些为空的列自动赋NULL，一般用不到该功能，传入null即可</li>
+<li>参数三：ContentValues对象，提供一系列put方法，用于将表中对应列名以及相应的数据传入</li>
+</ul>
+<h4 id="更新（Update）"><a href="#更新（Update）" class="headerlink" title="更新（Update）"></a>更新（Update）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">db.update(<span class="hljs-string">&quot;Book&quot;</span>, values, <span class="hljs-string">&quot;name = ?&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[] &#123;<span class="hljs-string">&quot;The Da Vinci Code&quot;</span>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>update()的四个参数：</p>
+<ul>
+<li>参数一：指定表名</li>
+<li>参数二：指定ContentValues对象，对象中放入要更新的列值</li>
+<li>参数三：对应SQL语句中的where部分，<code>？</code>为占位符号</li>
+<li>参数四：提供字符串数组用于匹配参数三中的占位符</li>
+</ul>
+<h4 id="删除（Delete）"><a href="#删除（Delete）" class="headerlink" title="删除（Delete）"></a>删除（Delete）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">db.delete(<span class="hljs-string">&quot;Book&quot;</span>, <span class="hljs-string">&quot;pages &gt; ?&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[] &#123;<span class="hljs-string">&quot;500&quot;</span>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h4 id="查询（Retrieve）"><a href="#查询（Retrieve）" class="headerlink" title="查询（Retrieve）"></a>查询（Retrieve）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Cursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> db.query(<span class="hljs-string">&quot;Book&quot;</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>);<br><span class="hljs-keyword">if</span>(cursor.moveToFirst()) &#123;<br>    <span class="hljs-comment">//遍历每一列</span><br>    <span class="hljs-keyword">do</span> &#123;<br>        <span class="hljs-comment">//取出列中数据</span><br>        <span class="hljs-comment">//getColumnIndex()方法可以获取某列在表中对应位置的索引</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> cursor.getString(cursor.getColumnIndex(<span class="hljs-string">&quot;name&quot;</span>));<br>        ...<br>    &#125; <span class="hljs-keyword">while</span> (cursor.moveToNext());<br>&#125;<br>cursor.close();<br></code></pre></td></tr></table></figure>
+
+<p>query()最短的重载方法也需要七个参数，分别对应SQL语句不同部分：</p>
+<ul>
+<li><p>table：FROM table_name</p>
+</li>
+<li><p>columns：SELECT column1, column2</p>
+</li>
+<li><p>selection：WHERE column &#x3D; value</p>
+</li>
+<li><p>slectionArgs</p>
+</li>
+<li><p>groupBy：GROUP BY column</p>
+</li>
+<li><p>having：HAVING column &#x3D; value</p>
+</li>
+<li><p>orderBy：ORDER BY column1, column2</p>
+</li>
+</ul>
+<h4 id="使用SQL操作数据库"><a href="#使用SQL操作数据库" class="headerlink" title="使用SQL操作数据库"></a>使用SQL操作数据库</h4><p>使用SQLiteDatabase的execSQL()方法，传入SQL操作语句，来执行SQL。</p>
+<h2 id="使用LitePal操作数据库"><a href="#使用LitePal操作数据库" class="headerlink" title="使用LitePal操作数据库"></a>使用LitePal操作数据库</h2><blockquote>
+<p>LitePal是一款开源的Android数据库框架，它采用对象关系映射（ORM）的模式，将我们平时常用的数据库功能进行封装，使得我们不需要编写SQL语句也可以完成各种建表和CRUD操作。</p>
+</blockquote>
+<h3 id="配置LitePay"><a href="#配置LitePay" class="headerlink" title="配置LitePay"></a>配置LitePay</h3><ol>
+<li><p>添加LitePal的依赖</p>
+<blockquote>
+<p>在app&#x2F;build.gradle文件中添加依赖</p>
+</blockquote>
+</li>
+<li><p>编写配置文件</p>
+<blockquote>
+<p>新建配置文件：app&#x2F;src&#x2F;mian&#x2F;assets&#x2F;litepal.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;utf-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">litepal</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">dbname</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;BookStore&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">dbname</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">list</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">list</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">litepal</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>dbname：用于指定数据库名</li>
+<li>version：用于指定数据库版本</li>
+<li>list：用于指定所有的映射模型</li>
+</ul>
+</blockquote>
+</li>
+<li><p>修改AndroidManifest.xml文件</p>
+<blockquote>
+<p>修改其中&lt;application&gt;标签的android:name属性为org.litepal.LitePalApplication</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="创建和升级数据库"><a href="#创建和升级数据库" class="headerlink" title="创建和升级数据库"></a>创建和升级数据库</h3><h4 id="映射模型类"><a href="#映射模型类" class="headerlink" title="映射模型类"></a>映射模型类</h4><ol>
+<li><p>编写一个Java bean</p>
+<blockquote>
+<p>这个Java bean就对应着一张表，其属性一一对应数据库表中的列</p>
+</blockquote>
+</li>
+<li><p>配置litepal.xml</p>
+<blockquote>
+<p>在其中的&lt;list&gt;标签中添加&lt;mapping&gt;标签，并设置属性class，为其指定映射的Java bean的完整类名</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="创建和升级数据库-1"><a href="#创建和升级数据库-1" class="headerlink" title="创建和升级数据库"></a>创建和升级数据库</h4><blockquote>
+<p>在使用原生的SQLite的时候，需要自己编写一个SQLiteHelper，重写其onCreate()，onUpdate()方法来实现创建和升级数据库，并且在升级数据库时，需要先将之前的表drop掉，再重新创建，原有数据丢失。而LitePay在映射了模型类后，我们创建和升级数据库就简单很多。</p>
+</blockquote>
+<ul>
+<li><p>创建数据库</p>
+<blockquote>
+<p>直接调用LitePal.getDatabase()即可完成建表</p>
+</blockquote>
+</li>
+<li><p>升级数据库</p>
+<blockquote>
+<ol>
+<li>修改模型类（相当于修改表结构）或增加模型类（相当于新建表）</li>
+<li>在litepal.xml文件中将版本号+1（若有新增表还需要配置新增模型类映射）</li>
+<li>调用LitePal.getDatabase()即可完成表更新（LitePal会自动保留表中原有数据）</li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<h3 id="CRUD操作-1"><a href="#CRUD操作-1" class="headerlink" title="CRUD操作"></a>CRUD操作</h3><blockquote>
+<p>首先需要让模型类继承DataSupport，让其拥有增删改查的功能</p>
+</blockquote>
+<h4 id="添加（Create）-1"><a href="#添加（Create）-1" class="headerlink" title="添加（Create）"></a>添加（Create）</h4><blockquote>
+<p>使用SQLite添加数据：构建ContentValues对象 -&gt; 将数据put到ContentValues对象中 -&gt; 调用SQLiteDatabase的insert()方法将数据添加到数据库表中 </p>
+</blockquote>
+<p>LitePal添加数据：</p>
+<ol>
+<li>新建一个Book对象（前面映射的模型类）</li>
+<li>然后设置其属性添加数据</li>
+<li>调用模型类从DataSupport继承来的save()方法将数据添加到数据库</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 新建Book对象</span><br><span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br><span class="hljs-comment">// 设置数据</span><br>book.setName(<span class="hljs-string">&quot;The Da Vinci Code&quot;</span>);<br>...<br><span class="hljs-comment">// 将数据添加到数据库中</span><br>book.save();<br>    <br></code></pre></td></tr></table></figure>
+
+<h4 id="更新（Update）-1"><a href="#更新（Update）-1" class="headerlink" title="更新（Update）"></a>更新（Update）</h4><h5 id="更新单条数据"><a href="#更新单条数据" class="headerlink" title="更新单条数据"></a>更新单条数据</h5><p>同样是使用save()方法，但是在调用save方法时会调用对象的isSaved()方法的结构来判断对象是否已经保存。若对象已经保存了则save()方法执行的时更新操作。</p>
+<p>model对象被认为是已存储对象的两种情况：</p>
+<ol>
+<li>已经调用model.save()方法去将对象添加到表中</li>
+<li>该model对象是通过LitePay提供的查询API查询获取的</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//添加数据到数据库</span><br><span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br>book.setName(<span class="hljs-string">&quot;The Da Vinci Code&quot;</span>);<br>...<br>book.save();<br><span class="hljs-comment">//更新数据</span><br>book.setName(<span class="hljs-string">&quot;Head first Java&quot;</span>);<br>book.save();	<span class="hljs-comment">//由于这个book对象已经调用过save保存到数据库中了，所以这里的save是更新数据</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="更具条件更新n条数据"><a href="#更具条件更新n条数据" class="headerlink" title="更具条件更新n条数据"></a>更具条件更新n条数据</h5><p>使用模型类的updateAll()方法，第一个参数是条件语句，后面的额参数一一对应条件语句中额占位符，若没有参数表示更新表中所有行。</p>
+<p>若在更新数据时需要将一些字段设置为默认值，则在更新前调用模型类的setToDefault(“列名”)，指定某列设置为默认值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//更新指定行</span><br><span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br>book.setPrice(<span class="hljs-number">14.95</span>);<br>book.updateAll(<span class="hljs-string">&quot;name = ? and author = ?&quot;</span>, <span class="hljs-string">&quot;The lost Symbol&quot;</span>, <span class="hljs-string">&quot;Dan Brown&quot;</span>);<br><br><span class="hljs-comment">//更新所有行的某列为默认值</span><br><span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br>book.setToDefault(<span class="hljs-string">&quot;pages&quot;</span>);<br>book.updateAll();<br></code></pre></td></tr></table></figure>
+
+<h4 id="删除（Delete）-1"><a href="#删除（Delete）-1" class="headerlink" title="删除（Delete）"></a>删除（Delete）</h4><p>使用LitePal有两种方法删除数据：</p>
+<ul>
+<li><p>方法一：直接调用已存储对象的delete()方法</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//保存数据</span><br><span class="hljs-type">Book</span> <span class="hljs-variable">book</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>();<br>book.set...;<br>...<br>book.save();<br><span class="hljs-comment">//通过已存储对象删除数据</span><br>book.delete();<br></code></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>方法二：使用DataSupport类的静态方法deleteAll，指定表和条件语句删除数据</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">DataSupport.deleteAll(Book.class, <span class="hljs-string">&quot;price &lt; ?&quot;</span>, <span class="hljs-string">&quot;15&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>参数一：指定模型类来对应要删除数据的表</p>
+<p>剩余参数：条件语句、占位符对应的参数</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="查询（Retrieve）-1"><a href="#查询（Retrieve）-1" class="headerlink" title="查询（Retrieve）"></a>查询（Retrieve）</h4><blockquote>
+<p>SQLite中查询数据需要使用SQLiteDatabase对象的query()方法来获取Cursor对象。有两个缺点：1. 参数多，2. 取数据麻烦</p>
+</blockquote>
+<p>使用LitePal查询数据调用DataSupport中的查询API即可。</p>
+<h5 id="封装查询"><a href="#封装查询" class="headerlink" title="封装查询"></a>封装查询</h5><blockquote>
+<p>返回的结果是List列表，取出的结果就直接是model对象</p>
+</blockquote>
+<ul>
+<li><p>固定查询功能</p>
+<ul>
+<li>findAll：查询全部数据</li>
+<li>findFirst：查询第一条数据</li>
+<li>findLast：查询第二条数据</li>
+</ul>
+</li>
+<li><p>定制查询功能</p>
+<blockquote>
+<p>使用下面五个方法自由组合，并在最后加上find(model.class)来指定查询的表</p>
+</blockquote>
+<ul>
+<li>select()：指定查询列</li>
+<li>where()：指定查询约束条件</li>
+<li>order()：指定结果排序方式</li>
+<li>limit()：指定查询结果数量</li>
+<li>offset()：指定查询的偏移量（配合limit来实现分页查询）</li>
+</ul>
+</li>
+</ul>
+<h5 id="原生查询"><a href="#原生查询" class="headerlink" title="原生查询"></a>原生查询</h5><blockquote>
+<p>返回的结果是Cursor对象，取结果会比较麻烦</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Cursor</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> DataSupport.findBySQL(<span class="hljs-string">&quot;SQL查询语句&quot;</span>)；<br></code></pre></td></tr></table></figure>
+
               
             </div>
             <hr/>
@@ -351,7 +639,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年12月2日</div>
+          <div>2022年12月4日</div>
         </div>
       
       <div class="license-meta-item">

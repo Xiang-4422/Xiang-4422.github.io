@@ -16,13 +16,15 @@
   <meta name="author" content="XiangYU">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="通知通知（Notification） 是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而给应用程序又没有在前台运行时，就可以借助通知来实现。发出通知后，状态栏会显示一个图标，下拉通知栏会显示通知的详细内容，点击通知还会跳转到设定的活动。 通知的基本用法通知一般在广播接收器和服务中创建，因为一般只有在程序进入后台后才需要使用通知（当然活动中也可以创建通知）。 1">
+<meta property="og:type" content="article">
 <meta property="og:title" content="安卓开发-其余的一些技巧">
 <meta property="og:url" content="http://example.com/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E5%85%B6%E4%BD%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8A%80%E5%B7%A7/index.html">
 <meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="通知通知（Notification） 是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而给应用程序又没有在前台运行时，就可以借助通知来实现。发出通知后，状态栏会显示一个图标，下拉通知栏会显示通知的详细内容，点击通知还会跳转到设定的活动。 通知的基本用法通知一般在广播接收器和服务中创建，因为一般只有在程序进入后台后才需要使用通知（当然活动中也可以创建通知）。 1">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-02T06:00:04.000Z">
-<meta property="article:modified_time" content="2022-12-02T06:01:58.001Z">
+<meta property="article:modified_time" content="2022-12-06T02:41:10.083Z">
 <meta property="article:author" content="XiangYU">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -216,7 +218,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          9.3k 字
         
       </span>
     
@@ -227,7 +229,7 @@
         
         
         
-          1 分钟
+          78 分钟
         
       </span>
     
@@ -288,14 +290,212 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年12月2日 下午
+                    本文最后更新于：2022年12月6日 上午
                   
                 
               </p>
             
             <div class="markdown-body">
               
-              
+              <h1 id="通知"><a href="#通知" class="headerlink" title="通知"></a>通知</h1><p>通知（Notification） 是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而给应用程序又没有在前台运行时，就可以借助通知来实现。发出通知后，状态栏会显示一个图标，下拉通知栏会显示通知的详细内容，点击通知还会跳转到设定的活动。</p>
+<h2 id="通知的基本用法"><a href="#通知的基本用法" class="headerlink" title="通知的基本用法"></a>通知的基本用法</h2><p>通知一般在广播接收器和服务中创建，因为一般只有在程序进入后台后才需要使用通知（当然活动中也可以创建通知）。</p>
+<h3 id="1-获取NotificationManager实例"><a href="#1-获取NotificationManager实例" class="headerlink" title="1. 获取NotificationManager实例"></a>1. 获取NotificationManager实例</h3><blockquote>
+<p>通过Context的getSystemService()方法，通过传入指定字符串参数返回指定的系统服务管理器。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">NotificationManager</span> <span class="hljs-variable">manager</span> <span class="hljs-operator">=</span> (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-使用Builder构造器创建Notification对象"><a href="#2-使用Builder构造器创建Notification对象" class="headerlink" title="2. 使用Builder构造器创建Notification对象"></a>2. 使用Builder构造器创建Notification对象</h3><blockquote>
+<p>由于Android系统升级的改动，通知部分的API不稳定。可以使用support库中的NotificaionCompat类来构建Notification对象，保证程序在不同Android版本都能正常工作。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Notification</span> <span class="hljs-variable">notification</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.Builder(context)<br>    <span class="hljs-comment">// 使用链式方法配置所构建的通知</span><br>    .setContentTitle(<span class="hljs-string">&quot;This is content title&quot;</span>)<br>    ...<br>    <span class="hljs-comment">// build()方法正式构建通知对象</span><br>    .build();<br></code></pre></td></tr></table></figure>
+
+<p>一些配置通知的链式方法：</p>
+<ul>
+<li>setContentTitle()：通知标题</li>
+<li>setContentText()：通知内容</li>
+<li>setWhen()：通知被创建的事件（单位毫秒）</li>
+<li>setSmallIron()：通知栏显示的小图标</li>
+<li>setLargeIcon()：下拉通知栏显示的大图标</li>
+</ul>
+<h3 id="3-为通知绑定PendingIntent（让通知响应点击事件）"><a href="#3-为通知绑定PendingIntent（让通知响应点击事件）" class="headerlink" title="3. 为通知绑定PendingIntent（让通知响应点击事件）"></a>3. 为通知绑定PendingIntent（让通知响应点击事件）</h3><blockquote>
+<p>通知一般是可以点击的，点击过后会跳转到app的界面，并且通知在点击后会消失。PendingIntent类似于Intent，可以理解为一个延迟执行的Intent。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 构造PendingIntent</span><br><span class="hljs-type">Intent</span> <span class="hljs-variable">intent</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(thsi, NotificationActivity.class);<br><span class="hljs-type">PendingIntent</span> <span class="hljs-variable">pi</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PendingIntent</span>.getActivity(<span class="hljs-built_in">this</span>, <span class="hljs-number">0</span>, intent, <span class="hljs-number">0</span>);<br><br><span class="hljs-type">Notification</span> <span class="hljs-variable">notification</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.Builder(context)<br>    ...<br>    <span class="hljs-comment">// 为通知绑定PendingIntent</span><br>    .setContentIntent(pi)<br>    .build();<br></code></pre></td></tr></table></figure>
+
+<p>在点击通知后，通知会消失，有两种方法可以实现：</p>
+<ul>
+<li><p>方法一：在构造Notification的时候设置点击后自动取消通知</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Notification</span> <span class="hljs-variable">notification</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.Builder(context)<br>    ...<br>    .setAutoCancel()<br>    .build();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>方法二：点击通知后会跳转到Activity中，在Activity的onCreate()方法中通过NotificationaManager根据通知的id来关闭通知</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NotificationActivity</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AppCompatActivity</span> &#123;<br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onCreate</span><span class="hljs-params">(Bundle savedInstanceState)</span> &#123;<br>        ...<br>        <span class="hljs-type">NotificationManager</span> <span class="hljs-variable">manager</span> <span class="hljs-operator">=</span> (NorificationManager) getSystemService(NOTIFICATION_SERVICE);<br>        manager.cancel(<span class="hljs-number">1</span>);	<span class="hljs-comment">//cancel方法传入参数的是使用NOtificationManager的notify发送通知时为通知指定的唯一id</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="4-通过获取的NotificationManager实例发送通知"><a href="#4-通过获取的NotificationManager实例发送通知" class="headerlink" title="4. 通过获取的NotificationManager实例发送通知"></a>4. 通过获取的NotificationManager实例发送通知</h3><blockquote>
+<p>直接调用NorificationManager的notify()方法就可以让通知显示出来。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">manager.notify(<span class="hljs-number">1</span>, notification);<br></code></pre></td></tr></table></figure>
+
+<p>两个参数：</p>
+<ul>
+<li>参数一：指定通知的唯一id</li>
+<li>参数二：Norification对象</li>
+</ul>
+<h2 id="通知的进阶技巧"><a href="#通知的进阶技巧" class="headerlink" title="通知的进阶技巧"></a>通知的进阶技巧</h2><blockquote>
+<p>NotificationCompat.Builder中提供了很多API，可以对通知进行更多的设置。</p>
+</blockquote>
+<h3 id="通知效果"><a href="#通知效果" class="headerlink" title="通知效果"></a>通知效果</h3><blockquote>
+<p>一般来说通知都会有提示音、震动和LED灯闪烁的通知效果，下面这些API可供我们设置。</p>
+</blockquote>
+<ul>
+<li><p>通知响铃</p>
+<blockquote>
+<p>setSound(Uri.from(new File(“&#x2F;system&#x2F;media&#x2F;audio&#x2F;ringtons&#x2F;Luna.ogg”)))</p>
+<p>需要传入一个Uri对象来指定音频文件的URI。</p>
+<p>手机的&#x2F;system&#x2F;media&#x2F;audio&#x2F;ringtons目录下有很多音频文件供选择。</p>
+</blockquote>
+</li>
+<li><p>通知震动</p>
+<blockquote>
+<p>setVibrate(new long[] {1, 1000, 1000, 1000 })</p>
+<p>传入的参数是一个long型数组，用以设置手机静止和震动的时长，以毫秒为单位。</p>
+<p>下标为偶数表示手机静止时长，计数表示手机震动时长。</p>
+</blockquote>
+</li>
+<li><p>通知LED消息灯闪烁</p>
+<blockquote>
+<p>setLights(Color.GREEN, 1000, 1000)</p>
+<p>第一个参数是LED灯的颜色</p>
+<p>第二&#x2F;三个参数是LED灯亮&#x2F;熄灭起的时长，以毫秒为单位</p>
+</blockquote>
+</li>
+</ul>
+<p>上面这些通知的设置很麻烦，但是也可以通过 <code>.setDefaults(Notification.DEFAULT_ALL)</code>来使用通知的默认效果，它根据手机环境来决定播放的铃声以及如何震动。</p>
+<h3 id="构建富文本通知"><a href="#构建富文本通知" class="headerlink" title="构建富文本通知"></a>构建富文本通知</h3><blockquote>
+<p>setStyle()方法让我们可以构建出富文本的通知内容。也就是说通知中不光可以有文字和图标，还可以包含更多东西，如长文字、图片等。</p>
+</blockquote>
+<p>setStyle()方法接收一个NotificationCompat.Style参数：</p>
+<ul>
+<li><p>长文本</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Notification</span> <span class="hljs-variable">notification</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.Builder(context)<br>    ...<br>    .setStyle(<span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.BigTextStyle(<span class="hljs-string">&quot;长文本内容&quot;</span>))<br>    .build();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>图片</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Notification</span> <span class="hljs-variable">notification</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.Builder(context)<br>    ...<br>    .setStyle(<br>    	<span class="hljs-comment">// 先创建一个NotificationCompat.BigPictureStyle对象</span><br>    	<span class="hljs-keyword">new</span> <span class="hljs-title class_">NotificationCompat</span>.BigPictureStyle()<br>        	<span class="hljs-comment">// 调用它的bigPicture()方法将图片传入</span><br>    		.bigPicture(<br>                <span class="hljs-comment">// 使用BitmapFactory的decodeResource()方法解析图片为Bitmap对象，再传入bigPicture()方法中</span><br>                BitmapFactory.decodeResource(getResources(), R.drawable.big_image)))<br>    .build();<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="设置通知优先级"><a href="#设置通知优先级" class="headerlink" title="设置通知优先级"></a>设置通知优先级</h3><blockquote>
+<p>setPriority()方法可以设置通知的重要程度。</p>
+</blockquote>
+<p>有五个常量值可选：</p>
+<ul>
+<li>PRIORITY_MAX：这类消息会弹出，让用户立马看到，甚至需要用户做出响应操作。</li>
+<li>PRIORITY_HIGH：这类消息可能会将通知放大，或改变其显示的顺序，让其排在靠前的位置。</li>
+<li>PRIORITY_DEFAULT：默认设置，与不设置效果一致。</li>
+<li>PRIORITY_LOW：系统可能会折叠这类通知，或改变其显示的顺序，让其排在靠后的位置。</li>
+<li>PRIORITY_MIN：系统可能只会在特定的场景才显示这类消息。</li>
+</ul>
+<h1 id="全局获取Context的技巧"><a href="#全局获取Context的技巧" class="headerlink" title="全局获取Context的技巧"></a>全局获取Context的技巧</h1><h2 id="全局获取Context的必要性"><a href="#全局获取Context的必要性" class="headerlink" title="全局获取Context的必要性"></a>全局获取Context的必要性</h2><p>在很多地方我们都会用到Context，例如弹出Toast通知、启动活动、发送广播、操作数据库、使用通知等等。</p>
+<p>因为我们很多操作都是在活动中进行，而活动本身就是一个Context，所以获取Context很简单。但是当程序的架构开始复杂起来了，很多逻辑代码都将脱离Activity类，但是有很多操作又需要Context，这个时候获取Context就是一个问题了。</p>
+<h2 id="一个不太优雅的全局Context获取的方案"><a href="#一个不太优雅的全局Context获取的方案" class="headerlink" title="一个不太优雅的全局Context获取的方案"></a>一个不太优雅的全局Context获取的方案</h2><p>例如我们有一个HttpUtil工具类，在它的某个方法中，若检测到无网络连接，就不能执行后面的代码。若我们想要在检测到无网络连接的时候，弹出一个Toast提示，这个时候我们就需要Context了。</p>
+<p>一种不太优雅的解决方案：在这个方法中添加一个Context参数。这种解决方法有点推卸责任的意味，将Context获取的任务转移给了方法的调用者，方法只管接收传入的Context参数，而Context如何获取则由调用者自己解决。</p>
+<h2 id="自定义Application类以实现全局Context获取"><a href="#自定义Application类以实现全局Context获取" class="headerlink" title="自定义Application类以实现全局Context获取"></a>自定义Application类以实现全局Context获取</h2><blockquote>
+<p>Android提供了一个Application类，每当应用程序启动的时候，系统就会将这个类进行初始化。而我们可以定制一个自己的Application类替代它，以便于管理程序内一些全局状态信息，比如所全局Context。</p>
+</blockquote>
+<h3 id="自定义Application"><a href="#自定义Application" class="headerlink" title="自定义Application"></a>自定义Application</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyApplication</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Application</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Context context;<br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onCreate</span><span class="hljs-params">()</span> &#123;<br>        context = getApplicationContext();<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Context <span class="hljs-title function_">getContext</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> context;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="修改注册文件"><a href="#修改注册文件" class="headerlink" title="修改注册文件"></a>修改注册文件</h3><p>由于我们要用自己的MyApplication类替换系统自带的Application类，所以还需要在AndroidManifest.xml文件中修改&lt;application&gt;标签的android:name属性。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">manifest</span> <span class="hljs-attr">...</span> &gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">application</span></span><br><span class="hljs-tag">        <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;com.xy.test.MyApplication&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">...</span> &gt;</span><br>        ...<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">application</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">manifest</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="解决于LitePal配置的冲突"><a href="#解决于LitePal配置的冲突" class="headerlink" title="解决于LitePal配置的冲突"></a>解决于LitePal配置的冲突</h3><p>之前在配置LitePal的时候也修改了AndroidManifest.xml文件的&lt;application&gt;标签的android:name属性。因为LitePal也是通过将Application换成自定义的Application，使得LitePal可以在内部自动获取到Context。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">application</span></span><br><span class="hljs-tag">	<span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;org.litepal.LitPalApplication&quot;</span></span><br><span class="hljs-tag">	<span class="hljs-attr">...</span> &gt;</span><br>    ...<br><span class="hljs-tag">&lt;/<span class="hljs-name">application</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>冲突的解决：</p>
+<p>在我们自定义的MyApplication中调用LitePal的initialize()方法将context传给LitePal，效果和在AndroidManifest.xml中配置LitePalApplication一样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyApplication</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Application</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Context context;<br>        <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onCreate</span><span class="hljs-params">()</span> &#123;<br>        context = getApplicationContext();<br>        <span class="hljs-comment">// 初始化LitePal，传递context给LitePal</span><br>        LitePal.initialize(context);<br>    &#125;<br>    <br>    ...<br>        <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="使用Intent传递对象"><a href="#使用Intent传递对象" class="headerlink" title="使用Intent传递对象"></a>使用Intent传递对象</h1><p>我们可以借助Intent对象来启动活动、发送广播、启动服务等。我们在执行上述操作的时候，还可以在Intent中添加一些数据，以达到传值的效果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 发送数据</span><br><span class="hljs-type">Intent</span> <span class="hljs-variable">intent</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(<span class="hljs-built_in">this</span>, AnotherActivity.class);<br>intent.putExtra(<span class="hljs-string">&quot;string_data&quot;</span>, <span class="hljs-string">&quot;hello&quot;</span>);<br>intent.putExtra(<span class="hljs-string">&quot;int_data&quot;</span>, <span class="hljs-number">100</span>);<br>startActivity(intent);<br><br><span class="hljs-comment">// 接收数据</span><br><span class="hljs-type">String</span> <span class="hljs-variable">stringData</span> <span class="hljs-operator">=</span> getIntent().getStringExtra(<span class="hljs-string">&quot;string_data&quot;</span>);<br><span class="hljs-type">int</span> <span class="hljs-variable">intData</span> <span class="hljs-operator">=</span> getIntent().getIntExtra(<span class="hljs-string">&quot;int_data&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>使用putExtra()方法传递的数据类型有限，当我们想要传递一些自定义对象的时候就无能为力了。</p>
+<h2 id="Serializable方式"><a href="#Serializable方式" class="headerlink" title="Serializable方式"></a>Serializable方式</h2><blockquote>
+<p>Serializable方式是将对象序列化后进行传输。</p>
+</blockquote>
+<ol>
+<li><p>首先需要让需要被储传输的对象类实现Serializable接口。（这个接口只是一个标记接口）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    ...<br>&#125; <br></code></pre></td></tr></table></figure>
+</li>
+<li><p>然后使用intent的putExtra ()方法将对象传入intent</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Person</span> <span class="hljs-variable">person</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>();<br>person.setName(<span class="hljs-string">&quot;XY&quot;</span>);<br>person.setAge(<span class="hljs-number">20</span>);<br><span class="hljs-type">Intent</span> <span class="hljs-variable">intent</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(<span class="hljs-built_in">this</span>, AnotherActivity.class);<br>intent.putExtra(<span class="hljs-string">&quot;person_data&quot;</span>, person);<br>startActivity(intent);<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>最后使用intent的getSerializableExtra()方法将对象取出来，并向下转型成传输的对象类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Person</span> <span class="hljs-variable">person</span> <span class="hljs-operator">=</span> (Person) getIntent.getSerializableExtra(<span class="hljs-string">&quot;person_data&quot;</span>);<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="Parcelable方式（推荐）"><a href="#Parcelable方式（推荐）" class="headerlink" title="Parcelable方式（推荐）"></a>Parcelable方式（推荐）</h2><blockquote>
+<p>Parcelable方式是将一个完整的对象进行分解，分解后的每个部分都是Intent所支持的数据类型，以此来实现传递对象的功能。</p>
+</blockquote>
+<ol>
+<li><p>让需要被传输的对象实现Parcelable接口，并重写describeContens()方法和writeToParcel()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Parcelable</span> &#123;<br>    ...<br>        <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">describeContents</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 该方法用于构造Parcel，将被传输的对象解构并写入Parcel中</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeToParcel</span><span class="hljs-params">(Parcel dest, <span class="hljs-type">int</span> flags)</span> &#123;<br>        dest.writeString(name);<br>        dest.writeInt(age);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>在被传输对象的内部创建一个名为CREATOR的常量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Parcelable</span> &#123;<br>    ...<br>        <br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Parcelable.Creator&lt;Person&gt; CREATOR = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Parcelable</span>.Creator&lt;Person&gt;() &#123;<br>        <br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-comment">// 该方法用于解析Parcel，从中获取对象数据来构造出被传输的对象</span><br>        <span class="hljs-keyword">public</span> person <span class="hljs-title function_">createFromParcel</span><span class="hljs-params">(Parcel source)</span> &#123;<br>            <span class="hljs-type">Person</span> <span class="hljs-variable">person</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>();<br>            person.name = source.readString();<br>            person.age = source.readInt();<br>            <span class="hljs-keyword">return</span> person;<br>        &#125;<br>        <br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> Person[] newArray(<span class="hljs-type">int</span> size) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>[size];<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>Parcelable方式传递对象的方式同Serializable方式一样</p>
+</li>
+<li><p>取对象需要使用getParcelableExtra()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Person</span> <span class="hljs-variable">person</span> <span class="hljs-operator">=</span> (Person) getIntent.getParcelableExtra(<span class="hljs-string">&quot;person_data&quot;</span>);<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="创建定时任务"><a href="#创建定时任务" class="headerlink" title="创建定时任务"></a>创建定时任务</h1><blockquote>
+<p>Android中的定时任务有两种实现方式：一是使用Java API中提供的Timer类，一种是使用Android的Alarm机制。</p>
+<p>Android息屏后的休眠机制会让CPU进入睡眠状态，可能导致Timer中的定时任务失效，而Alarm则具有唤醒CPU的功能，它可以保证大多数的定时任务的执行。</p>
+</blockquote>
+<h2 id="Alarm机制"><a href="#Alarm机制" class="headerlink" title="Alarm机制"></a>Alarm机制</h2><h3 id="AlarmManager获取"><a href="#AlarmManager获取" class="headerlink" title="AlarmManager获取"></a>AlarmManager获取</h3><p>Alarm机制借助于AlarmManager类来实现。该类同Notifucationmanager类似，都是通过Context的getSystemService()方法获取。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">AlarmManager</span> <span class="hljs-variable">manager</span> <span class="hljs-operator">=</span> (AlarmManager) getSystemService(Context.ALARM_SERVICE);<br></code></pre></td></tr></table></figure>
+
+<h3 id="实现定时执行任务"><a href="#实现定时执行任务" class="headerlink" title="实现定时执行任务"></a>实现定时执行任务</h3><p>通过调用AlarmManager的set()方法就可以设置一个定时任务了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">long</span> <span class="hljs-variable">triggerAtTime</span> <span class="hljs-operator">=</span> SystemClock.elapsedRealtime() + <span class="hljs-number">10</span> * <span class="hljs-number">1000</span>;<br>manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);<br></code></pre></td></tr></table></figure>
+
+<p>关于set方法的三个参数：</p>
+<ul>
+<li><p>参数一：指定AlarmManager的工作类型，共有4种</p>
+<ul>
+<li>ELAPSED_REALTIME：定时任务的触发时间从系统开机时间算起，不会唤醒CPU</li>
+<li>ELAPSED_READTIME_WAKEUP：定时任务的触发时间从系统开机时间算起，会唤醒CPU</li>
+<li>RTC：定时任务的触发时间从格林威治时间（1970.01.01.00:00）算起，不会唤醒CPU</li>
+<li>RTC_WAKEUP：定时任务的触发时间从格林威治时间（1970.01.01.00:00）算起，不会唤醒CPU</li>
+</ul>
+</li>
+<li><p>参数二：定时任务的触发事件，以毫秒为单位</p>
+</li>
+<li><p>参数三：PendingIntent</p>
+<blockquote>
+<p>这里我们一般传入一个通过getService()或getBroadcast()方法获得的PendingIntent。这样在定时任务被触发时，服务的onStartCommand()方法或广播接收器的onReceive()方法就可以得到执行。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="实现定时重复执行任务"><a href="#实现定时重复执行任务" class="headerlink" title="实现定时重复执行任务"></a>实现定时重复执行任务</h3><blockquote>
+<p>通过在创建一个服务，在服务执行任务，并任务完成后再设置一个定时任务执行这个服务，形成永久循环，这样服务就定时重复执行。</p>
+</blockquote>
+<h4 id="1-创建定时重复任务服务"><a href="#1-创建定时重复任务服务" class="headerlink" title="1. 创建定时重复任务服务"></a>1. 创建定时重复任务服务</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LongRunningService</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Service</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> IBinder <span class="hljs-title function_">onBinde</span><span class="hljs-params">(Intent intent)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">onStartCommand</span><span class="hljs-params">(Intent intent, <span class="hljs-type">int</span> flags, <span class="hljs-type">int</span> startId)</span> &#123;<br>        <br>        <span class="hljs-comment">// 执行定时任务</span><br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runable</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>                <span class="hljs-comment">// TODO，需要定时执行的任务</span><br>            &#125;<br>        &#125;).start();<br>        <br>        <span class="hljs-comment">// 设置定时任务</span><br>        <span class="hljs-type">AlarmManager</span> <span class="hljs-variable">manager</span> <span class="hljs-operator">=</span> (AlarmManager) getSystemService(ALARM_SERVICE);<br>        <span class="hljs-type">long</span> <span class="hljs-variable">triggerAtTime</span> <span class="hljs-operator">=</span> SystemClock.elapsedRealtime() + <span class="hljs-number">10</span> * <span class="hljs-number">1000</span>;<br>        <span class="hljs-type">Intent</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(<span class="hljs-built_in">this</span>, LongRunningService.class);	<span class="hljs-comment">// 重点，将Intent的目标设置为服务自身，从而定时循环进入该服务</span><br>		manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);<br>        <br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">super</span>.onStartCommand(intent, flags, startId);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-定时任务的启动"><a href="#2-定时任务的启动" class="headerlink" title="2. 定时任务的启动"></a>2. 定时任务的启动</h4><blockquote>
+<p>和启动一个普通服务一样</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Intent</span> <span class="hljs-variable">intent</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Intent</span>(context, LongRunningService.class);<br>context.startService(intent);<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="确保Alarm任务的准时执行"><a href="#确保Alarm任务的准时执行" class="headerlink" title="确保Alarm任务的准时执行"></a>确保Alarm任务的准时执行</h2><h3 id="Alarm任务合并"><a href="#Alarm任务合并" class="headerlink" title="Alarm任务合并"></a>Alarm任务合并</h3><p>由于系统在耗电性方面的优化，系统会自动检测目前所有的Alarm任务，然后会将触发时间相近的几个任务放在一起执行，这样就可以大幅度减少CPU被唤醒的次数。但是这也就导致设定的Alarm任务的执行时间不是那么准确。</p>
+<p>如果要求Alarm任务的执行时间必须准确无误，可以使用AlarmManager提供的setExact()方法来替代set()方法。</p>
+<h3 id="Doze模式"><a href="#Doze模式" class="headerlink" title="Doze模式"></a>Doze模式</h3><p>当设备未接入电源，在屏幕关闭一段时间后，就会进入Doze模式。在该模式下，系统会对CPU、网络、Alarm等活动进行限制，从而延长续航。设备进入Doze模式后，会间歇性的退出Doze模式去完成一些同步，Alarm工作，随着设备进入Doze模式的时间越来越长，间歇退出Doze模式的时间间隔也越来越长，以此来减少CPU被唤醒的频率。</p>
+<p>Doze模式下的功能限制：</p>
+<ul>
+<li>网络访问禁止</li>
+<li>系统忽略唤醒CPU或屏幕操作</li>
+<li>系统不再执行WIFI扫描</li>
+<li>系统不再执行同步服务</li>
+<li>Alarm任务将会在下次退出Doze模式的时候执行</li>
+</ul>
+<p>因为Doze模式的原因Alarm任务的执行时间也会变得不准。可以使用AlarmManager的setAndAllowWhileIdle()或setExactAndAllowWhileIdle()方法来设置定时任务。</p>
+
               
             </div>
             <hr/>
@@ -351,7 +551,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2022年12月2日</div>
+          <div>2022年12月6日</div>
         </div>
       
       <div class="license-meta-item">
@@ -384,8 +584,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-MaterialDesign/" title="安卓开发-MaterialDesign">
-                        <span class="hidden-mobile">安卓开发-MaterialDesign</span>
+                      <a href="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91%E2%80%94%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E2%80%94Service/" title="安卓开发—四大组件—Service">
+                        <span class="hidden-mobile">安卓开发—四大组件—Service</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
