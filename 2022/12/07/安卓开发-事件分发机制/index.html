@@ -1,0 +1,883 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rideordie.png">
+  <link rel="icon" href="/img/rideordie.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiangYU">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="事件分发机制概述 了解整套的事件分发机制，有助于更好的分析各种点击滑动失效问题，更好地去扩展控件地事件功能和开发自定义控件。  事件是什么 我们对屏幕的点击、滑动、抬起等一系列动作都是由一个个MotionEvent对象组成，也就是所谓的“事件”。  事件主要分为三种（手指在屏幕上的所有操作都是这三种事件的组合）：  ACTION_DOWN ACTION_MOVE ACTION_UP  事件的分发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓开发-事件分发机制">
+<meta property="og:url" content="http://example.com/2022/12/07/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Ride_or_DIE">
+<meta property="og:description" content="事件分发机制概述 了解整套的事件分发机制，有助于更好的分析各种点击滑动失效问题，更好地去扩展控件地事件功能和开发自定义控件。  事件是什么 我们对屏幕的点击、滑动、抬起等一系列动作都是由一个个MotionEvent对象组成，也就是所谓的“事件”。  事件主要分为三种（手指在屏幕上的所有操作都是这三种事件的组合）：  ACTION_DOWN ACTION_MOVE ACTION_UP  事件的分发">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/07/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/sfy9ol0ecm.jpeg">
+<meta property="article:published_time" content="2022-12-07T03:08:50.000Z">
+<meta property="article:modified_time" content="2022-12-07T07:43:27.503Z">
+<meta property="article:author" content="XiangYU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/12/07/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/sfy9ol0ecm.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>安卓开发-事件分发机制 - Ride_or_DIE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","app_key":"2rUmLcHtDRExt0YFmed3951e","server_url":null,"path":"window.location.pathname","ignore_local":true}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ride_or_DIE</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="安卓开发-事件分发机制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-07 11:08" pubdate>
+          2022年12月7日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">安卓开发-事件分发机制</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年12月7日 下午
+                  
+                
+              </p>
+            
+            <div class="markdown-body">
+              
+              <h1 id="事件分发机制概述"><a href="#事件分发机制概述" class="headerlink" title="事件分发机制概述"></a>事件分发机制概述</h1><blockquote>
+<p>了解整套的事件分发机制，有助于更好的分析各种点击滑动失效问题，更好地去扩展控件地事件功能和开发自定义控件。</p>
+</blockquote>
+<h2 id="事件是什么"><a href="#事件是什么" class="headerlink" title="事件是什么"></a>事件是什么</h2><blockquote>
+<p>我们对屏幕的点击、滑动、抬起等一系列动作都是由一个个MotionEvent对象组成，也就是所谓的“事件”。</p>
+</blockquote>
+<p>事件主要分为三种（手指在屏幕上的所有操作都是这三种事件的组合）：</p>
+<ul>
+<li>ACTION_DOWN</li>
+<li>ACTION_MOVE</li>
+<li>ACTION_UP</li>
+</ul>
+<h2 id="事件的分发"><a href="#事件的分发" class="headerlink" title="事件的分发"></a>事件的分发</h2><blockquote>
+<p>当一个事件产生后，系统需要把这一系列的事件分发给一个具体的View。</p>
+</blockquote>
+<p>View中事件分发相关的三个重要方法：</p>
+<ul>
+<li><p>boolean dispatchTouchEvent(MotionEvent event)：事件分发</p>
+<blockquote>
+<p>当一个MotionEvent传递给了View，那么dispatchTouchEvent()方法一定会被调用。</p>
+<p>返回值表示是否消费当前事件：</p>
+<ul>
+<li>返回true：可能是在当前View或子View的dispatchTouchEvent()方法中被消费。</li>
+<li>返回false：未消费事件，将调用父View的onTouchEvent()方法。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>boolean onInterceptTouchEvent(MotionEvent ev)：事件拦截</p>
+<blockquote>
+<p>当一个ViewGroup在接到一个事件时，会先调用此方法判断是否需要拦截（ViewGroup特有，View没有）。</p>
+<p>返回值表示是否拦截事件传递：</p>
+<ul>
+<li>返回true：表示拦截事件，那么事件不再往下分发，而是调用View本身的onTouchEvent()方法。</li>
+<li>返回false：表示不做拦截，事件将向下分发到子View的dispatchTouchEvent()方法。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>boolean onTouchEvent(MotionEvent ev)：事件消费</p>
+<blockquote>
+<p>真正对MotionEvent进行处理（消费），在dispatchTouchEvent中被调用。</p>
+<p>返回值表示是否消费事件：</p>
+<ul>
+<li>返回true：表示事件被消费，本次事件终止。</li>
+<li>返回false：表示事件未消费，将调用父View的onTouchEvent()方法。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>上述三个方法之间的伪代码关系：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">dispatchTouchEvent</span><span class="hljs-params">(MotionEvent ev)</span> &#123;<br>    <span class="hljs-comment">//事件是否被消费</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">consume</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>    <br>    <span class="hljs-comment">//调用onInterceptTouchEvent判断是否拦截事件</span><br>    <span class="hljs-keyword">if</span> (onInterceptTouchEvent(ev))&#123;<br>        <span class="hljs-comment">//如果拦截则调用自身的onTouchEvent方法</span><br>        consume = onTouchEvent(ev);<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        <span class="hljs-comment">//不拦截调用子View的dispatchTouchEvent方法</span><br>        consume = child.dispatchTouchEvent(ev);<br>    &#125;<br>    <br>    <span class="hljs-comment">//返回值表示事件是否被消费，true事件终止，false调用父View的onTouchEvent方法</span><br>    <span class="hljs-keyword">return</span> consume;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>事件分发的一个流程图：</p>
+<p><img src="/2022/12/07/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/sfy9ol0ecm.jpeg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li>按照ViewGroup和View的默认方法实现，会走完整个U型流程。中间不会回溯、终止。</li>
+</ul>
+<h2 id="事件的拦截"><a href="#事件的拦截" class="headerlink" title="事件的拦截"></a>事件的拦截</h2><blockquote>
+<p>ViewGroup在通过dispatchTouchEvent()方法分发事件的时候，会先通过onInterceptTouchEvent()方法判断是否需要将事件拦截下来交给自己的onTouchEvent。</p>
+</blockquote>
+<p>一个dispatchTouchEvent()方法在接收到一个事件后有四种选择：</p>
+<ul>
+<li><p>消费事件：</p>
+<ol>
+<li>消费事件，终结事件的传递。（return true）</li>
+</ol>
+</li>
+<li><p>不消费事件：</p>
+<ol start="2">
+<li><p>拦截事件，交给自己的onTouchEvent()方法处理。</p>
+</li>
+<li><p>传递事件，给子View处理。</p>
+</li>
+<li><p>回溯事件，给父View的onTouchEvent()方法处理。（return false）</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>一个onTouchEvent()方法在接收到一个事件后有两种选择：</p>
+<ol>
+<li>消费事件，终结事件的传递。（return true）</li>
+<li>不消费事件，向上传递给父View的onTouchEvent()方法处理。（return false）</li>
+</ol>
+<p>拦截器是ViewGroup的所特有的，View没有拦截器。也就是说在View的dispatchTouchEvent()中方法中默认是将事件交给自己的onTouchEvent()方法处理。拦截器不能消费事件，只起到一个分流的作用。</p>
+<h2 id="一些需要注意的点"><a href="#一些需要注意的点" class="headerlink" title="一些需要注意的点"></a>一些需要注意的点</h2><ul>
+<li><p>子View可以干预父View的事件分发</p>
+<blockquote>
+<p>子View可以通过requestDisallowInterceptTouchEvent()方法干预父View的事件分发过程（ACTION_ DOWN事件除外）。而这就是我们处理滑动冲突的关键方法。</p>
+</blockquote>
+</li>
+<li><p>onTouch方法的优先级</p>
+<blockquote>
+<p>如果我们对View设置了onTouchListener，那么OnTouchListener()方法中的onTouch()方法会被回调，再根据onTouch()的返回值决定是否调用onTouchEvent()方法（true调用），而onClick事件是在onTouchEvent中被调用的。</p>
+<p>所以三者的优先级：onTouch -&gt; onTouchEvent -&gt; onClick</p>
+</blockquote>
+</li>
+<li><p>onTouchEvent()方法默认消费事件</p>
+<blockquote>
+<p>View的onTouchEvent()方法默认会消费掉事件（返回true）。除非它是不可点击的，也就是clickable和longClickable都为false。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="源码分析："><a href="#源码分析：" class="headerlink" title="源码分析："></a>源码分析：</h1><h2 id="Activity"><a href="#Activity" class="headerlink" title="Activity"></a>Activity</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java">Class Activity：<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">dispatchTouchEvent</span><span class="hljs-params">(MotionEvent ev)</span> &#123;<br>        <span class="hljs-keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;<br>            onUserInteraction();<br>        &#125;<br>        <span class="hljs-comment">// 事件分发并返回结果</span><br>        <span class="hljs-keyword">if</span> (getWindow().superDispatchTouchEvent(ev)) &#123;<br>            <span class="hljs-comment">// 事件被消费</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125;<br>        <span class="hljs-comment">// 没有View可以处理，调用Activity onTouchEvent方法</span><br>        <span class="hljs-keyword">return</span> onTouchEvent(ev);<br>	&#125;<br></code></pre></td></tr></table></figure>
+
+<p>getWindow().superDispatchTouchEvent()，调用的是抽象的Window类，而该抽象类只有一个实现，也就是PhoneWindow：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">PhoneWindow</span><br>    <span class="hljs-keyword">private</span> DecorView mDecor;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">superDispatchTouchEvent</span><span class="hljs-params">(MotionEvent event)</span> &#123;<br>        <span class="hljs-keyword">return</span> mDecor.superDispatchTouchEvent(event);<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>DecorView是Window的顶级View。我们通过setContentView设置的View就是它的子View。</p>
+<p>至此，事件就已经被传递到我们的顶级View中了（一般来说也就是ViewGroup）。</p>
+<h2 id="ViewGroup"><a href="#ViewGroup" class="headerlink" title="ViewGroup"></a>ViewGroup</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ViewGroup</span>:<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">dispatchTouchEvent</span><span class="hljs-params">(MotionEvent ev)</span> &#123;<br>        ...<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">action</span> <span class="hljs-operator">=</span> ev.getAction();<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">actionMasked</span> <span class="hljs-operator">=</span> action &amp; MotionEvent.ACTION_MASK;<br>        <br>        <span class="hljs-comment">// 1. 初始化操作</span><br>        <span class="hljs-comment">// 如果事件是ACTION_DOWN（表示开启了一个新的touch手势）</span><br>        <span class="hljs-keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;<br>            cancelAndClearTouchTargets(ev);<br>            <span class="hljs-comment">// 清除FLAG_DISALLOW_INTERCEPT标志位，并且将mFirstTouchTarget置为null</span><br>            resetTouchState();<br>        &#125;<br>        <br>        <span class="hljs-comment">// 用以标记是否事件是否被拦截</span><br>        <span class="hljs-keyword">final</span> <span class="hljs-type">boolean</span> intercepted;<br>        <br>        <span class="hljs-comment">// 2. 判断是否事件由ViewGroup本身处理</span><br>        <span class="hljs-keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN || mFirstTouchTarget != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-comment">// 2.1 如果是ACTION_DOWN（ACTION_DOWN事件不会被拦截）</span><br>            <span class="hljs-comment">//		或mFirstTouchTarget != null（事件由子View处理）</span><br>            <br>            <span class="hljs-comment">// FLAG_DISALLOW_INTERCEPT由子View的方法进行设置的</span><br>            <span class="hljs-keyword">final</span> <span class="hljs-type">boolean</span> <span class="hljs-variable">disallowIntercept</span> <span class="hljs-operator">=</span> (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="hljs-number">0</span>;<br>            <span class="hljs-comment">// 判断事件允许被拦截</span><br>            <span class="hljs-keyword">if</span> (!disallowIntercept) &#123;<br>                <span class="hljs-comment">// 2.1.1 若事件允许被拦截，则将事件交给拦截器拦截判断是否需要被拦截</span><br>                intercepted = onInterceptTouchEvent(ev);<br>                ev.setAction(action); <span class="hljs-comment">// restore action in case it was changed</span><br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-comment">// 2.1.2 若事件不允许被拦截，则被拦截标记为false</span><br>                intercepted = <span class="hljs-literal">false</span>;<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// 2.2 若事件不为ACTION_DOWN且为ViewGroup本身处理</span><br>            <br>            <span class="hljs-comment">// 显然该事件已经被拦截不会往下传递，被拦截标志为true</span><br>            intercepted = <span class="hljs-literal">true</span>;<br>        &#125;<br>        ...<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>当ViewGroup不拦截事件，也就是说intercepted标志为false，那么事件将下发给子View进行处理，GroupView中事件分发的相关代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ViewGroup</span>:<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">dispatchTouchEvent</span><span class="hljs-params">(MotionEvent ev)</span> &#123;<br>        <br>        ...<br>        <br>        <span class="hljs-keyword">final</span> View[] children = mChildren;<br>        <br>        <span class="hljs-comment">//对子View进行遍历</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> childrenCount - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) &#123;<br>            <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">childIndex</span> <span class="hljs-operator">=</span> getAndVerifyPreorderedIndex(<br>                    childrenCount, i, customOrder);<br>            <span class="hljs-keyword">final</span> <span class="hljs-type">View</span> <span class="hljs-variable">child</span> <span class="hljs-operator">=</span> getAndVerifyPreorderedView(<br>                    preorderedList, children, childIndex);<br>            <br>            ...<br><br>            <span class="hljs-comment">// 判断条件：1、View可见并且没有播放动画；2、点击事件的坐标落在View的范围内</span><br>            <span class="hljs-comment">// 如果上述两个条件有一项不满足，则跳过该子View，遍历下一个</span><br>            <span class="hljs-keyword">if</span> (!canViewReceivePointerEvents(child)<br>                    || !isTransformedTouchPointInView(x, y, child, <span class="hljs-literal">null</span>)) &#123;<br>                ev.setTargetAccessibilityFocus(<span class="hljs-literal">false</span>);<br>                <span class="hljs-keyword">continue</span>;<br>            &#125;<br><br>            newTouchTarget = getTouchTarget(child);<br>            <span class="hljs-comment">//如果有子View处理了事件（即newTouchTarget不为null），则停止遍历</span><br>            <span class="hljs-keyword">if</span> (newTouchTarget != <span class="hljs-literal">null</span>) &#123;<br>                newTouchTarget.pointerIdBits |= idBitsToAssign;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br><br>            resetCancelNextUpFlag(child);<br>            <br>            <span class="hljs-comment">// dispatchTransformedTouchEvent()方法会根据child进行递归调用</span><br>            <span class="hljs-keyword">if</span> (dispatchTransformedTouchEvent(ev, <span class="hljs-literal">false</span>, child, idBitsToAssign)) &#123;<br>                <span class="hljs-comment">// dispatchTransformedTouchEvent内部的逻辑:</span><br>                <span class="hljs-comment">//     if (child == null) &#123;</span><br>            	<span class="hljs-comment">//		   handled = super.dispatchTouchEvent(event);</span><br>        		<span class="hljs-comment">//	   &#125; else &#123;</span><br>            	<span class="hljs-comment">//		   handled = child.dispatchTouchEvent(event);</span><br>        		<span class="hljs-comment">//	   &#125;</span><br>                <br>                mLastTouchDownTime = ev.getDownTime();<br>                <span class="hljs-keyword">if</span> (preorderedList != <span class="hljs-literal">null</span>) &#123;<br>                    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; childrenCount; j++) &#123;<br>                        <span class="hljs-keyword">if</span> (children[childIndex] == mChildren[j]) &#123;<br>                            mLastTouchDownIndex = j;<br>                            <span class="hljs-keyword">break</span>;<br>                        &#125;<br>                    &#125;<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    mLastTouchDownIndex = childIndex;<br>                &#125;<br>                mLastTouchDownX = ev.getX();<br>                mLastTouchDownY = ev.getY();<br>                <br>                <span class="hljs-comment">//当child处理了点击事件，那么mFirstTouchTarget会在addTouchTarget被赋值</span><br>                newTouchTarget = addTouchTarget(child, idBitsToAssign);<br>                alreadyDispatchedToNewTouchTarget = <span class="hljs-literal">true</span>;<br>                <span class="hljs-comment">//子View处理了事件，然后就跳出了for循环</span><br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <br>        ...<br>        <br>        <span class="hljs-comment">// 若遍历完子View后都没有子View处理事件，此时mFirstTouchTarget为null</span><br>        <span class="hljs-keyword">if</span> (mFirstTouchTarget == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-comment">// 进行递归调用，由super.dispatchTouchEvent(event)处理</span><br>            handled = dispatchTransformedTouchEvent(ev, canceled, <span class="hljs-literal">null</span>,<br>                    TouchTarget.ALL_POINTER_IDS);<br>        &#125;    <br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="View"><a href="#View" class="headerlink" title="View"></a>View</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">View</span>:<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">dispatchTouchEvent</span><span class="hljs-params">(MotionEvent ev)</span> &#123;<br>        <br>        ...<br>        <br>		<span class="hljs-comment">// 如果窗口没有被遮盖</span><br>        <span class="hljs-keyword">if</span> (onFilterTouchEventForSecurity(event)) &#123;<br>            <span class="hljs-keyword">if</span> ((mViewFlags &amp; ENABLED_MASK) == ENABLED &amp;&amp; handleScrollBarDragging(event)) &#123;<br>                result = <span class="hljs-literal">true</span>;<br>            &#125;<br>            <span class="hljs-comment">// 当前监听事件</span><br>            <span class="hljs-type">ListenerInfo</span> <span class="hljs-variable">li</span> <span class="hljs-operator">=</span> mListenerInfo;<br>            <br>            <span class="hljs-comment">// 判断是否设置了OnTouchListener</span><br>            <span class="hljs-keyword">if</span> (li != <span class="hljs-literal">null</span> &amp;&amp; li.mOnTouchListener != <span class="hljs-literal">null</span><br>                    &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED<br>                	<span class="hljs-comment">// 调用OnTouchListener的onTouch()方法</span><br>                    &amp;&amp; li.mOnTouchListener.onTouch(<span class="hljs-built_in">this</span>, event)) &#123;<br>                result = <span class="hljs-literal">true</span>;<br>            &#125;<br>			<span class="hljs-comment">// result为true表示没有设置OnTouchListener或者说设置了但是onTouch()方法返回的是true</span><br>            <span class="hljs-comment">// 则onTouchEvent()方法不会被调用</span><br>            <span class="hljs-keyword">if</span> (!result &amp;&amp; onTouchEvent(event)) &#123;<br>                result = <span class="hljs-literal">true</span>;<br>            &#125;<br>        &#125;<br>		<br>        ...<br><br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>在调用onTouchEvent()之前会先执行onTouch()方法，并根据其执行结果决定是否执行onTouchEvent()。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">View</span>:<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">onTouchEvent</span><span class="hljs-params">(MotionEvent event)</span> &#123;<br>        <br>        ...<br>        <br>        <span class="hljs-comment">//1.如果View是设置成不可用的（DISABLED）仍然会消费点击事件</span><br>        <span class="hljs-keyword">if</span> ((viewFlags &amp; ENABLED_MASK) == DISABLED) &#123;<br>            ...<br>        &#125;<br>        ...<br>        <span class="hljs-comment">//2.CLICKABLE和LONG_CLICKABLE只要有一个为true就消费这个事件</span><br>        <span class="hljs-keyword">if</span> (((viewFlags &amp; CLICKABLE) == CLICKABLE ||<br>                (viewFlags &amp; LONG_CLICKABLE) == LONG_CLICKABLE) ||<br>                (viewFlags &amp; CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE) &#123;<br>            <span class="hljs-keyword">switch</span> (action) &#123;<br>                <span class="hljs-keyword">case</span> MotionEvent.ACTION_UP:<br>                    ...<br>                    <span class="hljs-comment">//3.在ACTION_UP方法发生时会触发performClick()方法</span><br>                    performClick();<br>                    ...<br>                    <span class="hljs-keyword">break</span>;<br>            &#125;<br>            ...<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>View的onTouchEvent()默认会消费掉事件，除非它是不可点击的。</li>
+<li>在View的ACTION_UP中有perfromClick()方法，这个方法会回调我们为View设置的OnclickListener中的onClick()方法。</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Android/" class="category-chain-item">Android</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>安卓开发-事件分发机制</div>
+      <div>http://example.com/2022/12/07/安卓开发-事件分发机制/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiangYU</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月7日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2022年12月7日</div>
+        </div>
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/02/%E5%AE%89%E5%8D%93%E5%BC%80%E5%8F%91-%E5%85%B6%E4%BD%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8A%80%E5%B7%A7/" title="安卓开发-其余的一些技巧">
+                        <span class="hidden-mobile">安卓开发-其余的一些技巧</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.4.16/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"oJgRmRSoMnXMSzk2FSqr3T8l-gzGzoHsz","appKey":"2rUmLcHtDRExt0YFmed3951e","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
